@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bakaloria Race · سباق البكالوريا</title>
+<meta name="description" content="وفي ذلك فليتنافس المتنافسون: race your friends through the Bakaloria.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@500;600;700&display=swap">
+<style>
+/* VOICE: sporty, friendly rivalry, still tidy enough to study by
+   IDEA: an athletics track: each friend runs in a lane toward the finish (100% of lessons)
+   PICTURE: terracotta running track with white lane lines and runner markers
+   COLOUR and TYPE: white ground, ink, track terracotta, deep green accent; Barlow Condensed numbers, Inter, IBM Plex Sans Arabic
+   LAYOUT: title, track, hours board, then your own study: hours logger and subjects */
+:root{color-scheme:light dark;--bg:light-dark(#FFFFFF,#121417);--panel:light-dark(#F5F4F0,#1B1E23);--ink:light-dark(#16181D,#EEEFF2);--mute:light-dark(#555B66,#A4AAB4);--line:light-dark(#E3E1DA,#2D3138);--track:light-dark(#C4553C,#9E4430);--trackD:light-dark(#A9452F,#7F3424);--acc:light-dark(#0B6B45,#4FCB8E);--accT:light-dark(#FFFFFF,#0B1A12);--soft:light-dark(#E6F2EC,#1C2A23)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:880px;margin:0 auto;padding:clamp(24px,4vw,48px) max(4vw,16px) 64px}
+.ar{font-family:'IBM Plex Sans Arabic',sans-serif}
+.num{font-family:'Barlow Condensed',Inter,sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
+h1{margin:0;font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:-.01em;text-wrap:balance}
+h2{margin:0 0 12px;font-size:22px;line-height:1.2}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap}
+.top{flex-direction:column;align-items:stretch}.ayah{font-family:Amiri,'IBM Plex Sans Arabic',serif;font-size:clamp(36px,7vw,60px);line-height:1.5;text-align:center;color:var(--track);letter-spacing:0}
+.sub{margin:0;display:flex;justify-content:center;gap:6px 16px;flex-wrap:wrap;font-weight:600;font-size:16px;color:var(--mute)}
+.cnt{all:unset;box-sizing:border-box;min-width:44px;height:44px;padding:0 12px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:15px;cursor:pointer;border:1.5px solid var(--line);color:var(--ink);flex:none}
+.cnt.on{background:var(--acc);border-color:var(--acc);color:var(--accT)}
+.cnt:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.cnt:disabled{opacity:.5;cursor:default}
+.ls .t{flex:1;min-height:46px;display:flex;align-items:center;padding-right:8px}
+.lead{margin:8px 0 0;color:var(--mute);font-size:17px}
+.lead b{color:var(--ink)}
+.track{margin:22px 0 10px;background:var(--track);border-radius:22px;padding:14px 0;position:relative;overflow:hidden;box-shadow:inset 0 -6px 0 var(--trackD)}
+.lane{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) 4.2em;align-items:center;gap:12px;padding:0 18px;height:54px;border-top:2px solid rgba(255,255,255,.75)}
+.lane:last-child{border-bottom:2px solid rgba(255,255,255,.75)}
+.lane .who{color:#fff;font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lane .who small{display:block;font-weight:500;opacity:.85;font-size:13px}
+.run{position:relative;height:100%}
+.run::after{content:"";position:absolute;right:0;top:0;bottom:0;width:10px;background:repeating-linear-gradient(0deg,#fff 0 5px,#16181D 5px 10px);opacity:.9}
+.runner{position:absolute;top:50%;width:34px;height:34px;margin-left:-17px;transform:translateY(-50%);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;color:#16181D;border:3px solid #fff;box-shadow:0 3px 0 rgba(0,0,0,.25);transition:left .7s cubic-bezier(.2,.8,.2,1);z-index:1}
+.runner.me{outline:3px solid #16181D;outline-offset:1px}
+.lane .pct{color:#fff;font-size:26px;text-align:right;white-space:nowrap}
+.track .empty{color:#fff;padding:22px 20px;margin:0}
+.note{font-size:14px;color:var(--mute);margin:0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:28px}
+.card{background:var(--panel);border-radius:18px;padding:20px 22px}
+.rows{display:flex;flex-direction:column;gap:10px}
+.hr{display:grid;grid-template-columns:minmax(0,7em) minmax(0,1fr) 3.6em;gap:10px;align-items:center;font-size:15px}
+.hr .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.hbar i{display:block;height:100%;border-radius:6px;transition:width .5s}
+.hr .v{text-align:right;font-size:20px;white-space:nowrap}
+.logger{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.big{font-size:56px;line-height:1}
+.big small{font-family:Inter,sans-serif;font-size:15px;font-weight:500;color:var(--mute);margin-left:4px}
+.step{display:flex;gap:8px;margin-left:auto}
+.btn{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:12px;padding:0 18px;min-height:44px;background:var(--acc);color:var(--accT);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.sq{width:48px;padding:0;font-size:22px}
+.btn:focus-visible,.sbj>button:focus-visible,.x:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.btn:disabled{opacity:.5;cursor:default}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:16px;align-items:end;height:84px}
+.week div{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;font-size:12px;color:var(--mute)}
+.week i{display:block;width:100%;max-width:28px;background:var(--acc);border-radius:5px 5px 2px 2px;min-height:3px}
+.subjects{display:flex;flex-direction:column;gap:8px;margin-top:28px}
+.sbj{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg)}
+.sbj>button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 18px;cursor:pointer}
+.sbj .nm{font-weight:600;font-size:18px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.sbj .nm .ar{font-weight:600;color:var(--mute);font-size:17px}
+.sbj .ct{font-size:22px;text-align:right;white-space:nowrap}
+.sbj .bar{grid-column:1/-1;height:6px;background:var(--soft);border-radius:6px;overflow:hidden}
+.sbj .bar i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.sbj .body{display:none;border-top:1px solid var(--line);padding:6px 18px 16px}
+.sbj.open .body{display:block}
+.ls{list-style:none;margin:0 0 12px;padding:0}
+.ls li{display:flex;align-items:center;border-bottom:1px solid var(--line)}
+.ls label{flex:1;display:flex;align-items:center;gap:12px;min-height:46px;cursor:pointer}
+.ls input{width:20px;height:20px;accent-color:var(--acc);margin:0;flex:none}
+.ls .dn span{text-decoration:line-through;color:var(--mute)}
+.ls .who{font-size:12px;color:var(--mute);white-space:nowrap;margin-right:6px}
+.x{all:unset;width:44px;height:44px;display:grid;place-items:center;color:var(--mute);cursor:pointer;border-radius:10px;flex:none}
+.x:hover{background:var(--panel);color:var(--ink)}
+.add{display:flex;gap:8px}
+input[type=text],input[type=date]{flex:1;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px}
+input[type=text]:focus,input[type=date]:focus{outline:2px solid var(--acc);border-color:transparent}
+.join{background:var(--soft);border-radius:18px;padding:20px 22px;margin-top:20px}
+.join form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.join p{margin:0}
+.bac{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;font-size:15px;color:var(--mute)}
+.bac b{color:var(--ink)}
+.bac form{display:flex;gap:8px}
+.lobby{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:inherit;font-weight:600;font-size:15px;display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-decoration:none;cursor:pointer}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.add{border-style:dashed;color:var(--mute)}
+.chip:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.inl{display:flex;gap:8px;flex-wrap:wrap}
+.info{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--mute)}
+.info b{color:var(--ink)}
+.code{font-size:22px;letter-spacing:.06em}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1}
+@media(max-width:640px){.grid2{grid-template-columns:minmax(0,1fr)}.lane{grid-template-columns:minmax(0,5.5em) minmax(0,1fr) 3.4em;gap:8px;padding:0 12px}.lane .pct{font-size:22px}.big{font-size:46px}.step{margin-left:0}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.linkbtn{all:unset;color:var(--acc);font-weight:600;cursor:pointer;text-decoration:underline}
+.linkbtn:focus-visible{outline:2px solid var(--acc)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span>Bakaloria race · Scientific</span><span class="ar" lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></div>
+  <div id="lobby" class="lobby"></div>
+  <p class="lead" id="lead">Loading…</p>
+  <div id="bac" class="bac"></div>
+  <div class="track" id="track" aria-label="Race track: lesson progress per friend"><p class="empty">Loading…</p></div>
+  <p class="note">Everyone races on the same lesson list. Reach 100% of lessons to cross the finish line.</p>
+  <div id="join"></div>
+  <div class="grid2">
+    <section class="card"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
+    <section class="card" id="mine"><h2>Your hours today</h2></section>
+  </div>
+  <section style="margin-top:36px"><h2>Your subjects</h2><p class="note">Tap Studied when you finish a lesson, and again each time you review it.</p>
+  <div class="subjects" id="subjects"></div></section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script type="module">
+// ===== SETTINGS: only you (the site owner) change these =====
+// 1) Paste your Firebase web app config here (Firebase console > Project settings > Your apps).
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyD0alaXh9Qse0357_Z85M8hx_Rug5CgACY",
+  authDomain: "bakaloria-race-636c8.firebaseapp.com",
+  projectId: "bakaloria-race-636c8",
+  storageBucket: "bakaloria-race-636c8.firebasestorage.app",
+  messagingSenderId: "408908905540",
+  appId: "1:408908905540:web:5466fbed95023b15e19011"
+};
+// 2) First Bakaloria exam date, "YYYY-MM-DD". Leave "" until it is announced.
+const BAC_DATE = "";
+// 3) Lessons per subject: [id, name]. Ids must never change once people start ticking.
+const LESSONS = {
+  math: [], phy: [], chem: [], bio: [], arb: [], eng: [], fr: [], rel: []
+};
+// ============================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, collection, doc, onSnapshot, setDoc, query, where } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+const SUBJ=[['math','Mathematics','رياضيات'],['phy','Physics','فيزياء'],['chem','Chemistry','كيمياء'],['bio','Science','علوم'],['arb','Arabic','عربي'],['eng','English','إنكليزي'],['fr','French','فرنسي'],['rel','Religion','ديانة']];
+const ALL=SUBJ.flatMap(([k])=>(LESSONS[k]||[]).map(([id,t])=>({id,t,s:k})));
+const COLORS=['#F6C445','#7FD3F7','#B9F27C','#FFA3C7','#C9B6FF','#FFB36B','#8CF0D4','#F7F3E8'];
+const CH='abcdefghjkmnpqrstuvwxyz23456789';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const dkey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const dayAgo=n=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-n);return d};
+const fmtH=h=>(Math.round(h*10)/10).toString();
+const ord=i=>(i+1)+(i===0?'st':i===1?'nd':i===2?'rd':'th');
+const hashCode=()=>{const m=/^#r-([a-z0-9]{4,12})$/.exec(location.hash.toLowerCase());return m?m[1]:null};
+
+let auth,db,meId=null,meName='',authReady=false,me=null,players={},lobbyDocs={},lobbyUnsub=new Map(),playersUnsub=null,watching=null;
+let cur=null,ui='',leaveArm=false,open=new Set(['math']),pending=null,writing=false,toastT=null;
+try{cur=localStorage.getItem('bac-cur')||null;open=new Set(JSON.parse(localStorage.getItem('bac-open')||'["math"]'))}catch(e){}
+if(hashCode())cur=hashCode();
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
+const lname=c=>lobbyDocs[c]&&lobbyDocs[c].name?lobbyDocs[c].name:'Race '+c.toUpperCase();
+const nick=p=>(p&&p.nick)||'Someone';
+const colorOf=id=>{const ids=Object.keys(players).sort((a,b)=>(players[a].joined||'').localeCompare(players[b].joined||''));const i=ids.indexOf(id);return COLORS[(i<0?0:i)%COLORS.length]};
+function stats(p){
+  const done=(p&&p.done)||{};const d=ALL.filter(l=>done[l.id]>0).length;const rv=ALL.reduce((a,l)=>a+(+done[l.id]||0),0);
+  const hours=(p&&p.hours)||{};let week=0,total=0;for(const k in hours)total+=+hours[k]||0;
+  for(let i=0;i<7;i++)week+=+hours[dkey(dayAgo(i))]||0;
+  let streak=0,i=(+hours[dkey(dayAgo(0))]||0)>0?0:1;while((+hours[dkey(dayAgo(i))]||0)>0){streak++;i++}
+  return{d,rv,pct:ALL.length?Math.round(d/ALL.length*100):0,week,total,streak};
+}
+
+// ---------- data ----------
+function watchLobby(c){if(!c||lobbyUnsub.has(c))return;lobbyUnsub.set(c,onSnapshot(doc(db,'lobbies',c),s=>{if(s.exists())lobbyDocs[c]=s.data();else lobbyDocs[c]={missing:true};render()},()=>{lobbyDocs[c]={missing:true};render()}))}
+function watchPlayers(){
+  if(watching===cur)return;watching=cur;if(playersUnsub){playersUnsub();playersUnsub=null}players={};
+  if(!cur){render();return}
+  playersUnsub=onSnapshot(query(collection(db,'players'),where('lobbies','array-contains',cur)),s=>{const nx={};s.forEach(x=>nx[x.id]=x.data());players=nx;render()},()=>toast('Could not load this race'));
+}
+function changeMe(fn){const c=JSON.parse(JSON.stringify(me||{}));fn(c);me=c;if(cur&&(c.lobbies||[]).includes(cur))players[meId]=c;render();pending=c;pump()}
+async function pump(){if(writing||!pending)return;writing=true;const d=pending;pending=null;
+  try{await setDoc(doc(db,'players',meId),d)}catch(e){toast('Could not save. Check your connection.')}writing=false;pump()}
+function enter(c){changeMe(p=>{p.lobbies=(p.lobbies||[]).filter(x=>x!==c);p.lobbies.push(c)});cur=c;ui='';location.hash='r-'+c;sync()}
+function sync(){
+  const my=(me&&me.lobbies)||[];
+  if(!hashCode()&&(!cur||(me&&!my.includes(cur))))cur=my[0]||null;
+  try{if(cur)localStorage.setItem('bac-cur',cur)}catch(e){}
+  my.forEach(watchLobby);if(cur)watchLobby(cur);watchPlayers();render();
+}
+
+// ---------- view ----------
+function lobbyHTML(my){
+  if(!me)return '';
+  let h='<div class="chips">'+my.map(c=>'<a class="chip'+(c===cur?' on':'')+'" href="#r-'+c+'">'+esc(lname(c))+'</a>').join('')+
+    '<button type="button" class="chip add" data-act="new">+ New race</button><button type="button" class="chip add" data-act="code">Join with code</button></div>';
+  if(ui==='new')h+='<form id="newForm" class="inl"><input type="text" id="newIn" maxlength="30" required placeholder="Race name, like School friends" aria-label="Race name" autocomplete="off"><button class="btn">Create</button></form>';
+  if(ui==='code')h+='<form id="codeForm" class="inl"><input type="text" id="codeIn" maxlength="12" required placeholder="Race code" aria-label="Race code" autocomplete="off" autocapitalize="characters"><button class="btn">Join</button></form>';
+  if(cur){const L=lobbyDocs[cur],inIt=my.includes(cur);
+    if(L&&L.missing)h+='<p class="note">No race found with code '+esc(cur.toUpperCase())+'.</p>';
+    else if(L)h+='<div class="info"><span>'+(inIt?'':'Viewing ')+'<b>'+esc(lname(cur))+'</b> · code <b class="num code">'+esc(cur.toUpperCase())+'</b></span><button type="button" class="btn ghost" data-act="copy">Copy invite</button>'+(!inIt?'<button type="button" class="btn" data-act="enter">Join this race</button>':'<button type="button" class="btn ghost" data-act="leave">'+(leaveArm?'Tap again to leave':'Leave race')+'</button>')+'</div>';
+  }else h+='<p class="note">Create a race and send the invite to your friends, or join one with a code.</p>';
+  return h;
+}
+function render(){
+  // sign-in / join
+  const j=$('join');
+  if(!authReady)j.innerHTML='';
+  else if(!meId)j.innerHTML='<div class="join"><p><b>Sign in to race.</b> Google keeps your progress on any phone. Guest works on this device only.</p><div class="inl" style="margin-top:12px"><button class="btn" data-act="google">Continue with Google</button><button class="btn ghost" data-act="guest">Play as guest</button></div></div>';
+  else if(!me||!me.nick)j.innerHTML='<div class="join"><p><b>Pick the name your friends will see.</b></p><form id="joinForm"><input type="text" id="nickIn" maxlength="24" required value="'+esc(meName)+'" aria-label="Your name"><button class="btn">Start</button></form></div>';
+  else j.innerHTML='';
+  const my=(me&&me.lobbies)||[];
+  $('lobby').innerHTML=me&&me.nick?lobbyHTML(my):'';
+  // track
+  const rows=Object.keys(players).filter(id=>(players[id].lobbies||[]).includes(cur)).map(id=>({id,p:players[id],s:stats(players[id])}));
+  const by=rows.slice().sort((a,b)=>b.s.pct-a.s.pct||b.s.rv-a.s.rv);
+  const tr=$('track');
+  if(!cur)tr.innerHTML='<p class="empty">'+(me&&me.nick?'Pick a race above, create one, or join with a code.':'Sign in below to start racing.')+'</p>';
+  else if(!rows.length)tr.innerHTML='<p class="empty">No runners in this race yet.</p>';
+  else tr.innerHTML=by.map((r,i)=>'<div class="lane"><div class="who">'+esc(nick(r.p))+(r.id===meId?' (you)':'')+'<small>'+ord(i)+' · '+r.s.d+' of '+ALL.length+(r.s.rv>r.s.d?' · '+r.s.rv+' reviews':'')+'</small></div><div class="run"><span class="runner'+(r.id===meId?' me':'')+'" style="left:calc(17px + (100% - 44px) * '+(r.s.pct/100)+');background:'+colorOf(r.id)+'" aria-hidden="true">'+esc(nick(r.p).trim().charAt(0).toUpperCase()||'?')+'</span></div><div class="pct num">'+r.s.pct+'%</div></div>').join('');
+  const lead=$('lead');
+  if(rows.length&&cur){const top=by[0],mi=by.findIndex(r=>r.id===meId);lead.innerHTML=esc(lname(cur))+': <b>'+esc(nick(top.p))+'</b> leads with '+top.s.pct+'% of '+ALL.length+' lessons'+(mi>0?' · you are '+ord(mi):'')+'.'}
+  else lead.textContent=ALL.length?ALL.length+' lessons across 8 subjects.':'Lessons are being added. Hours already count.';
+  // bac countdown
+  if(BAC_DATE){const n=Math.round((new Date(BAC_DATE+'T00:00')-dayAgo(0))/864e5);$('bac').innerHTML='<span>First Bakaloria exam: <b>'+new Date(BAC_DATE+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</b> · <b class="num" style="font-size:20px">'+(n>0?n+' days':n===0?'today':'done')+'</b></span>'}
+  else $('bac').innerHTML='<span>2027 exam dates not announced yet.</span>';
+  // hours
+  const bw=rows.slice().sort((a,b)=>b.s.week-a.s.week),mx=Math.max(1,...rows.map(r=>r.s.week));
+  $('hours').innerHTML=rows.length?bw.map(r=>'<div class="hr"><span class="n">'+esc(nick(r.p))+(r.s.streak>1?'<small style="display:block;font-size:12px;color:var(--mute)">'+r.s.streak+'-day streak</small>':'')+'</span><div class="hbar"><i style="width:'+(r.s.week/mx*100)+'%;background:'+(r.id===meId?'var(--acc)':'var(--track)')+'"></i></div><span class="v num">'+fmtH(r.s.week)+'h</span></div>').join('')+'<p class="note">Last 7 days · all-time leader: '+esc(nick(rows.slice().sort((a,b)=>b.s.total-a.s.total)[0].p))+'</p>':'<p class="note">No hours in this race yet.</p>';
+  // my hours
+  if(me&&me.nick){const h=me.hours||{},t=+h[dkey(dayAgo(0))]||0,days=[...Array(7)].map((_,i)=>dayAgo(6-i)),wm=Math.max(1,...days.map(d=>+h[dkey(d)]||0));
+    $('mine').innerHTML='<h2>Your hours today</h2><div class="logger"><div class="big num">'+fmtH(t)+'<small>hours</small></div><div class="step"><button class="btn ghost sq" data-h="-0.5" aria-label="Remove half an hour">−</button><button class="btn sq" data-h="0.5" aria-label="Add half an hour">+</button><button class="btn ghost" data-h="1">+1h</button></div></div><div class="week" aria-label="Your last 7 days">'+days.map(d=>{const v=+h[dkey(d)]||0;return'<div><span>'+fmtH(v)+'</span><i style="height:'+(v/wm*56)+'px"></i><span>'+d.toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2)+'</span></div>'}).join('')+'</div>'+
+      '<p class="note" style="margin-top:14px">Signed in as '+esc(me.nick)+' · <button class="linkbtn" data-act="signout">Sign out</button></p>'}
+  else $('mine').innerHTML='<h2>Your hours today</h2><p class="note">Sign in to log hours.</p>';
+  // subjects
+  const done=(me&&me.done)||{},can=!!(me&&me.nick);
+  $('subjects').innerHTML=SUBJ.map(([k,en,ar])=>{const L=(LESSONS[k]||[]),c=L.filter(([id])=>done[id]>0).length,o=open.has(k);
+    return '<div class="sbj'+(o?' open':'')+'"><button type="button" data-open="'+k+'" aria-expanded="'+o+'"><span class="nm">'+en+' <span class="ar" lang="ar" dir="rtl">'+ar+'</span></span><span class="ct num">'+c+'/'+L.length+'</span><span class="bar"><i style="width:'+(L.length?c/L.length*100:0)+'%"></i></span></button><div class="body">'+
+    (L.length?'<ul class="ls">'+L.map(([id,t])=>{const n=+done[id]||0;return '<li><span class="t" dir="auto">'+esc(t)+'</span>'+(n>0&&can?'<button class="x" data-unrev="'+esc(id)+'" aria-label="Undo one study of '+esc(t)+'">−</button>':'')+'<button class="cnt'+(n>0?' on':'')+'" data-rev="'+esc(id)+'"'+(can?'':' disabled')+' aria-label="Mark '+esc(t)+' studied">'+(n>0?'✓'+(n>1?' ×'+n:''):'Studied')+'</button></li>'}).join('')+'</ul>':'<p class="note" style="margin:10px 0">Lessons for this subject are coming soon.</p>')+'</div></div>'}).join('');
+}
+
+// ---------- events ----------
+document.addEventListener('click',async ev=>{
+  const o=ev.target.closest('[data-open]');
+  if(o){const k=o.dataset.open;open.has(k)?open.delete(k):open.add(k);try{localStorage.setItem('bac-open',JSON.stringify([...open]))}catch(e){}render();const b=document.querySelector('[data-open="'+k+'"]');if(b)b.focus();return}
+  const h=ev.target.closest('[data-h]');
+  if(h&&me&&me.nick){const k=dkey(dayAgo(0));changeMe(p=>{p.hours=p.hours||{};p.hours[k]=Math.max(0,Math.min(24,(+p.hours[k]||0)+(+h.dataset.h)))});return}
+  const rv=ev.target.closest('[data-rev],[data-unrev]');
+  if(rv&&me&&me.nick){const up=!!rv.dataset.rev,id=up?rv.dataset.rev:rv.dataset.unrev;let n=0;
+    changeMe(p=>{p.done=p.done||{};n=Math.max(0,(+p.done[id]||0)+(up?1:-1));if(n)p.done[id]=n;else delete p.done[id]});
+    if(up)toast(n===1?'Lesson done. Keep running!':'Reviewed '+n+' times');const b=document.querySelector('[data-rev="'+id+'"]');if(b)b.focus();return}
+  const a=ev.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
+  if(act==='google'){const p=new GoogleAuthProvider();try{await signInWithPopup(auth,p)}catch(e){if(e&&/popup/.test(e.code||''))signInWithRedirect(auth,p);else toast('Google sign-in failed. Try guest.')}return}
+  if(act==='guest'){try{await signInAnonymously(auth)}catch(e){toast('Could not sign in')}return}
+  if(act==='signout'){await signOut(auth);return}
+  if(act==='new'||act==='code'){ui=ui===act?'':act;render();const i=$(act==='new'?'newIn':'codeIn');if(i)i.focus();return}
+  if(act==='copy'){const link=location.origin+location.pathname+'#r-'+cur;const txt='Join my Bakaloria race "'+lname(cur)+'": '+link+' (code '+cur.toUpperCase()+')';
+    try{if(navigator.share){await navigator.share({text:txt});return}await navigator.clipboard.writeText(txt);toast('Invite copied')}catch(e){toast('Code: '+cur.toUpperCase())}return}
+  if(act==='enter'&&cur){enter(cur);toast('You joined '+lname(cur));return}
+  if(act==='leave'&&cur){if(!leaveArm){leaveArm=true;render();setTimeout(()=>{leaveArm=false;render()},4000);return}
+    const c=cur;leaveArm=false;changeMe(p=>{p.lobbies=(p.lobbies||[]).filter(x=>x!==c)});cur=null;history.replaceState(null,'',location.pathname);sync();toast('You left '+lname(c))}
+});
+document.addEventListener('submit',async ev=>{
+  ev.preventDefault();const f=ev.target;
+  if(f.id==='joinForm'){const n=$('nickIn').value.trim().slice(0,24);if(!n)return;
+    changeMe(p=>{p.nick=n;p.joined=p.joined||new Date().toISOString();p.done=p.done||{};p.hours=p.hours||{};p.lobbies=p.lobbies||[]});
+    if(cur&&lobbyDocs[cur]&&!lobbyDocs[cur].missing)enter(cur);toast('Welcome, '+n);return}
+  if(f.id==='newForm'){const name=$('newIn').value.trim().slice(0,30);if(!name)return;let code='';for(let i=0;i<6;i++)code+=CH[Math.floor(Math.random()*CH.length)];
+    try{await setDoc(doc(db,'lobbies',code),{name,by:meId,n:Date.now()});lobbyDocs[code]={name};enter(code);toast('Race created. Code '+code.toUpperCase())}catch(e){toast('Could not create the race')}return}
+  if(f.id==='codeForm'){const c=$('codeIn').value.toLowerCase().replace(/[^a-z0-9]/g,'');if(!c)return;cur=c;ui='';watchLobby(c);location.hash='r-'+c;sync();
+    setTimeout(()=>{if(lobbyDocs[c]&&!lobbyDocs[c].missing&&!((me&&me.lobbies)||[]).includes(c)){enter(c);toast('You joined '+lname(c))}},900)}
+});
+window.addEventListener('hashchange',()=>{const c=hashCode();if(c){cur=c;ui='';sync()}});
+
+// ---------- start ----------
+render();
+if(FIREBASE_CONFIG.apiKey.startsWith('PASTE')){$('lead').textContent='Setup needed: paste your Firebase config at the top of the code.'}
+else{
+  const app=initializeApp(FIREBASE_CONFIG);auth=getAuth(app);db=getFirestore(app);
+  let meUnsub=null;
+  onAuthStateChanged(auth,u=>{
+    authReady=true;if(meUnsub){meUnsub();meUnsub=null}
+    meId=u?u.uid:null;meName=u&&u.displayName?u.displayName.split(' ')[0]:'';me=null;
+    if(u)meUnsub=onSnapshot(doc(db,'players',u.uid),s=>{if(!pending&&!writing)me=s.exists()?s.data():null;sync()},()=>toast('Could not load your profile'));
+    else{players={};watching=null;if(playersUnsub){playersUnsub();playersUnsub=null}}
+    sync();
+  });
+}
+
+</script>
+</body>
+</html>
