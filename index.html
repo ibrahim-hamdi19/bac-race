@@ -403,6 +403,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
 .tabs[hidden]{display:none!important}
 .notebanner{background:var(--panel);border:2px solid var(--gold);border-radius:20px;padding:14px 16px;gap:4px}.notebanner>p{margin:0}
 .secpick{display:flex;gap:8px}.secpick .secopt{flex:1;justify-content:center;margin:0}.secbtn{min-width:72px;font-size:18px}
+#hwSec{flex:0 0 auto!important;width:100%;height:44px}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1",hamster:"#FFE6EF"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -718,7 +719,7 @@ function hwHTML() {
     (canPost ? '<button class="btn ghost" data-act="hw">' + (ui === 'hw' ? 'Close' : '+ Add homework') + '</button>' : '') + '</div>';
   if (ui === 'hw' && canPost) {
     const opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option>' + esc(s.name) + '</option>').join('');
-    h += '<form id="hwForm" class="inl" style="margin-bottom:10px"><select id="hwSub" aria-label="Subject">' + opts + '</select><input type="date" id="hwDue" required value="' + tm + '" min="' + today + '" aria-label="Due date"><input type="text" id="hwText" maxlength="160" required placeholder="What to do" aria-label="Homework" style="flex:2 1 14em">' + (canPostAll() ? '<label class="allck"><input type="checkbox" id="hwAll" checked' + (member ? '' : ' disabled') + '> ' + L('Send to all races on the website', 'أرسله لكل السباقات على الموقع') + '</label>' + '<select id="hwSec" aria-label="' + L('Which section', 'أي شعبة') + '"><option value="">' + L('All sections', 'كل الشعب') + '</option>' + SECS.map(x => '<option value="' + x + '">' + L('Only section ', 'شعبة ') + x + L('', ' بس') + '</option>').join('') + '</select>' : '') + '<button class="btn">Post</button></form>';
+    h += '<form id="hwForm" class="inl" style="margin-bottom:10px"><select id="hwSub" aria-label="Subject">' + opts + '</select><input type="date" id="hwDue" required value="' + tm + '" min="' + today + '" aria-label="Due date"><input type="text" id="hwText" maxlength="160" required placeholder="What to do" aria-label="Homework" style="flex:2 1 14em">' + (canPostAll() ? '<label class="allck"><input type="checkbox" id="hwAll" checked' + (member ? '' : ' disabled') + '> ' + L('Send to all races on the website', 'أرسله لكل السباقات على الموقع') + '</label>' + '<label class="fl" style="flex:1 1 100%">' + L('Which section (الشعبة)', 'أي شعبة') + '<select id="hwSec" aria-label="' + L('Which section', 'أي شعبة') + '"><option value="">' + L('All sections', 'كل الشعب') + '</option>' + SECS.map(x => '<option value="' + x + '">' + L('Only section ', 'شعبة ') + x + L('', ' بس') + '</option>').join('') + '</select></label>' : '') + '<button class="btn">Post</button></form>';
   }
   if (!list.length) h += '<p class="note">' + (canPost ? 'No homework yet. Add what the teachers gave.' : 'No homework posted for now.') + '</p>';
   else h += '<ul class="hwl">' + list.map(w => { const d = mine[w.g ? 'g_' + w.id : cur + '_' + w.id]; const soon = w.due <= tm;
@@ -1361,7 +1362,7 @@ document.addEventListener('submit', async ev => {
     const tkind = (f.querySelector('input[name=tKind]:checked') || {}).value === 'exam' ? 'exam' : 'test';
     try { await api.addDoc(api.collection(api.db, 'tests'), {name, kind: tkind, start, date, items, n: Date.now()}); ui = ''; $('testsBox').innerHTML = ''; render(); toast(L('Test announced', 'أُعلن الاختبار')); } catch (e) { toast(L('Could not save the test', 'تعذّر حفظ الاختبار')); } return; }
   if (f.id === 'hwForm' && api) { const text = $('hwText').value.trim().slice(0, 160), due = $('hwDue').value, subj = $('hwSub').value; if (!text || !due) return;
-    const all = canPostAll() && (!$('hwAll') || $('hwAll').checked || !(lobby() && (me.lobbies || []).includes(cur))), sec = all && $('hwSec') && SECS.includes($('hwSec').value) ? $('hwSec').value : '';
+    const all = canPostAll() && (!$('hwAll') || $('hwAll').checked || !(lobby() && (me.lobbies || []).includes(cur))), sec = $('hwSec') && SECS.includes($('hwSec').value) ? $('hwSec').value : '';
     try { await api.addDoc(all ? api.collection(api.db, 'allhw') : api.collection(api.db, 'lobbies', cur, 'homework'), {text, due, subj, sec, by: meId, n: Date.now()}); $('hwText').value = ''; toast('Homework posted'); ui = ''; $('hwBox').innerHTML = ''; render(); } catch (e) { toast('Could not post homework'); } }
 });
 window.addEventListener('hashchange', () => { const c = hashCode(); if (c) { cur = c; ui = ''; sync(); } });
@@ -1488,7 +1489,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795726650";
+const BUILD = "1795726968";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
