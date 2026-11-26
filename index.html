@@ -13,10 +13,10 @@
    PICTURE: navy track with gold lane lines and runners, the ayah above it in gold
    COLOUR and TYPE: night blue #0A1128, panels #111C3A, gold #E2B84F; Amiri ayah, Inter + IBM Plex Sans Arabic, Barlow Condensed numbers
    LAYOUT: ayah, race tabs, track, homework, hours, then subjects grouped by teacher */
-:root{color-scheme:dark;--bg:#0A1128;--panel:#111C3A;--panel2:#17244A;--line:#26365F;--ink:#EEF1F8;--mute:#A9B3CF;--gold:#E2B84F;--gold2:#F3D37A;--goldD:#B8902F;--onGold:#0A1128;--good:#7FD6A4}
+:root{color-scheme:dark;--bg:#0A1128;--panel:#111C3A;--panel2:#17244A;--line:#26365F;--ink:#EEF1F8;--mute:#A9B3CF;--gold:#E2B84F;--gold2:#F3D37A;--goldD:#B8902F;--onGold:#0A1128;--good:#7FD6A4;--sky:#1B2B5E;--t1:#13214A;--t2:#0E1834;--lane:#E2B84F55;--tab:#0A1128EE;--bar2:#5B6FA8}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,'IBM Plex Sans Arabic',system-ui,sans-serif;overflow-x:clip;
-  background-image:radial-gradient(1px 1px at 12% 8%,#fff8 50%,transparent 51%),radial-gradient(1px 1px at 78% 4%,#fff6 50%,transparent 51%),radial-gradient(1.5px 1.5px at 55% 14%,#F3D37A88 50%,transparent 51%),radial-gradient(1px 1px at 30% 22%,#fff5 50%,transparent 51%),radial-gradient(1px 1px at 90% 18%,#fff7 50%,transparent 51%),radial-gradient(ellipse at 50% -10%,#1B2B5E 0%,transparent 60%);background-repeat:no-repeat}
+  background-image:radial-gradient(1px 1px at 12% 8%,#fff8 50%,transparent 51%),radial-gradient(1px 1px at 78% 4%,#fff6 50%,transparent 51%),radial-gradient(1.5px 1.5px at 55% 14%,#F3D37A88 50%,transparent 51%),radial-gradient(1px 1px at 30% 22%,#fff5 50%,transparent 51%),radial-gradient(1px 1px at 90% 18%,#fff7 50%,transparent 51%),radial-gradient(ellipse at 50% -10%,var(--sky) 0%,transparent 60%);background-repeat:no-repeat}
 .wrap{max-width:900px;margin:0 auto;padding:clamp(20px,4vw,44px) max(4vw,14px) 120px}
 .ar,[lang=ar]{font-family:'IBM Plex Sans Arabic',Inter,sans-serif}
 .num{font-family:'Barlow Condensed',Inter,sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
@@ -35,9 +35,9 @@ h2{margin:0 0 12px;font-size:21px;line-height:1.2}
 .info b{color:var(--ink)}
 .code{font-size:22px;letter-spacing:.06em;color:var(--gold2)}
 .tag{font-size:13px;padding:2px 10px;border-radius:12px;background:var(--panel2);color:var(--gold2);border:1px solid var(--line);white-space:nowrap}
-.track{margin:16px 0 8px;background:linear-gradient(180deg,#13214A,#0E1834);border:1px solid var(--line);border-radius:22px;padding:12px 0;overflow:hidden;box-shadow:0 10px 40px #0006}
-.lane{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 5.6em;align-items:center;gap:12px;padding:0 18px;height:58px;border-top:1.5px solid #E2B84F55}
-.lane:last-child{border-bottom:1.5px solid #E2B84F55}
+.track{margin:16px 0 8px;background:linear-gradient(180deg,var(--t1),var(--t2));border:1px solid var(--line);border-radius:22px;padding:12px 0;overflow:hidden;box-shadow:0 10px 40px #0006}
+.lane{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 5.6em;align-items:center;gap:12px;padding:0 18px;height:58px;border-top:1.5px solid var(--lane)}
+.lane:last-child{border-bottom:1.5px solid var(--lane)}
 .lane .who{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lane .who small{display:block;font-weight:500;color:var(--mute);font-size:13px}
 .run{position:relative;height:100%}
@@ -67,7 +67,7 @@ h2{margin:0 0 12px;font-size:21px;line-height:1.2}
 .hr .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hr .n small{display:block;font-size:12px;color:var(--mute)}
 .hbar{height:12px;background:var(--panel2);border-radius:6px;overflow:hidden}
-.hbar i{display:block;height:100%;border-radius:6px;background:#5B6FA8;transition:width .5s}
+.hbar i{display:block;height:100%;border-radius:6px;background:var(--bar2);transition:width .5s}
 .hbar i.me{background:var(--gold)}
 .hr .v{text-align:right;font-size:20px;white-space:nowrap}
 .logger{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -122,8 +122,8 @@ input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
 .pgt{font-family:'IBM Plex Sans Arabic',sans-serif;font-size:26px;margin:26px 0 12px;color:var(--gold2);text-align:right}
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#0A1128EE;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
-.tabs button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;justify-content:center;border-radius:12px;color:var(--mute);font-size:13px;font-weight:600}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:var(--tab);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.tabs button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;justify-content:center;border-radius:12px;color:var(--mute);font-size:11.5px;font-weight:600;white-space:nowrap}
 .tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .tabs button[aria-current=page]{color:var(--gold2);background:var(--panel)}
 .tabs button:focus-visible{outline:2px solid var(--gold2)}
@@ -141,11 +141,80 @@ input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
 .wk b{font-size:34px;color:var(--gold2);line-height:1.1}
 .wk span{font-size:13px;color:var(--mute)}
 @media(max-width:480px){.wk{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.wrap{position:relative}
+.langbtn{position:absolute;top:12px;inset-inline-end:max(4vw,14px);display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:600;font-size:14px;min-height:40px;padding:0 14px;border-radius:20px;border:1.5px solid var(--gold);background:var(--panel);color:var(--gold2);cursor:pointer;z-index:2}
+.langbtn:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
+.top{padding-top:40px}
+[dir=rtl] body{font-family:'IBM Plex Sans Arabic',Inter,system-ui,sans-serif}
+[dir=rtl] .track{direction:ltr}
+[dir=rtl] .lane .who{direction:rtl;text-align:left}
+[dir=rtl] .step{margin-left:0;margin-inline-start:auto}
+[dir=rtl] .unitbody{padding:0 10px 10px 0;border-left:0;border-right:2px solid var(--gold)}
+[dir=rtl] .hr .v,[dir=rtl] .sbj .ct{text-align:left}
+[dir=rtl] .pgt{text-align:start}
+[dir=rtl] .en-only{display:none}
+.num{unicode-bidi:isolate;direction:ltr}
+.infobox{margin:0 0 14px;padding:12px 14px;border-radius:14px;background:var(--panel2);border:1px solid var(--gold);color:var(--ink);font-size:15px}
+.hr{grid-template-columns:minmax(0,7em) minmax(0,1fr) 4.8em}
+
+/* colour themes */
+[data-theme=emerald]{--bg:#06201A;--panel:#0C2D25;--panel2:#123A30;--line:#1E4C40;--ink:#ECF5F1;--mute:#A3C2B8;--gold:#E2B84F;--gold2:#F3D37A;--goldD:#B8902F;--onGold:#06201A;--sky:#11463A;--t1:#0F3A30;--t2:#082920;--lane:#E2B84F55;--tab:#06201AEE;--bar2:#4F8F7C}
+[data-theme=royal]{--bg:#160B2E;--panel:#211340;--panel2:#2B1A52;--line:#3B2868;--ink:#F2EEFA;--mute:#B9ADD6;--gold:#E7B85A;--gold2:#F5D58C;--goldD:#B98C3A;--onGold:#160B2E;--sky:#3A1F6E;--t1:#2A1752;--t2:#1A0E36;--lane:#E7B85A55;--tab:#160B2EEE;--bar2:#7B62B8}
+[data-theme=rose]{--bg:#2A0F1E;--panel:#3A1629;--panel2:#4A1D35;--line:#5E2A45;--ink:#FBEFF4;--mute:#D9AFC2;--gold:#F29BB6;--gold2:#F8C2D3;--goldD:#C76E8C;--onGold:#2A0F1E;--sky:#5C1F40;--t1:#45182F;--t2:#300F21;--lane:#F29BB655;--tab:#2A0F1EEE;--bar2:#A65E7E}
+[data-theme=ocean]{--bg:#04202B;--panel:#0A2E3C;--panel2:#0F3A4B;--line:#1A4C60;--ink:#EAF6FA;--mute:#9EC6D4;--gold:#4FD1C5;--gold2:#8EE6DD;--goldD:#2A9E94;--onGold:#04202B;--sky:#0B4A60;--t1:#0B3747;--t2:#062633;--lane:#4FD1C555;--tab:#04202BEE;--bar2:#3E7F96}
+[data-theme=paper]{color-scheme:light;--bg:#F6F1E6;--panel:#FFFFFF;--panel2:#F1EADB;--line:#E0D6C2;--ink:#1D2433;--mute:#5F6676;--gold:#B8862B;--gold2:#9A6E1C;--goldD:#C99A3E;--onGold:#FFFFFF;--sky:#EFE5D0;--t1:#1F2B4F;--t2:#17213F;--lane:#E2B84F66;--tab:#F6F1E6EE;--bar2:#9AA6C4}
+[data-theme=paper] .track{color:#EEF1F8}
+[data-theme=paper] .track .lane .who small,[data-theme=paper] .track .pct small,[data-theme=paper] .track .empty{color:#B8C1DA}
+[data-theme=paper] .track .pct b{color:#F3D37A}
+[data-theme=paper] .run::after{background:repeating-linear-gradient(0deg,#E2B84F 0 5px,#17213F 5px 10px)}
+[data-theme=paper] body{background-image:none}
+[data-theme=paper] .ayah{text-shadow:none}
+.topbtns{position:absolute;top:12px;inset-inline-end:max(4vw,14px);display:flex;gap:8px;z-index:3}
+.topbtns .langbtn{position:static}
+.themes{position:absolute;top:60px;inset-inline-end:max(4vw,14px);z-index:4;background:var(--panel);border:1px solid var(--gold);border-radius:16px;padding:12px;display:grid;grid-template-columns:repeat(3,auto);gap:10px;box-shadow:0 10px 30px #0008}
+.themes[hidden]{display:none}
+.sw{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--mute);min-width:56px;padding:4px;border-radius:10px}
+.sw i{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);display:block}
+.sw[aria-pressed=true]{color:var(--gold2)}
+.sw[aria-pressed=true] i{border-color:var(--gold2);box-shadow:0 0 0 2px var(--gold2)}
+.sw:focus-visible{outline:2px solid var(--gold2)}
+
+.h3{font-size:16px;margin:16px 0 8px}
+.tcard{margin-top:14px}.tcard .head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.tcard.past{opacity:.8}
+.fl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute);flex:1 1 10em}
+.tree{max-height:55vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:6px 10px}
+.tree details{border-bottom:1px solid var(--line)}.tree details details{border:0;margin-inline-start:14px}
+.tree summary{list-style:none;min-height:44px;display:flex;align-items:center;cursor:pointer}
+.tree summary::-webkit-details-marker{display:none}
+.tree label{display:flex;align-items:center;gap:10px;min-height:40px;cursor:pointer}
+.tree input{width:20px;height:20px;accent-color:var(--gold);flex:none}
+.tls{display:flex;flex-direction:column;margin-inline-start:22px;padding-bottom:6px}
+.rules h2{margin-top:18px;color:var(--gold2)}.rules h2:first-child{margin-top:0}
+.rules ul,.rules ol{margin:0;padding-inline-start:20px}.rules li{margin:6px 0}
+.rt{width:100%;border-collapse:collapse;margin:10px 0 4px;font-size:15px}
+.rt th,.rt td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:start}
+.rt th{color:var(--mute);font-weight:600;font-size:13px}
+.rt td.num{text-align:end}
+.trow{display:flex;align-items:center;gap:10px;min-height:46px}
+.trow input{width:22px;height:22px;accent-color:var(--gold);flex:none}
+.topen{all:unset;flex:1;display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
+.topen span,.topen b{flex:1}
+.topen.open .chev{transform:rotate(180deg)}
+.topen:focus-visible{outline:2px solid var(--gold2)}
+.tsub{border-bottom:1px solid var(--line)}
+.tkids{margin-inline-start:16px;padding-bottom:6px}
+.tkids label{display:flex;align-items:center;gap:10px;min-height:40px;cursor:pointer}
+.tkids label input{width:20px;height:20px;accent-color:var(--gold);flex:none}
 </style>
+<script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <main class="wrap">
-  <header class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span>Bakaloria race · Scientific</span><span lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></header>
+  <div class="topbtns"><button id="themeBtn" class="langbtn" type="button" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7" r="1.2"/></svg><span>Colours</span></button><button id="langBtn" class="langbtn" type="button">عربي</button></div>
+  <div class="themes" id="themes" hidden></div>
+  <header class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span class="en-only">Bakaloria race · Scientific</span><span lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></header>
   <div id="join"></div>
   <div id="pg-race">
   <div id="lobby" class="lobby"></div>
@@ -157,18 +226,23 @@ input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
   </div>
   <div id="pg-week" hidden><h2 class="pgt">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
   <div id="pg-hours" hidden><h2 class="pgt">ساعات الدراسة</h2>
+    <p class="infobox">Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.</p>
     <section class="card" id="mine"></section>
     <section class="card" style="margin-top:14px"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
   </div>
   <div id="pg-subj" hidden><h2 class="pgt">المواد</h2><div class="score" id="myScore"></div><p class="note">Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.</p>
   <div class="subjects" id="subjects"></div></div>
+  <div id="pg-tests" hidden><h2 class="pgt">الاختبارات</h2><div id="testsBox"></div></div>
+  <div id="pg-rules" hidden><h2 class="pgt">القوانين وطريقة الاستخدام</h2><div id="rulesBox"></div></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <nav class="tabs" aria-label="Pages">
   <button data-page="race"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4M6 4h11l-2 4 2 4H6"/></svg><span lang="ar">السباق</span></button>
   <button data-page="week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg><span lang="ar">إنجازك</span></button>
   <button data-page="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg><span lang="ar">الساعات</span></button>
+  <button data-page="tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v3H9zM6 5h3M15 5h3v16H6V5M9 12l2 2 4-4"/></svg><span lang="ar">الاختبارات</span></button>
   <button data-page="subj"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5"/></svg><span lang="ar">المواد</span></button>
+  <button data-page="rules"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span lang="ar">القوانين</span></button>
 </nav>
 
 <script>
@@ -186,6 +260,8 @@ const FIREBASE_CONFIG = {
 };
 // First Bakaloria exam date "YYYY-MM-DD", or "" until announced.
 const BAC_DATE = "";
+// Only this Google account can add tests.
+const ADMIN_EMAIL = "ibrahim72hamdi@gmail.com";
 // ============================================================
 const FB = "https://www.gstatic.com/firebasejs/11.0.2/";
 const COLORS = ['#F3D37A','#7FD3F7','#B9F27C','#FFA3C7','#C9B6FF','#FFB36B','#8CF0D4','#F7F3E8'];
@@ -198,7 +274,11 @@ const dayAgo = n => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.get
 const fmtH = h => (Math.round(h * 10) / 10).toString();
 const ord = i => (i + 1) + (i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th');
 const hashCode = () => { const m = /^#r-([a-z0-9]{4,12})$/.exec(location.hash.toLowerCase()); return m ? m[1] : null; };
-const fmtDate = s => { const d = new Date(s + 'T00:00'); return d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'}); };
+let LANG = 'en'; try { LANG = localStorage.getItem('bac-lang') === 'ar' ? 'ar' : 'en'; } catch (e) {}
+const LOC = () => LANG === 'ar' ? 'ar-SY-u-nu-latn' : 'en-GB';
+const fmtDate = s => { const d = new Date(s + 'T00:00'); return d.toLocaleDateString(LOC(), {weekday:'short', day:'numeric', month:'short'}); };
+const AR_DAYS = ['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+const dayShort = d => LANG === 'ar' ? AR_DAYS[d.getDay()] : d.toLocaleDateString('en-GB', {weekday: 'short'}).slice(0, 2);
 
 // ---- lesson model ----
 const TASKS = {};            // subjectKey -> [taskId]
@@ -222,22 +302,93 @@ function score(p, mode) {
   return Math.round(s);
 }
 const maxScore = mode => mode === 'both' ? 2700 : 2400;
+// ---- points: each lesson is worth (subject marks / its lessons); a review is worth half, once per lesson per day ----
+const TSUB = {}, VAL = {};
+for (const s of SUBJECTS) { for (const id of TASKS[s.k]) TSUB[id] = s.k; VAL[s.k] = TASKS[s.k].length ? s.pts / TASKS[s.k].length : 0; }
+function earned(p, from, to) {
+  let pts = 0, nw = 0, rv = 0; const lg = (p && p.log) || {}, f = (p && p.first) || {};
+  for (const day in lg) { if (day < from || day > to) continue;
+    for (const id in lg[day]) { const k = TSUB[id]; if (!k || !(lg[day][id] > 0)) continue;
+      if (f[id] === day) { pts += VAL[k]; nw++; } else { pts += VAL[k] / 2; rv++; } } }
+  return {pts: Math.round(pts), nw, rv};
+}
+const monthStart = () => { const d = dayAgo(0); d.setDate(1); return dkey(d); };
+const todayKey = () => dkey(dayAgo(0));
+// ---- tests ----
+function studiedIn(p, id, from, to) { const f = (p && p.first) || {}, lg = (p && p.log) || {}; if (f[id] && f[id] >= from && f[id] <= to) return true; for (const day in lg) if (day >= from && day <= to && lg[day][id] > 0) return true; return false; }
+function testCalc(p, t, mode) {
+  const by = {}; for (const id of (t.items || [])) { const k = TSUB[id]; if (k) (by[k] = by[k] || []).push(id); }
+  const part = {}; for (const k in by) { const n = by[k].filter(id => studiedIn(p, id, t.start, t.date)).length; part[k] = {got: SUBJ[k].pts * n / by[k].length, n, of: by[k].length}; }
+  let got = 0, max = 0;
+  for (const k of CORE) if (part[k]) { got += part[k].got; max += SUBJ[k].pts; }
+  const rk = relKey(p); if (part.rel_i || part.rel_c) { max += 200; if (part[rk]) got += part[rk].got; }
+  const e = part.eng, fr = part.fr;
+  if (mode === 'both') { if (e) { got += e.got; max += 300; } if (fr) { got += fr.got; max += 300; } }
+  else if (e || fr) { got += Math.max(e ? e.got : 0, fr ? fr.got : 0); max += 300; }
+  return {got: Math.round(got), max, part, by};
+}
 function streakOf(p) { const h = (p && p.hours) || {}; let s = 0, i = (+h[dkey(dayAgo(0))] || 0) > 0 ? 0 : 1; while ((+h[dkey(dayAgo(i))] || 0) > 0) { s++; i++; } return s; }
 function weekOf(p) { const h = (p && p.hours) || {}; let w = 0; for (let i = 0; i < 7; i++) w += +h[dkey(dayAgo(i))] || 0; return w; }
 function totalH(p) { const h = (p && p.hours) || {}; let t = 0; for (const k in h) t += +h[k] || 0; return t; }
 
 // ---- state ----
 let api = null, meId = null, meName = '', authReady = false, me = null;
-let players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
+let tests = [], testsUnsub = null, meEmail = '', players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
 let page = 'race', cur = null, ui = '', leaveArm = false, open = new Set(), pending = null, writing = false, toastT = null;
 try { page = localStorage.getItem('bac-page') || 'race'; cur = localStorage.getItem('bac-cur') || null; open = new Set(JSON.parse(localStorage.getItem('bac-open2') || '[]')); } catch (e) {}
 if (hashCode()) cur = hashCode();
 const DEMO = window.__DEMO || null;
 
-function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2600); }
+
+// ---- Arabic interface (translates the rendered English text) ----
+const AR = {
+ 'Bakaloria race · Scientific':'سباق البكالوريا · علمي','Loading…':'جارٍ التحميل…','+ New race':'+ سباق جديد','Join with code':'انضم برمز','New race':'سباق جديد',
+ 'How should English and French count?':'كيف تُحسب الإنكليزي والفرنسي؟','Only the higher one':'الأعلى فقط','Like the real exam':'مثل الامتحان الحقيقي','Both count':'الاثنتان تُحسبان','Rewards studying both languages':'تكافئ دراسة اللغتين',
+ '· out of 2,400':'· من 2400','· out of 2,700':'· من 2700','Create race':'أنشئ السباق','Cancel':'إلغاء','Join':'انضم','Viewing':'تشاهد','· code':'· الرمز','Best language · /2400':'اللغة الأعلى · /2400','Both languages · /2700':'اللغتان · /2700',
+ 'Invite':'دعوة','Join this race':'انضم لهذا السباق','Leave':'مغادرة','Tap again to leave':'اضغط مرة ثانية للمغادرة','Create a race and send the invite to your friends, or join one with a code.':'أنشئ سباقاً وأرسل الدعوة لأصدقائك، أو انضم لسباق برمز.',
+ 'Homework':'الواجبات','+ Add homework':'+ أضف واجباً','Close':'إغلاق','Post':'نشر','No homework yet. Add what the teachers gave.':'لا واجبات بعد. أضف ما أعطاه الأساتذة.','No homework posted for now.':'لا واجبات حالياً.','due today':'التسليم اليوم','due tomorrow':'التسليم غداً',
+ 'Manage homework helpers':'إدارة مساعدي الواجبات','Homework helpers':'مساعدو الواجبات','can post homework in this race (teachers, supervisors, the classmate who always knows).':'يمكنهم نشر الواجبات في هذا السباق (أساتذة، مشرفون، أو الزميل اللي دايماً بيعرف).','Make helper':'اجعله مساعداً','Helper ✓':'مساعد ✓','Nobody else has joined yet.':'لم ينضم أحد بعد.','Done':'تم',
+ "Each runner's spot is their predicted score: every subject counts for its real exam points.":'مكان كل متسابق هو علامته المتوقعة: كل مادة تُحسب بعلامتها الحقيقية في الامتحان.',
+ 'Pick a race above, create one, or join with a code.':'اختر سباقاً من الأعلى، أو أنشئ واحداً، أو انضم برمز.','Sign in below to start racing.':'سجّل الدخول في الأسفل لتبدأ السباق.','No runners in this race yet.':'لا متسابقين في هذا السباق بعد.','Every lesson you study moves you toward the full mark.':'كل درس تدرسه يقرّبك من العلامة التامة.',
+ 'Sign in to race.':'سجّل الدخول لتتسابق.','Google keeps your progress on any phone. Guest works on this device only.':'حساب Google يحفظ تقدمك على أي هاتف. الضيف يعمل على هذا الجهاز فقط.','Continue with Google':'المتابعة مع Google','Play as guest':'العب كضيف',
+ 'Welcome!':'أهلاً!','Pick the name your friends will see.':'اختر الاسم الذي سيراه أصدقاؤك.','Which religion subject do you take?':'أي مادة ديانة تدرس؟','Start':'ابدأ',
+ 'Study hours this week':'ساعات الدراسة هذا الأسبوع','No hours in this race yet.':'لا ساعات في هذا السباق بعد.','Your hours today':'ساعاتك اليوم','hours':'ساعات','Sign in to log hours.':'سجّل الدخول لتسجّل ساعاتك.','Edit':'تعديل','Sign out':'تسجيل الخروج',
+ 'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.',
+ "Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.":'الساعات ما إلها نقاط بالسباق. هي إلك أنت بس، لتشوف قديش عم تدرس. النقاط بتجي من الدروس اللي بتخلّصها.', '+1h':'+1 ساعة', 'Colours':'الألوان', 'pts':'نقطة', 'points this month':'نقطة هذا الشهر', 'Every lesson you study earns points. The race restarts on the 1st of every month.':'كل درس تدرسه يعطيك نقاطاً. يبدأ السباق من جديد في أول كل شهر.', 'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.', 'Lessons':'الدروس','Studied':'درست','Lessons for this subject are coming soon.':'دروس هذه المادة قريباً.',
+ 'points':'نقطة','new lessons':'دروس جديدة','reviews':'مراجعات','Finished this week':'أنهيت هذا الأسبوع','Nothing finished yet this week. Your first lesson starts the count.':'لم تنهِ شيئاً هذا الأسبوع بعد. أول درس يبدأ العدّ.','Sign in to see your week.':'سجّل الدخول لترى أسبوعك.',
+ 'Could not connect. Check your internet and reload.':'تعذّر الاتصال. تحقّق من الإنترنت وأعد التحميل.','Could not load this race':'تعذّر تحميل السباق','Could not save. Check your connection.':'تعذّر الحفظ. تحقّق من الاتصال.','Homework removed':'حُذف الواجب','Could not remove':'تعذّر الحذف','Could not update helpers':'تعذّر تحديث المساعدين',
+ 'Google sign-in failed. Try guest.':'فشل الدخول بـ Google. جرّب كضيف.','Could not sign in':'تعذّر تسجيل الدخول','Invite copied':'نُسخت الدعوة','Could not create the race':'تعذّر إنشاء السباق','Homework posted':'نُشر الواجب','Could not post homework':'تعذّر نشر الواجب','Could not load your profile':'تعذّر تحميل ملفك',
+ '@Race name, like School friends':'اسم السباق، مثلاً: رفقات المدرسة','@Race code':'رمز السباق','@What to do':'المطلوب','@Your name':'اسمك','@Pages':'الصفحات','@Add half an hour':'أضف نصف ساعة','@Remove half an hour':'احذف نصف ساعة','@Undo one':'تراجع مرة','@Delete homework':'احذف الواجب','@Due date':'موعد التسليم','@Subject':'المادة','@Homework':'الواجب','@Done':'تم','@Race name':'اسم السباق','@Your last 7 days':'آخر 7 أيام','@Race track: predicted score per friend':'مضمار السباق'
+};
+const ordAr = n => 'المركز ' + n;
+const AR_RX = [
+ [/^(\d+(?:\.\d+)?)h$/, '$1 س'], [/^(\d+)(?:st|nd|rd|th)$/, (m, n) => ordAr(n)], [/^(\d+)-day streak$/, '$1 أيام متتالية'], [/^(\d+) lessons$/, '$1 دروس'],
+ [/^(\d+\/\d+) · best of two counts$/, '$1 · تُحسب الأعلى من اللغتين'], [/^(\d+\/\d+) · counts$/, '$1 · تُحسب'],
+ [/^\/ (\d+) predicted score in (.+)$/, '/ $1 العلامة المتوقعة في $2'], [/^\/ (\d+) predicted score$/, '/ $1 العلامة المتوقعة'],
+ [/^Last 7 days · all-time leader: (.+)$/, 'آخر 7 أيام · الأكثر ساعات على الإطلاق: $1'], [/^Since (.+)$/, 'منذ $1'], [/^This week in (.+)$/, 'هذا الأسبوع في $1'], [/^due (.+)$/, 'التسليم $1'],
+ [/^leads (.+) with (\d+) \/ (\d+)(?: · you are (\d+)(?:st|nd|rd|th))?\.$/, (m, r, a, b, y) => 'يتصدّر ' + r + ' بـ ' + a + ' / ' + b + (y ? ' · أنت في المركز ' + y : '') + '.'],
+ [/^leads (.+) this month with (\d+) points(?: · you are (\d+)(?:st|nd|rd|th))?\.$/, (m, r, a, y) => 'يتصدّر ' + r + ' هذا الشهر بـ ' + a + ' نقطة' + (y ? ' · أنت في المركز ' + y : '') + '.'], [/^(.+) \(you\)$/, '$1 (أنت)'], [/^No race found with code (.+)\.$/, 'لا يوجد سباق بالرمز $1.'], [/^First Bakaloria exam in (.+)$/, 'أول امتحان بكالوريا بعد $1'],
+ [/^Done: (.+)$/, 'تم: $1'], [/^Reviewed (\d+) times$/, 'راجعته $1 مرات'], [/^You joined (.+)$/, 'انضممت إلى $1'], [/^You left (.+)$/, 'غادرت $1'], [/^Welcome, (.+)$/, 'أهلاً $1'],
+ [/^Race created\. Code (.+)$/, 'أُنشئ السباق. الرمز $1'], [/^Code: (.+)$/, 'الرمز: $1'], [/^Race ([A-Z0-9]+)$/, 'سباق $1']
+];
+function tr(s) {
+  if (LANG !== 'ar' || !s) return s;
+  const t = s.trim(); if (!t) return s;
+  let out = AR[t];
+  if (out == null) for (const [rx, rep] of AR_RX) if (rx.test(t)) { out = t.replace(rx, rep); break; }
+  return out == null ? s : s.replace(t, out);
+}
+function translateDOM(root) {
+  if (LANG !== 'ar') return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
+  while ((n = w.nextNode())) { if (n.parentElement.closest('script,style')) continue; const v = tr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+  root.querySelectorAll('[placeholder],[aria-label]').forEach(e => { for (const a of ['placeholder', 'aria-label']) { const v = e.getAttribute(a); if (v && AR['@' + v]) e.setAttribute(a, AR['@' + v]); } });
+}
+function toast(m) { m = tr(m); const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2600); }
 const lobby = () => (cur && lobbyDocs[cur] && !lobbyDocs[cur].missing) ? lobbyDocs[cur] : null;
 const lname = c => lobbyDocs[c] && lobbyDocs[c].name ? lobbyDocs[c].name : 'Race ' + c.toUpperCase();
 const nick = p => (p && p.nick) || 'Someone';
+const isAdmin = () => !!meEmail && meEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 const isCreator = () => !!(lobby() && lobby().by === meId);
 const canPostHw = () => !!(lobby() && (lobby().by === meId || (lobby().helpers || []).includes(meId)));
 const colorOf = id => { const ids = Object.keys(players).sort((a, b) => (players[a].joined || '').localeCompare(players[b].joined || '')); const i = ids.indexOf(id); return COLORS[(i < 0 ? 0 : i) % COLORS.length]; };
@@ -288,7 +439,7 @@ function hwHTML() {
   const today = dkey(dayAgo(0)), tm = dkey(dayAgo(-1));
   const list = homework.filter(w => typeof w.text === 'string' && w.due >= today).sort((a, b) => a.due < b.due ? -1 : 1);
   const mine = (me && me.hw) || {};
-  let h = '<section class="card hw"><div class="head"><h2 style="margin:0">Homework <span class="ar" lang="ar" style="color:var(--mute);font-size:16px">· واجبات</span></h2>' +
+  let h = '<section class="card hw"><div class="head"><h2 style="margin:0">Homework <span class="ar en-only" lang="ar" style="color:var(--mute);font-size:16px">· واجبات</span></h2>' +
     (canPostHw() ? '<button class="btn ghost" data-act="hw">' + (ui === 'hw' ? 'Close' : '+ Add homework') + '</button>' : '') + '</div>';
   if (ui === 'hw' && canPostHw()) {
     const opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option>' + esc(s.name) + '</option>').join('');
@@ -323,8 +474,8 @@ function subjectsHTML() {
   const mode = (lobby() && lobby().lang) || 'best';
   return SUBJECTS.filter(s => !s.rel || s.k === rk).map(s => {
     const ids = TASKS[s.k]; let n = 0; for (const i of ids) if (d[i] > 0) n++;
-    const pts = Math.round(s.pts * (ids.length ? n / ids.length : 0)); const o = open.has(s.k);
-    const langNote = s.lang ? (mode === 'both' ? ' · counts' : ' · best of two counts') : '';
+    const pct = ids.length ? Math.round(n / ids.length * 100) : 0; const o = open.has(s.k);
+    const langNote = '';
     let body = '';
     if (!ids.length) body = '<p class="note" style="margin-top:12px">Lessons for this subject are coming soon.</p>';
     s.groups.forEach((g, gi) => {
@@ -337,7 +488,7 @@ function subjectsHTML() {
           (uo ? '<div class="unitbody">' + itemsHTML(u.items, d, can) + '</div>' : '') + '</div>';
       });
     });
-    return '<div class="sbj' + (o ? ' open' : '') + '"><button type="button" data-open="' + s.k + '" aria-expanded="' + o + '"><span class="nm" dir="auto">' + esc(s.name) + ' <small>' + n + '/' + ids.length + langNote + '</small></span><span class="ct num">' + pts + '<small> / ' + s.pts + '</small></span><span class="bar"><i style="width:' + (ids.length ? n / ids.length * 100 : 0) + '%"></i></span></button><div class="body">' + body + '</div></div>';
+    return '<div class="sbj' + (o ? ' open' : '') + '"><button type="button" data-open="' + s.k + '" aria-expanded="' + o + '"><span class="nm" dir="auto">' + esc(s.name) + ' <small>' + n + '/' + ids.length + langNote + '</small></span><span class="ct num">' + pct + '<small>%</small></span><span class="bar"><i style="width:' + (ids.length ? n / ids.length * 100 : 0) + '%"></i></span></button><div class="body">' + body + '</div></div>';
   }).join('');
 }
 // ---- this week ----
@@ -346,61 +497,130 @@ function weekInfo(p, mode) {
   const ws = dkey(weekStart()), f = (p && p.first) || {}, done = (p && p.done) || {};
   const fresh = Object.keys(f).filter(id => f[id] >= ws && done[id] > 0 && TITLE[id]);
   const before = Object.assign({}, p, {done: Object.fromEntries(Object.entries(done).filter(([k]) => !fresh.includes(k)))});
-  const gain = score(p, mode) - score(before, mode);
+  const e = earned(p, ws, todayKey()); const gain = e.pts;
   let reviews = 0; const lg = (p && p.log) || {}; for (const k in lg) if (k >= ws) for (const id in lg[k]) reviews += +lg[k][id] || 0;
   let hours = 0; const h = (p && p.hours) || {}; for (const k in h) if (k >= ws) hours += +h[k] || 0;
-  return {fresh, gain, reviews: Math.max(0, reviews - fresh.length), hours, ws};
+  return {fresh, gain, reviews: e.rv, hours, ws};
 }
 function weekHTML(rows, mode) {
   if (!(me && me.nick)) return '<p class="note">Sign in to see your week.</p>';
   const w = weekInfo(me, mode), f = me.first || {};
   const byDay = {}; for (const id of w.fresh) (byDay[f[id]] = byDay[f[id]] || []).push(id);
   const subjOf = id => { for (const s of SUBJECTS) if (TASKS[s.k].includes(id)) return s.name; return ''; };
-  let h = '<section class="card"><p class="note">Since Sunday ' + esc(fmtDate(w.ws)) + '</p><div class="wk"><div><b class="num">+' + w.gain + '</b><span>points</span></div><div><b class="num">' + w.fresh.length + '</b><span>new lessons</span></div><div><b class="num">' + w.reviews + '</b><span>reviews</span></div><div><b class="num">' + fmtH(w.hours) + '</b><span>hours</span></div></div></section>';
+  let h = '<section class="card"><p class="note">Since ' + esc(fmtDate(w.ws)) + '</p><div class="wk"><div><b class="num">+' + w.gain + '</b><span>points</span></div><div><b class="num">' + w.fresh.length + '</b><span>new lessons</span></div><div><b class="num">' + w.reviews + '</b><span>reviews</span></div><div><b class="num">' + fmtH(w.hours) + '</b><span>hours</span></div></div></section>';
   const days = Object.keys(byDay).sort().reverse();
   h += '<section class="card" style="margin-top:14px"><h2>Finished this week</h2>' + (days.length ? days.map(k => '<div class="unit">' + esc(fmtDate(k)) + '</div><ul class="ls">' + byDay[k].map(id => '<li><span class="t" dir="auto"><span>' + esc(TITLE[id]) + '</span><small>' + esc(subjOf(id)) + '</small></span></li>').join('') + '</ul>').join('') : '<p class="note">Nothing finished yet this week. Your first lesson starts the count.</p>') + '</section>';
   if (rows.length) { const r2 = rows.map(r => ({...r, w: weekInfo(r.p, mode)})).sort((a, b) => b.w.gain - a.w.gain), mx = Math.max(1, ...r2.map(r => r.w.gain));
     h += '<section class="card" style="margin-top:14px"><h2>This week in ' + esc(lname(cur)) + '</h2><div class="rows">' + r2.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + '<small>' + r.w.fresh.length + ' lessons</small></span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (r.w.gain / mx * 100) + '%"></i></div><span class="v num">+' + r.w.gain + '</span></div>').join('') + '</div></section>'; }
   return h;
 }
+// ---- tests page ----
+const L = (en, ar) => LANG === 'ar' ? ar : en;
+let tdelArm = null;
+function testFormHTML() {
+  const tree = SUBJECTS.filter(s => TASKS[s.k].length).map(s => {
+    let units = '';
+    s.groups.forEach((g, gi) => g.units.forEach((u, ui) => {
+      const key = s.k + '|' + gi + '|' + ui, title = (u.t || g.t) + (g.who ? ' · ' + g.who : '');
+      units += '<div class="tunit"><div class="trow"><input type="checkbox" data-tunit="' + key + '" aria-label="' + esc(title) + '"><button type="button" class="topen" data-topen><span dir="auto">' + esc(title) + '</span><svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg></button></div><div class="tkids" hidden>' +
+        u.items.map(it => '<label><input type="checkbox" class="tl" value="' + esc(taskIds([it]).join(',')) + '"> <span dir="auto">' + esc(it.t) + '</span></label>').join('') + '</div></div>';
+    }));
+    return '<div class="tsub"><div class="trow"><input type="checkbox" data-tsubj="' + s.k + '" aria-label="' + esc(s.name) + '"><button type="button" class="topen" data-topen><b dir="auto">' + esc(s.name) + '</b><svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg></button></div><div class="tkids" hidden>' + units + '</div></div>';
+  }).join('');
+  return '<form id="testForm" class="panel"><p><b>' + L('New test', 'اختبار جديد') + '</b></p>' +
+    '<div class="inl" style="margin-bottom:10px"><input type="text" id="tName" maxlength="40" required placeholder="' + L('Test name, like Midterm 1', 'اسم الاختبار، مثلاً: مذاكرة أولى') + '" aria-label="' + L('Test name', 'اسم الاختبار') + '"></div>' +
+    '<div class="inl" style="margin-bottom:10px"><label class="fl">' + L('Counts from', 'يبدأ العدّ من') + '<input type="date" id="tStart" required value="' + todayKey() + '"></label><label class="fl">' + L('Test date', 'موعد الاختبار') + '<input type="date" id="tDate" required></label></div>' +
+    '<p>' + L('Pick what is included. Tap a name to open it.', 'اختر ما يشمله الاختبار. اضغط على الاسم لفتحه.') + '</p><div class="tree">' + tree + '</div>' +
+    '<div class="inl" style="margin-top:12px"><button class="btn">' + L('Announce test', 'أعلن الاختبار') + '</button><button type="button" class="btn ghost" data-act="test">' + L('Cancel', 'إلغاء') + '</button></div></form>';
+}
+function testsHTML(rows, mode) {
+  let h = '';
+  if (isAdmin()) h += ui === 'test' ? testFormHTML() : '<p><button class="btn" data-act="test">' + L('+ Announce a test', '+ أعلن اختباراً') + '</button></p>';
+  const tk = todayKey(), valid = tests.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
+  const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1);
+  if (!valid.length) return h + '<p class="note">' + L('No tests announced yet. When a test is announced, it shows here with its own leaderboard, out of the real exam marks.', 'لا اختبارات معلنة بعد. عندما يُعلن اختبار يظهر هنا مع ترتيبه الخاص، من العلامات الحقيقية.') + '</p>';
+  const card = (t, done) => {
+    const mine = me && me.nick ? testCalc(me, t, mode) : null, days = Math.round((new Date(t.date + 'T00:00') - dayAgo(0)) / 864e5);
+    const subs = Object.keys(mine ? mine.by : {}).map(k => { const pp = mine.part[k]; return '<div class="hr"><span class="n" dir="auto">' + esc(SUBJ[k].name) + '</span><div class="hbar"><i class="me" style="width:' + (pp.n / pp.of * 100) + '%"></i></div><span class="v num">' + pp.n + '/' + pp.of + '</span></div>'; }).join('');
+    const rk = rows.map(r => ({...r, t: testCalc(r.p, t, mode)})).sort((a, b) => b.t.got - a.t.got);
+    return '<section class="card tcard' + (done ? ' past' : '') + '"><div class="head"><h2 style="margin:0" dir="auto">' + esc(t.name) + '</h2><span class="tag">' + (done ? L('Finished', 'انتهى') : days === 0 ? L('Today', 'اليوم') : L('In ' + days + ' days', 'بعد ' + days + ' يوم')) + '</span></div>' +
+      '<p class="note">' + L('Test on ', 'الاختبار ') + esc(fmtDate(t.date)) + ' · ' + L('counts lessons studied from ', 'تُحسب الدروس المدروسة من ') + esc(fmtDate(t.start)) + '</p>' +
+      (mine ? '<div class="score" style="margin-top:12px"><b class="num">' + mine.got + '</b><span class="note">/ ' + mine.max + ' ' + L('your mark', 'علامتك') + '</span></div><div class="rows" style="margin-top:8px">' + subs + '</div>' : '') +
+      (rk.length ? '<h3 class="h3">' + L('Ranking in ', 'الترتيب في ') + esc(lname(cur)) + '</h3><div class="rows">' + rk.map((r, i) => '<div class="hr"><span class="n">' + (i + 1) + '. ' + esc(nick(r.p)) + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (r.t.max ? r.t.got / r.t.max * 100 : 0) + '%"></i></div><span class="v num">' + r.t.got + '</span></div>').join('') + '</div>' : '') +
+      (isAdmin() ? '<p style="margin-top:12px"><button class="linkbtn" data-tdel="' + esc(t.id) + '">' + (tdelArm === t.id ? L('Tap again to delete', 'اضغط مرة ثانية للحذف') : L('Delete test', 'احذف الاختبار')) + '</button></p>' : '') + '</section>';
+  };
+  h += active.map(t => card(t, false)).join('');
+  if (past.length) h += '<h3 class="h3" style="margin-top:22px">' + L('Past tests', 'اختبارات سابقة') + '</h3>' + past.map(t => card(t, true)).join('');
+  return h;
+}
+// ---- rules page ----
+function rulesHTML() {
+  const shown = SUBJECTS.filter(s => s.k !== 'rel_c');
+  const nm = s => s.k === 'rel_i' ? L('Religion', 'الديانة') : s.name;
+  const table = '<table class="rt"><thead><tr><th>' + L('Subject', 'المادة') + '</th><th>' + L('Exam marks', 'العلامة') + '</th><th>' + L('New lesson', 'درس جديد') + '</th><th>' + L('Review', 'مراجعة') + '</th></tr></thead><tbody>' +
+    shown.map(s => '<tr><td dir="auto">' + esc(nm(s)) + '</td><td class="num">' + s.pts + '</td><td class="num">' + (Math.round(VAL[s.k] * 10) / 10) + '</td><td class="num">' + (Math.round(VAL[s.k] * 5) / 10) + '</td></tr>').join('') + '</tbody></table>';
+  if (LANG === 'ar') return '<section class="card rules" dir="rtl">' +
+    '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>المراجعة تعطي <b>نصف</b> قيمة الدرس، ومرة واحدة لكل درس في اليوم.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
+    '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
+    '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
+    '<h2>الواجبات</h2><ul><li>ينشر الواجبات منشئ السباق ومن يختارهم كمساعدين فقط. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
+    '<h2>طريقة الاستخدام</h2><ol><li>سجّل الدخول بحساب Google (يحفظ تقدمك على أي هاتف) أو كضيف (على هذا الجهاز فقط).</li><li>اختر اسمك ومادة الديانة التي تدرسها.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
+    '<h2>الأمانة</h2><p>السباق قائم على الثقة بين الأصدقاء. علّم الدرس فقط عندما تدرسه فعلاً. الهدف أن ننجح كلنا. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ.</p></section>';
+  return '<section class="card rules">' +
+    '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>A review earns <b>half</b> a lesson\'s value, once per lesson per day.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
+    '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
+    '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
+    '<h2>Homework</h2><ul><li>Only the race creator and the helpers they choose can post homework. Everyone ticks their own when it\'s done, and it disappears after its due date.</li></ul>' +
+    '<h2>How to use</h2><ol><li>Sign in with Google (keeps your progress on any phone) or as a guest (this device only).</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
+    '<h2>Honesty</h2><p>The race runs on trust between friends. Only tick a lesson when you really studied it. The goal is for all of us to pass. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</p></section>';
+}
 function render() {
   const j = $('join');
   if (!authReady) j.innerHTML = '';
   else if (!meId) j.innerHTML = '<div class="panel"><p><b>Sign in to race.</b> Google keeps your progress on any phone. Guest works on this device only.</p><div class="inl"><button class="btn" data-act="google">Continue with Google</button><button class="btn ghost" data-act="guest">Play as guest</button></div></div>';
-  else if (!me || !me.nick || !me.religion) j.innerHTML = '<form id="joinForm" class="panel"><p><b>Welcome!</b> Pick the name your friends will see.</p><div class="inl" style="margin-bottom:14px"><input type="text" id="nickIn" maxlength="24" required value="' + esc((me && me.nick) || meName) + '" aria-label="Your name"></div>' +
+  else if (!me || !me.nick || !me.religion) { if (!$('joinForm')) j.innerHTML = '<form id="joinForm" class="panel"><p><b>Welcome!</b> Pick the name your friends will see.</p><div class="inl" style="margin-bottom:14px"><input type="text" id="nickIn" maxlength="24" required value="' + esc((me && me.nick) || meName) + '" aria-label="Your name"></div>' +
     '<p>Which religion subject do you take?</p><label class="opt"><input type="radio" name="rel" value="i"' + ((me && me.religion) !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="rel" value="c"' + ((me && me.religion) === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
-    '<button class="btn">Start</button></form>';
+    '<button class="btn">Start</button></form>'; }
   else j.innerHTML = '';
   const ready = !!(me && me.nick && me.religion);
   const my = (me && me.lobbies) || [];
-  $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
-  const mode = (lobby() && lobby().lang) || 'best', mx = maxScore(mode);
-  const rows = Object.keys(players).filter(id => (players[id].lobbies || []).includes(cur)).map(id => ({id, p: players[id], sc: score(players[id], mode)}));
+  if (!(ui === 'new' && $('newForm'))) $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
+  const mode = (lobby() && lobby().lang) || 'best', ms = monthStart(), tk = todayKey();
+  const rows = Object.keys(players).filter(id => (players[id].lobbies || []).includes(cur)).map(id => ({id, p: players[id], sc: earned(players[id], ms, tk).pts}));
+  const mx = Math.max(1, ...rows.map(r => r.sc));
   const by = rows.slice().sort((a, b) => b.sc - a.sc);
   const tr = $('track');
   if (!cur) tr.innerHTML = '<p class="empty">' + (ready ? 'Pick a race above, create one, or join with a code.' : 'Sign in below to start racing.') + '</p>';
   else if (!rows.length) tr.innerHTML = '<p class="empty">No runners in this race yet.</p>';
-  else tr.innerHTML = by.map((r, i) => '<div class="lane"><div class="who">' + esc(nick(r.p)) + (r.id === meId ? ' (you)' : '') + '<small>' + ord(i) + '</small></div><div class="run"><span class="runner' + (r.id === meId ? ' me' : '') + '" style="left:calc(17px + (100% - 44px) * ' + (r.sc / mx) + ');background:' + colorOf(r.id) + '" aria-hidden="true">' + esc(nick(r.p).trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + r.sc + '</b><small>/ ' + mx + '</small></div></div>').join('');
+  else tr.innerHTML = by.map((r, i) => '<div class="lane"><div class="who">' + esc(nick(r.p)) + (r.id === meId ? ' (you)' : '') + '<small>' + ord(i) + '</small></div><div class="run"><span class="runner' + (r.id === meId ? ' me' : '') + '" style="left:calc(17px + (100% - 44px) * ' + (r.sc / mx) + ');background:' + colorOf(r.id) + '" aria-hidden="true">' + esc(nick(r.p).trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + r.sc + '</b><small>pts</small></div></div>').join('');
   const lead = $('lead');
-  if (rows.length && cur) { const top = by[0], mi = by.findIndex(r => r.id === meId); lead.innerHTML = '<b>' + esc(nick(top.p)) + '</b> leads ' + esc(lname(cur)) + ' with ' + top.sc + ' / ' + mx + (mi > 0 ? ' · you are ' + ord(mi) : '') + '.'; }
-  else lead.textContent = 'Every lesson you study moves you toward the full mark.';
+  if (rows.length && cur) { const top = by[0], mi = by.findIndex(r => r.id === meId); lead.innerHTML = '<b>' + esc(nick(top.p)) + '</b> leads ' + esc(lname(cur)) + ' this month with ' + top.sc + ' points' + (mi > 0 ? ' · you are ' + ord(mi) : '') + '.'; }
+  else lead.textContent = 'Every lesson you study earns points. The race restarts on the 1st of every month.';
   $('bac').innerHTML = BAC_DATE ? (() => { const n = Math.round((new Date(BAC_DATE + 'T00:00') - dayAgo(0)) / 864e5); return '<span class="tag">First Bakaloria exam in ' + (n > 0 ? n + ' days' : n === 0 ? 'today' : '—') + '</span>'; })() : '';
-  $('hwBox').innerHTML = hwHTML();
+  if (!(ui === 'hw' && $('hwForm'))) $('hwBox').innerHTML = hwHTML();
   const bw = rows.slice().sort((a, b) => weekOf(b.p) - weekOf(a.p)), hm = Math.max(1, ...rows.map(r => weekOf(r.p)));
   $('hours').innerHTML = rows.length ? bw.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + (streakOf(r.p) > 1 ? '<small>' + streakOf(r.p) + '-day streak</small>' : '') + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (weekOf(r.p) / hm * 100) + '%"></i></div><span class="v num">' + fmtH(weekOf(r.p)) + 'h</span></div>').join('') + '<p class="note">Last 7 days · all-time leader: ' + esc(nick(rows.slice().sort((a, b) => totalH(b.p) - totalH(a.p))[0].p)) + '</p>' : '<p class="note">No hours in this race yet.</p>';
   if (ready) { const h = me.hours || {}, t = +h[dkey(dayAgo(0))] || 0, days = [...Array(7)].map((_, i) => dayAgo(6 - i)), wm = Math.max(1, ...days.map(d => +h[dkey(d)] || 0));
-    $('mine').innerHTML = '<h2>Your hours today</h2><div class="logger"><div class="big num">' + fmtH(t) + '<small>hours</small></div><div class="step"><button class="btn ghost sq" data-h="-0.5" aria-label="Remove half an hour">−</button><button class="btn sq" data-h="0.5" aria-label="Add half an hour">+</button><button class="btn ghost" data-h="1">+1h</button></div></div><div class="week" aria-label="Your last 7 days">' + days.map(d => { const v = +h[dkey(d)] || 0; return '<div><span>' + fmtH(v) + '</span><i style="height:' + (v / wm * 56) + 'px"></i><span>' + d.toLocaleDateString('en-GB', {weekday: 'short'}).slice(0, 2) + '</span></div>'; }).join('') + '</div>' +
+    $('mine').innerHTML = '<h2>Your hours today</h2><div class="logger"><div class="big num">' + fmtH(t) + '<small>hours</small></div><div class="step"><button class="btn ghost sq" data-h="-0.5" aria-label="Remove half an hour">−</button><button class="btn sq" data-h="0.5" aria-label="Add half an hour">+</button><button class="btn ghost" data-h="1" dir="ltr">+1h</button></div></div><div class="week" aria-label="Your last 7 days">' + days.map(d => { const v = +h[dkey(d)] || 0; return '<div><span>' + fmtH(v) + '</span><i style="height:' + (v / wm * 56) + 'px"></i><span>' + dayShort(d) + '</span></div>'; }).join('') + '</div>' +
       '<p class="note" style="margin-top:14px">' + esc(me.nick) + ' · <span lang="ar">' + (me.religion === 'c' ? 'التربية المسيحية' : 'التربية الإسلامية') + '</span> · <button class="linkbtn" data-act="profile">Edit</button> · <button class="linkbtn" data-act="signout">Sign out</button></p>'; }
   else $('mine').innerHTML = '<h2>Your hours today</h2><p class="note">Sign in to log hours.</p>';
-  const sc = ready ? score(me, mode) : 0;
-  $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">/ ' + mx + ' predicted score' + (cur ? ' in ' + esc(lname(cur)) : '') + '</span>' : '';
+  const sc = ready ? earned(me, ms, tk).pts : 0;
+  $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">points this month</span>' : '';
   $('subjects').innerHTML = subjectsHTML();
   $('weekBox').innerHTML = weekHTML(rows, mode);
-  for (const pgId of ['race', 'week', 'hours', 'subj']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('[data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
+  if (!(ui === 'test' && $('testForm'))) $('testsBox').innerHTML = testsHTML(rows, mode);
+  $('rulesBox').innerHTML = rulesHTML();
+  translateDOM(document.body);
+  for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('[data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
 }
 
 // ---- events ----
 document.addEventListener('click', async ev => {
+  if (ev.target.closest('#themeBtn')) { const box = $('themes'), b = $('themeBtn'); paintThemes(); box.hidden = !box.hidden; b.setAttribute('aria-expanded', String(!box.hidden)); return; }
+  const tp = ev.target.closest('[data-theme-pick]');
+  if (tp) { THEME = tp.dataset.themePick; try { localStorage.setItem('bac-theme', THEME); } catch (e) {} if (THEME === 'night') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', THEME); paintThemes(); $('themes').hidden = true; $('themeBtn').setAttribute('aria-expanded', 'false'); return; }
+  if (!ev.target.closest('#themes') && $('themes') && !$('themes').hidden) { $('themes').hidden = true; $('themeBtn').setAttribute('aria-expanded', 'false'); }
+  if (ev.target.closest('#langBtn')) { try { localStorage.setItem('bac-lang', LANG === 'ar' ? 'en' : 'ar'); } catch (e) {} location.reload(); return; }
   const pg = ev.target.closest('[data-page]');
   if (pg) { page = pg.dataset.page; try { localStorage.setItem('bac-page', page); } catch (e) {} render(); window.scrollTo(0, 0); return; }
   const o = ev.target.closest('[data-open]');
@@ -410,11 +630,16 @@ document.addEventListener('click', async ev => {
   const rv = ev.target.closest('[data-rev],[data-unrev]');
   if (rv && me && me.nick) { const up = !!rv.dataset.rev, id = up ? rv.dataset.rev : rv.dataset.unrev; let n = 0;
     changeMe(p => { p.done = p.done || {}; p.first = p.first || {}; p.log = p.log || {}; const today = dkey(dayAgo(0));
-      n = Math.max(0, (+p.done[id] || 0) + (up ? 1 : -1)); if (n) p.done[id] = n; else { delete p.done[id]; delete p.first[id]; }
-      if (up && n === 1) p.first[id] = today;
+      n = Math.max(0, (+p.done[id] || 0) + (up ? 1 : -1)); if (n) p.done[id] = n; else { delete p.done[id]; if (p.first[id] === today) delete p.first[id]; }
+      if (up && n === 1 && !p.first[id]) p.first[id] = today;
       const L = p.log[today] = p.log[today] || {}; L[id] = Math.max(0, (+L[id] || 0) + (up ? 1 : -1)); if (!L[id]) delete L[id]; if (!Object.keys(L).length) delete p.log[today];
-      const cut = dkey(dayAgo(60)); for (const k in p.log) if (k < cut) delete p.log[k]; });
+      const cut = dkey(dayAgo(200)); for (const k in p.log) if (k < cut) delete p.log[k]; });
     if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
+  const to = ev.target.closest('[data-topen]');
+  if (to) { const k = to.closest('.trow').nextElementSibling; k.hidden = !k.hidden; to.classList.toggle('open', !k.hidden); return; }
+  const td = ev.target.closest('[data-tdel]');
+  if (td && isAdmin() && api) { const id = td.dataset.tdel; if (tdelArm !== id) { tdelArm = id; render(); setTimeout(() => { tdelArm = null; render(); }, 4000); return; }
+    tdelArm = null; try { await api.deleteDoc(api.doc(api.db, 'tests', id)); toast(L('Test deleted', 'حُذف الاختبار')); } catch (e) { toast(L('Could not delete the test', 'تعذّر حذف الاختبار')); } return; }
   const hd = ev.target.closest('[data-hwdel]');
   if (hd && api) { try { await api.deleteDoc(api.doc(api.db, 'lobbies', cur, 'homework', hd.dataset.hwdel)); toast('Homework removed'); } catch (e) { toast('Could not remove'); } return; }
   const hp = ev.target.closest('[data-helper]');
@@ -425,15 +650,17 @@ document.addEventListener('click', async ev => {
   if (act === 'guest' && api) { try { await api.signInAnonymously(api.auth); } catch (e) { toast('Could not sign in'); } return; }
   if (act === 'signout' && api) { await api.signOut(api.auth); return; }
   if (act === 'profile') { changeMe(p => { delete p.religion; }); return; }
-  if (['new', 'code', 'hw', 'helpers'].includes(act)) { ui = ui === act ? '' : act; render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
-  if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
+  if (['new', 'code', 'hw', 'helpers', 'test'].includes(act)) { ui = ui === act ? '' : act; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
+  if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = LANG === 'ar' ? 'انضم لسباق البكالوريا "' + lname(cur) + '": ' + link + ' (الرمز ' + cur.toUpperCase() + ')' : 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
   if (act === 'enter' && cur) { enter(cur); toast('You joined ' + lname(cur)); return; }
   if (act === 'leave' && cur) { if (!leaveArm) { leaveArm = true; render(); setTimeout(() => { leaveArm = false; render(); }, 4000); return; }
     const c = cur; leaveArm = false; changeMe(p => { p.lobbies = (p.lobbies || []).filter(x => x !== c); }); cur = null; history.replaceState(null, '', location.pathname); sync(); toast('You left ' + lname(c)); }
 });
 document.addEventListener('change', ev => {
-  const c = ev.target; if (!c.dataset || !c.dataset.hwdone || !me) return;
+  const c = ev.target;
+  if (c.dataset && c.dataset.tsubj) { c.closest('.tsub').querySelectorAll('input[type=checkbox]').forEach(x => { if (x !== c) x.checked = c.checked; }); return; }
+  if (c.dataset && c.dataset.tunit) { c.closest('.tunit').querySelectorAll('.tl').forEach(x => { x.checked = c.checked; }); return; } if (!c.dataset || !c.dataset.hwdone || !me) return;
   const k = cur + '_' + c.dataset.hwdone; changeMe(p => { p.hw = p.hw || {}; if (c.checked) p.hw[k] = 1; else delete p.hw[k]; });
 });
 document.addEventListener('submit', async ev => {
@@ -444,17 +671,29 @@ document.addEventListener('submit', async ev => {
     if (first && cur && lobby() && !(me.lobbies || []).includes(cur)) enter(cur); toast('Welcome, ' + n); return; }
   if (f.id === 'newForm') { const name = $('newIn').value.trim().slice(0, 30); if (!name || !api) return; const lang = (f.querySelector('input[name=lang]:checked') || {}).value === 'both' ? 'both' : 'best';
     let code = ''; for (let i = 0; i < 6; i++) code += CH[Math.floor(Math.random() * CH.length)];
-    try { await api.setDoc(api.doc(api.db, 'lobbies', code), {name, by: meId, n: Date.now(), lang, helpers: []}); lobbyDocs[code] = {name, by: meId, lang, helpers: []}; enter(code); toast('Race created. Code ' + code.toUpperCase()); } catch (e) { toast('Could not create the race'); } return; }
+    try { await api.setDoc(api.doc(api.db, 'lobbies', code), {name, by: meId, n: Date.now(), lang, helpers: []}); lobbyDocs[code] = {name, by: meId, lang, helpers: []}; $('lobby').innerHTML = ''; enter(code); toast('Race created. Code ' + code.toUpperCase()); } catch (e) { toast('Could not create the race'); } return; }
   if (f.id === 'codeForm') { const c = $('codeIn').value.toLowerCase().replace(/[^a-z0-9]/g, ''); if (!c) return; cur = c; ui = ''; watchLobby(c); location.hash = 'r-' + c; sync();
     setTimeout(() => { if (lobbyDocs[c] && !lobbyDocs[c].missing && !((me && me.lobbies) || []).includes(c)) { enter(c); toast('You joined ' + lname(c)); } }, 900); return; }
+  if (f.id === 'testForm' && api && isAdmin()) { const name = $('tName').value.trim().slice(0, 40), start = $('tStart').value, date = $('tDate').value;
+    const items = [...f.querySelectorAll('.tl:checked')].flatMap(x => x.value.split(','));
+    if (!name || !start || !date) return; if (date < start) { toast(L('The test date must be after the start date', 'موعد الاختبار يجب أن يكون بعد تاريخ البدء')); return; } if (!items.length) { toast(L('Pick at least one lesson', 'اختر درساً واحداً على الأقل')); return; }
+    try { await api.addDoc(api.collection(api.db, 'tests'), {name, start, date, items, n: Date.now()}); ui = ''; $('testsBox').innerHTML = ''; render(); toast(L('Test announced', 'أُعلن الاختبار')); } catch (e) { toast(L('Could not save the test', 'تعذّر حفظ الاختبار')); } return; }
   if (f.id === 'hwForm' && api) { const text = $('hwText').value.trim().slice(0, 160), due = $('hwDue').value, subj = $('hwSub').value; if (!text || !due) return;
-    try { await api.addDoc(api.collection(api.db, 'lobbies', cur, 'homework'), {text, due, subj, by: meId, n: Date.now()}); $('hwText').value = ''; toast('Homework posted'); } catch (e) { toast('Could not post homework'); } }
+    try { await api.addDoc(api.collection(api.db, 'lobbies', cur, 'homework'), {text, due, subj, by: meId, n: Date.now()}); $('hwText').value = ''; toast('Homework posted'); ui = ''; $('hwBox').innerHTML = ''; render(); } catch (e) { toast('Could not post homework'); } }
 });
 window.addEventListener('hashchange', () => { const c = hashCode(); if (c) { cur = c; ui = ''; sync(); } });
 
+if (LANG === 'ar') { document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl'; }
+{ const lb = document.getElementById('langBtn'); if (lb) lb.textContent = LANG === 'ar' ? 'English' : 'عربي'; }
+
+// ---- colour themes ----
+const THEMES = [['night','Night & gold','ليل وذهب','#0A1128','#E2B84F'],['emerald','Emerald','زمرّدي','#06201A','#E2B84F'],['royal','Royal purple','بنفسجي','#160B2E','#E7B85A'],['rose','Rose','وردي','#2A0F1E','#F29BB6'],['ocean','Ocean','بحري','#04202B','#4FD1C5'],['paper','Paper (light)','فاتح','#F6F1E6','#B8862B']];
+let THEME = 'night'; try { THEME = localStorage.getItem('bac-theme') || 'night'; } catch (e) {}
+function paintThemes() { const box = $('themes'); if (!box) return;
+  box.innerHTML = THEMES.map(([k, en, ar, bg, ac]) => '<button type="button" class="sw" data-theme-pick="' + k + '" aria-pressed="' + (THEME === k) + '"><i style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (LANG === 'ar' ? ar : en) + '</button>').join(''); }
 // ---- start ----
 async function start() {
-  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
+  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; tests = DEMO.tests || []; meEmail = DEMO.email || ''; cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
   render();
   const [A, U, F] = await Promise.all([import(FB + 'firebase-app.js'), import(FB + 'firebase-auth.js'), import(FB + 'firebase-firestore.js')]);
   const app = A.initializeApp(FIREBASE_CONFIG), auth = U.getAuth(app), db = F.getFirestore(app);
@@ -462,7 +701,8 @@ async function start() {
   let meUnsub = null;
   U.onAuthStateChanged(auth, u => {
     authReady = true; if (meUnsub) { meUnsub(); meUnsub = null; }
-    meId = u ? u.uid : null; meName = u && u.displayName ? u.displayName.split(' ')[0] : ''; me = null;
+    meId = u ? u.uid : null; meEmail = u && u.email ? u.email : ''; meName = u && u.displayName ? u.displayName.split(' ')[0] : ''; me = null;
+    if (u && !testsUnsub) testsUnsub = F.onSnapshot(F.collection(db, 'tests'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); tests = a; render(); }, () => {});
     if (u) meUnsub = F.onSnapshot(F.doc(db, 'players', u.uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast('Could not load your profile'));
     else { players = {}; watching = null; if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; } }
     sync();
