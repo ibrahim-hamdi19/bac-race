@@ -674,7 +674,7 @@ function authHTML() {
     '<p class="note" style="margin-top:6px">' + L('Usernames: 3–20 English letters, numbers, _ or .', 'اسم المستخدم: من 3 إلى 20 حرفاً إنكليزياً أو أرقاماً أو _ أو .') + '</p></form>';
 }
 function gateHTML() {
-  return '<form id="codeGate" class="panel"><p><b>' + L('Enter your access code', 'أدخل كود الدخول') + '</b></p><p class="note">' + L('Ask the site owner for a code. Each code works once.', 'اطلب الكود من صاحب الموقع. كل كود يعمل مرة واحدة.') + '</p>' +
+  return '<form id="codeGate" class="panel" data-na="' + String(Array.isArray(adminUids) && !adminUids.length) + '"><p><b>' + L('Enter your access code', 'أدخل كود الدخول') + '</b></p><p class="note">' + L('Ask the site owner for a code. Each code works once.', 'اطلب الكود من صاحب الموقع. كل كود يعمل مرة واحدة.') + '</p>' +
     '<div class="inl" style="margin:10px 0"><input type="text" id="gateCode" required maxlength="12" autocapitalize="characters" autocomplete="off" spellcheck="false" dir="ltr" aria-label="' + L('Access code', 'كود الدخول') + '"><button class="btn">' + L('Unlock', 'فتح') + '</button></div>' +
     (Array.isArray(adminUids) && !adminUids.length ? '<div class="infobox" style="margin-top:12px">' + L('No admin yet. If you are the site owner, tap this now. It only works once, for the first person.', 'لا يوجد مدير بعد. إذا كنت صاحب الموقع اضغط هنا الآن. يعمل مرة واحدة فقط لأول شخص.') + '<p style="margin:10px 0 0"><button type="button" class="btn" data-act="claim">' + L('Make me the admin', 'اجعلني المدير') + '</button></p></div>' : '') +
     '<p class="note"><button type="button" class="linkbtn" data-act="signout">' + L('Sign out', 'تسجيل الخروج') + '</button></p></form>';
@@ -693,7 +693,7 @@ function render() {
   if (!authReady) j.innerHTML = '';
   else if (!meId) { if (!$('authForm') || $('authForm').dataset.mode !== authMode) j.innerHTML = authHTML(); }
   else if (access === null || adminUids === null) j.innerHTML = '<p class="note" style="margin-top:16px">' + L('Checking your access…', 'جارٍ التحقق من صلاحيتك…') + '</p>';
-  else if (!hasAccess()) { if (!$('codeGate')) j.innerHTML = gateHTML(); }
+  else if (!hasAccess()) { const na = String(Array.isArray(adminUids) && !adminUids.length); if (!$('codeGate') || $('codeGate').dataset.na !== na) j.innerHTML = gateHTML(); }
   else if (!me || !me.nick || !me.religion) { if (!$('joinForm')) j.innerHTML = '<form id="joinForm" class="panel"><p><b>Welcome!</b> Pick the name your friends will see.</p><div class="inl" style="margin-bottom:14px"><input type="text" id="nickIn" maxlength="24" required value="' + esc((me && me.nick) || meName) + '" aria-label="Your name"></div>' +
     '<p>Which religion subject do you take?</p><label class="opt"><input type="radio" name="rel" value="i"' + ((me && me.religion) !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="rel" value="c"' + ((me && me.religion) === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
     '<button class="btn">Start</button></form>'; }
@@ -851,6 +851,7 @@ async function start() {
   const startCodes = () => { if (codesUnsub || !isAdmin()) return; codesUnsub = F.onSnapshot(F.collection(db, 'codes'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); codes = a; render(); }, () => { codesUnsub = null; }); };
   const stopAll = () => { for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = null; dataOn = false; };
   U.onAuthStateChanged(auth, u => {
+    if (u && !(u.providerData || []).some(p => p.providerId === 'password')) { U.signOut(auth); return; } // old Google/guest sessions
     stopAll(); authReady = true; meId = u ? u.uid : null; me = null; access = null; adminUids = null; codes = []; tests = []; ghw = []; players = {}; homework = []; watching = null;
     if (u) {
       admUnsub = F.onSnapshot(F.doc(db, 'meta', 'admins'), s => { adminUids = s.exists() && Array.isArray(s.data().uids) ? s.data().uids : []; startData(); startCodes(); render(); }, () => { adminUids = []; render(); });
