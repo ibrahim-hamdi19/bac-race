@@ -285,12 +285,13 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .eye{all:unset;position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border-radius:10px;color:var(--gold2);font-size:14px;font-weight:600;cursor:pointer}
 .eye:focus-visible{outline:2px solid var(--gold2)}
 .alist{margin:0;padding-inline-start:20px}.alist li{margin:6px 0}
+.pgt.en{text-align:start;font-family:Inter,sans-serif}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
 <body>
 <main class="wrap">
-  <div class="topbtns"><button id="themeBtn" class="langbtn" type="button" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7" r="1.2"/></svg><span>Style</span></button><button id="langBtn" class="langbtn" type="button">عربي</button><button id="outBtn" class="langbtn" type="button" hidden aria-label="Sign out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span id="outTxt"></span></button></div>
+  <div class="topbtns"><button id="themeBtn" class="langbtn" type="button" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7" r="1.2"/></svg><span>Style</span></button><button id="langBtn" class="langbtn" type="button">عربي</button><button id="outBtn" class="langbtn" type="button" hidden aria-label="Profile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></button></div>
   <div class="themes" id="themes" hidden></div>
   <header class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span class="en-only">Bakaloria race · Scientific</span><span lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></header>
   <div id="join"></div>
@@ -302,27 +303,28 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <p class="note">Each runner's spot is their points this month. Every lesson counts by its subject's exam marks.</p>
   <div id="hwBox"></div>
   </div>
-  <div id="pg-week" hidden><h2 class="pgt">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
-  <div id="pg-hours" hidden><h2 class="pgt">ساعات الدراسة</h2>
+  <div id="pg-week" hidden><h2 class="pgt" data-en="Your week">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
+  <div id="pg-hours" hidden><h2 class="pgt" data-en="Study hours">ساعات الدراسة</h2>
     <p class="infobox">Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.</p>
     <section class="card" id="mine"></section>
     <section class="card" style="margin-top:14px"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
   </div>
-  <div id="pg-subj" hidden><h2 class="pgt">المواد</h2><div class="score" id="myScore"></div><p class="note">Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.</p>
+  <div id="pg-subj" hidden><h2 class="pgt" data-en="Subjects">المواد</h2><div class="score" id="myScore"></div><p class="note">Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.</p>
   <div class="subjects" id="subjects"></div></div>
-  <div id="pg-tests" hidden><h2 class="pgt">الاختبارات</h2><div id="testsBox"></div></div>
-  <div id="pg-admin" hidden><h2 class="pgt">لوحة المدير</h2><div id="adminBox"></div></div>
-  <div id="pg-rules" hidden><h2 class="pgt">القوانين وطريقة الاستخدام</h2><div id="rulesBox"></div></div>
+  <div id="pg-tests" hidden><h2 class="pgt" data-en="Tests">الاختبارات</h2><div id="testsBox"></div></div>
+  <div id="pg-profile" hidden><h2 class="pgt" data-en="Profile">ملفي</h2><div id="profileBox"></div></div>
+  <div id="pg-admin" hidden><h2 class="pgt" data-en="Admin panel">لوحة المدير</h2><div id="adminBox"></div></div>
+  <div id="pg-rules" hidden><h2 class="pgt" data-en="Rules &amp; how to use">القوانين وطريقة الاستخدام</h2><div id="rulesBox"></div></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <nav class="tabs" aria-label="Pages">
-  <button data-page="race"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4M6 4h11l-2 4 2 4H6"/></svg><span lang="ar">السباق</span></button>
-  <button data-page="week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg><span lang="ar">إنجازك</span></button>
-  <button data-page="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg><span lang="ar">الساعات</span></button>
-  <button data-page="tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v3H9zM6 5h3M15 5h3v16H6V5M9 12l2 2 4-4"/></svg><span lang="ar">الاختبارات</span></button>
-  <button data-page="subj"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5"/></svg><span lang="ar">المواد</span></button>
-  <button data-page="admin" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span lang="ar">المدير</span></button>
-  <button data-page="rules"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span lang="ar">القوانين</span></button>
+  <button data-page="race"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4M6 4h11l-2 4 2 4H6"/></svg><span lang="ar" data-en="Race">السباق</span></button>
+  <button data-page="week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg><span lang="ar" data-en="My week">إنجازك</span></button>
+  <button data-page="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg><span lang="ar" data-en="Hours">الساعات</span></button>
+  <button data-page="tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v3H9zM6 5h3M15 5h3v16H6V5M9 12l2 2 4-4"/></svg><span lang="ar" data-en="Tests">الاختبارات</span></button>
+  <button data-page="subj"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5"/></svg><span lang="ar" data-en="Subjects">المواد</span></button>
+  <button data-page="admin" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span lang="ar" data-en="Admin">المدير</span></button>
+  <button data-page="rules"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span lang="ar" data-en="Rules">القوانين</span></button>
 </nav>
 
 <script>
@@ -674,12 +676,29 @@ function rulesHTML() {
     '<h2>How to use</h2><ol><li>Create an account with a username, a password and the access code you were given. Remember your password: it can\'t be reset. Log in with the same account on any phone.</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
     '<h2>Honesty</h2><p>The race runs on trust between friends. Only tick a lesson when you really studied it. The goal is for all of us to pass. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</p></section>';
 }
+function pwField(id, label, ac) {
+  return '<label class="fl">' + label + '<span class="pwrap"><input type="password" id="' + id + '" required minlength="6" autocomplete="' + ac + '" dir="ltr"><button type="button" class="eye" data-act="pw" data-pw="' + id + '" aria-label="' + L('Show password', 'أظهر كلمة السر') + '" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>' + L('Show', 'إظهار') + '</span></button></span></label>';
+}
+const myUsername = () => { const u = api && api.auth.currentUser; return u && u.email ? u.email.split('@')[0] : ''; };
+let outArm2 = false;
+function profileHTML() {
+  if (!meId) return '<p class="note">' + L('Log in to see your profile.', 'سجّل الدخول لترى ملفك.') + '</p>';
+  const p = me || {};
+  return '<form id="pfName" class="card"><p class="note">' + L('Logged in as ', 'مسجّل الدخول باسم ') + '<b dir="ltr">' + esc(myUsername()) + '</b></p><h2 style="margin-top:10px">' + L('Your name and religion subject', 'اسمك ومادة الديانة') + '</h2><p class="note">' + L('This is the name your friends see in races.', 'هذا الاسم الذي يراه أصدقاؤك في السباقات.') + '</p>' +
+    '<div class="stackf" style="margin-top:10px"><label class="fl">' + L('Name', 'الاسم') + '<input type="text" id="pfNick" required maxlength="24" value="' + esc(p.nick || '') + '"></label></div>' +
+    '<label class="opt" style="margin-top:12px"><input type="radio" name="pfRel" value="i"' + (p.religion !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="pfRel" value="c"' + (p.religion === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
+    '<button class="btn">' + L('Save', 'حفظ') + '</button></form>' +
+    '<form id="pfPw" class="card" style="margin-top:14px"><h2>' + L('Password', 'كلمة السر') + '</h2>' +
+    '<div class="stackf" style="margin-top:10px">' + pwField('pfPass2', L('Current password', 'كلمة السر الحالية'), 'current-password') + pwField('pfPass3', L('New password (6+ characters)', 'كلمة السر الجديدة (6 أحرف أو أكثر)'), 'new-password') + '</div>' +
+    '<button class="btn" style="margin-top:12px">' + L('Change password', 'غيّر كلمة السر') + '</button></form>' +
+    '<section class="card" style="margin-top:14px"><h2>' + L('Sign out', 'تسجيل الخروج') + '</h2><p class="note">' + L('You can log back in on any phone with your username and password.', 'يمكنك الدخول من أي هاتف باسم المستخدم وكلمة السر.') + '</p><button class="btn ghost' + (outArm2 ? ' arm' : '') + '" data-act="out2" style="margin-top:10px">' + (outArm2 ? L('Tap again to sign out', 'اضغط مرة ثانية للخروج') : L('Sign out', 'تسجيل الخروج')) + '</button></section>';
+}
 function authHTML() {
   const su = authMode === 'signup';
   return '<form id="authForm" data-mode="' + authMode + '" class="panel"><p><b>' + (su ? L('Create your account', 'أنشئ حسابك') : L('Log in', 'تسجيل الدخول')) + '</b></p>' +
     (su ? '<p class="note">' + L('You need an access code to join. Pick a username and password you will remember: they can\'t be reset.', 'تحتاج كود دخول للاشتراك. اختر اسم مستخدم وكلمة سر تتذكرهما: لا يمكن استرجاعهما.') + '</p>' : '') +
     '<div class="stackf"><label class="fl">' + L('Username', 'اسم المستخدم') + '<input type="text" id="auUser" required minlength="3" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" pattern="[A-Za-z0-9_.]{3,20}"></label>' +
-    '<label class="fl">' + L('Password', 'كلمة السر') + '<span class="pwrap"><input type="password" id="auPass" required minlength="6" autocomplete="' + (su ? 'new-password' : 'current-password') + '" dir="ltr"><button type="button" class="eye" data-act="pw" aria-label="' + L('Show password', 'أظهر كلمة السر') + '" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>' + L('Show', 'إظهار') + '</span></button></span></label>' +
+    pwField('auPass', L('Password', 'كلمة السر'), su ? 'new-password' : 'current-password') +
     (su ? '<label class="fl">' + L('Access code', 'كود الدخول') + '<input type="text" id="auCode" maxlength="12" autocapitalize="characters" autocomplete="off" spellcheck="false" dir="ltr"></label>' : '') + '</div>' +
     '<div class="inl" style="margin-top:12px"><button class="btn">' + (su ? L('Create account', 'إنشاء الحساب') : L('Log in', 'دخول')) + '</button></div>' +
     '<p class="note" style="margin-top:12px"><button type="button" class="linkbtn" data-act="authmode">' + (su ? L('I already have an account', 'عندي حساب') : L('New here? Create an account with a code', 'جديد؟ أنشئ حساباً بكود')) + '</button></p>' +
@@ -696,10 +715,10 @@ function codesHTML() {
   return '<section class="card" style="margin-bottom:14px"><div class="head" style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">' + L('Access codes', 'أكواد الدخول') + '</h2><span class="tag">' + L(free.length + ' unused · ' + used.length + ' used', free.length + ' متاح · ' + used.length + ' مستخدم') + '</span></div>' +
     '<p class="note">' + L('Give one code to each person. A code works once.', 'أعط كل شخص كوداً. الكود يعمل مرة واحدة.') + '</p>' +
     '<div class="inl" style="margin:10px 0"><button class="btn" data-mk="1">' + L('+ 1 code', '+ كود') + '</button><button class="btn ghost" data-mk="10">' + L('+ 10 codes', '+ 10 أكواد') + '</button></div>' +
-    (free.length ? '<ul class="hwl">' + free.map(c => '<li><div class="t"><span class="num code" dir="ltr">' + esc(c.id) + '</span></div><button class="tk" data-cpy="' + esc(c.id) + '">' + L('Copy', 'نسخ') + '</button><button class="x" data-cdel="' + esc(c.id) + '" aria-label="' + L('Delete code', 'احذف الكود') + '">×</button></li>').join('') + '</ul>' : '') +
+    (free.length ? '<ul class="hwl">' + free.map(c => '<li><div class="t"><span class="num code" dir="ltr">' + esc(c.id) + '</span></div><button class="tk" data-cpy="' + esc(c.id) + '">' + L('Copy', 'نسخ') + '</button><button class="' + (cdelArm === c.id ? 'tk on' : 'x') + '" data-cdel="' + esc(c.id) + '" aria-label="' + L('Delete code', 'احذف الكود') + '">' + (cdelArm === c.id ? L('Sure?', 'متأكد؟') : '×') + '</button></li>').join('') + '</ul>' : '') +
     (used.length ? '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Used codes', 'الأكواد المستخدمة') + '</summary><ul class="hwl">' + used.map(c => '<li><div class="t"><span class="num" dir="ltr">' + esc(c.id) + '</span><span class="due">' + L('used ', 'استُخدم ') + esc(fmtDate(dkey(new Date(c.usedAt || 0)))) + '</span></div><button class="tk" data-revoke="' + esc(c.id) + '">' + (revokeArm === c.id ? L('Tap again', 'اضغط مرة ثانية') : L('Remove access', 'إلغاء الدخول')) + '</button></li>').join('') + '</ul></details>' : '') + '</section>';
 }
-let revokeArm = null;
+let revokeArm = null, cdelArm = null;
 function adminHTML() {
   const used = codes.filter(c => c.usedBy).length;
   return '<p class="infobox">' + L('Only you see this page. Accounts with access: ', 'أنت فقط ترى هذه الصفحة. الحسابات التي لها دخول: ') + '<b class="num">' + used + '</b></p>' + codesHTML() +
@@ -737,7 +756,7 @@ function render() {
   $('hours').innerHTML = rows.length ? bw.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + (streakOf(r.p) > 1 ? '<small>' + streakOf(r.p) + '-day streak</small>' : '') + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (weekOf(r.p) / hm * 100) + '%"></i></div><span class="v num">' + fmtH(weekOf(r.p)) + 'h</span></div>').join('') + '<p class="note">Last 7 days · all-time leader: ' + esc(nick(rows.slice().sort((a, b) => totalH(b.p) - totalH(a.p))[0].p)) + '</p>' : '<p class="note">No hours in this race yet.</p>';
   if (ready) { const h = me.hours || {}, t = +h[dkey(dayAgo(0))] || 0, days = [...Array(7)].map((_, i) => dayAgo(6 - i)), wm = Math.max(1, ...days.map(d => +h[dkey(d)] || 0));
     $('mine').innerHTML = '<h2>Your hours today</h2><div class="logger"><div class="big num">' + fmtH(t) + '<small>hours</small></div><div class="step"><button class="btn ghost sq" data-h="-0.5" aria-label="Remove half an hour">−</button><button class="btn sq" data-h="0.5" aria-label="Add half an hour">+</button><button class="btn ghost" data-h="1" dir="ltr">+1h</button></div></div><div class="week" aria-label="Your last 7 days">' + days.map(d => { const v = +h[dkey(d)] || 0; return '<div><span>' + fmtH(v) + '</span><i style="height:' + (v / wm * 56) + 'px"></i><span>' + dayShort(d) + '</span></div>'; }).join('') + '</div>' +
-      '<p class="note" style="margin-top:14px">' + esc(me.nick) + ' · <span lang="ar">' + (me.religion === 'c' ? 'التربية المسيحية' : 'التربية الإسلامية') + '</span> · <button class="linkbtn" data-act="profile">Edit</button> · <button class="linkbtn" data-act="signout">Sign out</button></p>'; }
+      '<p class="note" style="margin-top:14px">' + esc(me.nick) + ' · <span lang="ar">' + (me.religion === 'c' ? 'التربية المسيحية' : 'التربية الإسلامية') + '</span> · <button class="linkbtn" data-act="profile">' + L('Profile', 'ملفي') + '</button></p>'; }
   else $('mine').innerHTML = '<h2>Your hours today</h2><p class="note">Sign in to log hours.</p>';
   const sc = ready ? racePts(cur && players[meId] ? players[meId] : me, ms, tk).pts : 0;
   $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">points this month</span>' : '';
@@ -748,14 +767,17 @@ function render() {
   if (page === 'admin' && !isAdmin()) page = 'race';
   { const ta = document.querySelector('.tabs [data-page="admin"]'); if (ta) ta.hidden = !isAdmin(); document.querySelector('.tabs').classList.toggle('seven', isAdmin()); }
   $('adminBox').innerHTML = isAdmin() ? adminHTML() : '';
-  { const ob = $('outBtn'); if (ob) { ob.hidden = !meId; $('outTxt').textContent = outArm ? L('Sure?', 'متأكد؟') : ''; ob.classList.toggle('arm', outArm); } }
+  { const ob = $('outBtn'); if (ob) { ob.hidden = !meId; ob.classList.toggle('arm', page === 'profile'); } }
+  if (page === 'profile' && !meId) page = 'race';
+  { const pb = $('profileBox'); const keep = pb.contains(document.activeElement) && document.activeElement.tagName === 'INPUT'; if (!keep) pb.innerHTML = profileHTML(); }
   translateDOM(document.body);
-  for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules', 'admin']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('.tabs [data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
+  for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules', 'admin', 'profile']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('.tabs [data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
 }
 
 // ---- events ----
 document.addEventListener('click', async ev => {
-  if (ev.target.closest('#outBtn')) { if (!outArm) { outArm = true; render(); setTimeout(() => { outArm = false; render(); }, 4000); return; } outArm = false; if (api) await api.signOut(api.auth); return; }
+  if (ev.target.closest('#outBtn')) { page = page === 'profile' ? 'race' : 'profile'; render(); window.scrollTo(0, 0); return; }
+  if (false) { if (api) await api.signOut(api.auth); return; }
   if (ev.target.closest('#themeBtn')) { const box = $('themes'), b = $('themeBtn'); paintThemes(); box.hidden = !box.hidden; b.setAttribute('aria-expanded', String(!box.hidden)); return; }
   const tp = ev.target.closest('[data-theme-pick]');
   if (tp) { THEME = tp.dataset.themePick; try { localStorage.setItem('bac-theme', THEME); } catch (e) {} if (THEME === 'night') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', THEME); { const th = THEMES.find(x => x[0] === THEME); const mt = document.querySelector('meta[name=theme-color]'); if (th && mt) mt.setAttribute('content', th[3]); } paintThemes(); $('themes').hidden = true; $('themeBtn').setAttribute('aria-expanded', 'false'); return; }
@@ -783,7 +805,7 @@ document.addEventListener('click', async ev => {
   if (cp) { const c = cp.dataset.cpy, link = location.origin + location.pathname; const txt = L('Your access code for the Bakaloria race: ' + c + '\nOpen ' + link + ' and tap "Create an account".', 'كود الدخول لسباق البكالوريا: ' + c + '\nافتح ' + link + ' واضغط «أنشئ حساباً بكود».');
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast(L('Copied', 'نُسخ')); } catch (e) { toast(c); } return; }
   const cd = ev.target.closest('[data-cdel]');
-  if (cd && isAdmin() && api) { try { await api.deleteDoc(api.doc(api.db, 'codes', cd.dataset.cdel)); } catch (e) { toast(L('Could not delete', 'تعذّر الحذف')); } return; }
+  if (cd && isAdmin()) { const id = cd.dataset.cdel; if (cdelArm !== id) { cdelArm = id; render(); setTimeout(() => { cdelArm = null; render(); }, 4000); return; } cdelArm = null; if (!api) return; try { await api.deleteDoc(api.doc(api.db, 'codes', cd.dataset.cdel)); } catch (e) { toast(L('Could not delete', 'تعذّر الحذف')); } return; }
   const rv2 = ev.target.closest('[data-revoke]');
   if (rv2 && isAdmin() && api) { const id = rv2.dataset.revoke; if (revokeArm !== id) { revokeArm = id; render(); setTimeout(() => { revokeArm = null; render(); }, 4000); return; }
     revokeArm = null; const c = codes.find(x => x.id === id); try { const b = api.writeBatch(api.db); if (c && c.usedBy) b.delete(api.doc(api.db, 'access', c.usedBy)); b.delete(api.doc(api.db, 'codes', id)); await b.commit(); toast(L('Access removed', 'أُلغي الدخول')); } catch (e) { toast(L('Could not remove access', 'تعذّر إلغاء الدخول')); } return; }
@@ -796,11 +818,12 @@ document.addEventListener('click', async ev => {
   if (hp && isCreator() && api) { const id = hp.dataset.helper, hs = new Set(lobby().helpers || []); hs.has(id) ? hs.delete(id) : hs.add(id);
     try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {helpers: [...hs]}); } catch (e) { toast('Could not update helpers'); } return; }
   const a = ev.target.closest('[data-act]'); if (!a) return; const act = a.dataset.act;
-  if (act === 'pw') { const i = $('auPass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; a.setAttribute('aria-pressed', String(show)); a.querySelector('span').textContent = show ? L('Hide', 'إخفاء') : L('Show', 'إظهار'); return; }
+  if (act === 'pw') { const i = $(a.dataset.pw || 'auPass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; a.setAttribute('aria-pressed', String(show)); a.querySelector('span').textContent = show ? L('Hide', 'إخفاء') : L('Show', 'إظهار'); return; }
   if (act === 'authmode') { const ku = $('auUser') ? $('auUser').value : '', kp = $('auPass') ? $('auPass').value : ''; authMode = authMode === 'login' ? 'signup' : 'login'; render(); if ($('auUser')) $('auUser').value = ku; if ($('auPass')) $('auPass').value = kp; const u = $('auUser'); if (u) u.focus(); return; }
   if (act === 'claim' && api) { try { await api.setDoc(api.doc(api.db, 'meta', 'admins'), {uids: [meId]}); toast(L('You are the admin now', 'أصبحت المدير')); } catch (e) { toast(L('Someone is already the admin', 'يوجد مدير بالفعل')); } return; }
   if (act === 'signout' && api) { await api.signOut(api.auth); return; }
-  if (act === 'profile') { changeMe(p => { delete p.religion; }); return; }
+  if (act === 'profile') { page = 'profile'; render(); window.scrollTo(0, 0); return; }
+  if (act === 'out2') { if (!outArm2) { outArm2 = true; render(); setTimeout(() => { outArm2 = false; render(); }, 4000); return; } outArm2 = false; page = 'race'; if (api) await api.signOut(api.auth); return; }
   if (['new', 'code', 'hw', 'helpers', 'test'].includes(act)) { ui = ui === act ? '' : act; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
   if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = LANG === 'ar' ? 'انضم لسباق البكالوريا "' + lname(cur) + '": ' + link + ' (الرمز ' + cur.toUpperCase() + ')' : 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
@@ -828,6 +851,16 @@ document.addEventListener('submit', async ev => {
     return; }
   if (f.id === 'codeGate' && api) { const code = ($('gateCode').value || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!code) return;
     try { await redeem(code, meId); toast(L('Welcome! Your access is unlocked', 'أهلاً! تم فتح الدخول')); } catch (e) { toast(L('That code is not valid or already used', 'الكود غير صالح أو مستخدم')); } return; }
+  if (f.id === 'pfName') { const n = $('pfNick').value.trim().slice(0, 24), r = (f.querySelector('input[name=pfRel]:checked') || {}).value || 'i'; if (!n) return; changeMe(p => { p.nick = n; p.religion = r; }); toast(L('Saved', 'حُفظ')); return; }
+  if (f.id === 'pfPw' && api) { const u = api.auth.currentUser; if (!u) return; const btn = f.querySelector('.btn'); btn.disabled = true;
+    try { const cur = $('pfPass2').value;
+      await api.reauthenticateWithCredential(u, api.EmailAuthProvider.credential(u.email, cur));
+      if (f.id === 'pfPw') { await api.updatePassword(u, $('pfPass3').value); toast(L('Password changed', 'تغيّرت كلمة السر')); }
+      else { const nu = normUser($('pfNewUser').value); if (!/^[a-z0-9_.]{3,20}$/.test(nu)) { toast(L('Username: 3–20 English letters, numbers, _ or .', 'اسم المستخدم: 3–20 حرفاً إنكليزياً أو أرقاماً')); btn.disabled = false; return; }
+        await api.updateEmail(u, nu + '@' + USER_DOMAIN); toast(L('Username changed to ', 'تغيّر اسم المستخدم إلى ') + nu); }
+      $('profileBox').innerHTML = profileHTML();
+    } catch (e) { const c = (e && e.code) || ''; toast(c.includes('invalid-credential') || c.includes('wrong-password') ? L('Current password is wrong', 'كلمة السر الحالية خطأ') : c.includes('weak-password') ? L('New password needs at least 6 characters', 'كلمة السر الجديدة 6 أحرف على الأقل') : c.includes('email-already-in-use') ? L('That username is taken', 'اسم المستخدم مأخوذ') : c.includes('operation-not-allowed') ? L('Changing usernames is switched off in Firebase', 'تغيير اسم المستخدم مقفل في Firebase') : L('Could not save. Check your internet.', 'تعذّر الحفظ. تحقّق من الإنترنت.')); btn.disabled = false; }
+    return; }
   if (f.id === 'joinForm') { const n = $('nickIn').value.trim().slice(0, 24); const r = (f.querySelector('input[name=rel]:checked') || {}).value || 'i'; if (!n) return;
     const first = !(me && me.nick);
     changeMe(p => { p.nick = n; p.religion = r; p.joined = p.joined || new Date().toISOString(); p.done = p.done || {}; p.hours = p.hours || {}; p.lobbies = p.lobbies || []; });
@@ -848,6 +881,7 @@ document.addEventListener('submit', async ev => {
 window.addEventListener('hashchange', () => { const c = hashCode(); if (c) { cur = c; ui = ''; sync(); } });
 
 if (LANG === 'ar') { document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl'; }
+else document.querySelectorAll('[data-en]').forEach(e => { e.textContent = e.dataset.en; e.removeAttribute('lang'); e.classList.add('en'); });
 { const lb = document.getElementById('langBtn'); if (lb) lb.textContent = LANG === 'ar' ? 'English' : 'عربي'; }
 
 // ---- colour themes ----
