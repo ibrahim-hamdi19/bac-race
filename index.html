@@ -366,7 +366,7 @@ const AR = {
  'Welcome!':'أهلاً!','Pick the name your friends will see.':'اختر الاسم الذي سيراه أصدقاؤك.','Which religion subject do you take?':'أي مادة ديانة تدرس؟','Start':'ابدأ',
  'Study hours this week':'ساعات الدراسة هذا الأسبوع','No hours in this race yet.':'لا ساعات في هذا السباق بعد.','Your hours today':'ساعاتك اليوم','hours':'ساعات','Sign in to log hours.':'سجّل الدخول لتسجّل ساعاتك.','Edit':'تعديل','Sign out':'تسجيل الخروج',
  'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.',
- "Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.":'الساعات ما إلها نقاط بالسباق. هي إلك أنت بس، لتشوف قديش عم تدرس. النقاط بتجي من الدروس اللي بتخلّصها.', '+1h':'+1 ساعة', 'Colours':'الألوان', 'pts':'نقطة', 'points this month':'نقطة هذا الشهر', 'Every lesson you study earns points. The race restarts on the 1st of every month.':'كل درس تدرسه يعطيك نقاطاً. يبدأ السباق من جديد في أول كل شهر.', 'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.', 'Lessons':'الدروس','Studied':'درست','Lessons for this subject are coming soon.':'دروس هذه المادة قريباً.',
+ "Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.":'الساعات ما إلها نقاط بالسباق. هي إلك أنت بس، لتشوف قديش عم تدرس. النقاط بتجي من الدروس اللي بتخلّصها.', '+1h':'+1 ساعة', 'Colours':'الألوان', 'Join this race to see who is in it and their scores.':'انضم لهذا السباق لترى المشاركين فيه وعلاماتهم.', 'pts':'نقطة', 'points this month':'نقطة هذا الشهر', 'Every lesson you study earns points. The race restarts on the 1st of every month.':'كل درس تدرسه يعطيك نقاطاً. يبدأ السباق من جديد في أول كل شهر.', 'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.', 'Lessons':'الدروس','Studied':'درست','Lessons for this subject are coming soon.':'دروس هذه المادة قريباً.',
  'points':'نقطة','new lessons':'دروس جديدة','reviews':'مراجعات','Finished this week':'أنهيت هذا الأسبوع','Nothing finished yet this week. Your first lesson starts the count.':'لم تنهِ شيئاً هذا الأسبوع بعد. أول درس يبدأ العدّ.','Sign in to see your week.':'سجّل الدخول لترى أسبوعك.',
  'Could not connect. Check your internet and reload.':'تعذّر الاتصال. تحقّق من الإنترنت وأعد التحميل.','Could not load this race':'تعذّر تحميل السباق','Could not save. Check your connection.':'تعذّر الحفظ. تحقّق من الاتصال.','Homework removed':'حُذف الواجب','Could not remove':'تعذّر الحذف','Could not update helpers':'تعذّر تحديث المساعدين',
  'Google sign-in failed. Try guest.':'فشل الدخول بـ Google. جرّب كضيف.','Could not sign in':'تعذّر تسجيل الدخول','Invite copied':'نُسخت الدعوة','Could not create the race':'تعذّر إنشاء السباق','Homework posted':'نُشر الواجب','Could not post homework':'تعذّر نشر الواجب','Could not load your profile':'تعذّر تحميل ملفك',
@@ -410,16 +410,28 @@ function watchLobby(c) {
   if (!c || lobbyUnsub.has(c) || !api) return;
   lobbyUnsub.set(c, api.onSnapshot(api.doc(api.db, 'lobbies', c), s => { lobbyDocs[c] = s.exists() ? s.data() : {missing: true}; render(); }, () => { lobbyDocs[c] = {missing: true}; render(); }));
 }
+let retryT = null;
 function watchRace() {
-  if (watching === cur || !api) return; watching = cur;
+  if (!api) return; const member = !!(me && (me.lobbies || []).includes(cur));
+  const want = member ? cur : null; if (watching === want) return; watching = want;
   if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; }
   players = {}; homework = [];
-  if (!cur) { render(); return; }
-  playersUnsub = api.onSnapshot(api.query(api.collection(api.db, 'players'), api.where('lobbies', 'array-contains', cur)), s => { const nx = {}; s.forEach(x => nx[x.id] = x.data()); players = nx; render(); }, () => toast('Could not load this race'));
-  hwUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'homework'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); homework = a; render(); }, () => {});
+  if (!want) { render(); return; }
+  const retry = () => { clearTimeout(retryT); retryT = setTimeout(() => { watching = '__retry'; watchRace(); }, 1500); };
+  playersUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'members'), s => { const nx = {}; s.forEach(x => nx[x.id] = x.data()); if ((pending || writing) && nx[meId] && me) nx[meId] = pub(me); players = nx; render(); }, retry);
+  hwUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'homework'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); homework = a; render(); }, retry);
 }
-function changeMe(fn) { const c = JSON.parse(JSON.stringify(me || {})); fn(c); me = c; if (cur && (c.lobbies || []).includes(cur)) players[meId] = c; render(); if (DEMO) return; pending = c; pump(); }
-async function pump() { if (writing || !pending) return; writing = true; const d = pending; pending = null; try { await api.setDoc(api.doc(api.db, 'players', meId), d); } catch (e) { toast('Could not save. Check your connection.'); } writing = false; pump(); }
+// What race-mates can see: never the list of races, never homework ticks.
+const pub = p => ({nick: p.nick || '', religion: p.religion || 'i', joined: p.joined || '', done: p.done || {}, first: p.first || {}, log: p.log || {}, hours: p.hours || {}});
+let dropFrom = new Set();
+function changeMe(fn) { const before = new Set((me && me.lobbies) || []); const c = JSON.parse(JSON.stringify(me || {})); fn(c);
+  const after = new Set(c.lobbies || []); for (const x of before) if (!after.has(x)) dropFrom.add(x); for (const x of after) dropFrom.delete(x);
+  me = c; if (cur && after.has(cur)) players[meId] = pub(c); else if (cur) delete players[meId]; render(); if (DEMO) return; pending = c; pump(); }
+async function pump() { if (writing || !pending) return; writing = true; const d = pending; pending = null;
+  try { const b = api.writeBatch(api.db); b.set(api.doc(api.db, 'users', meId), d);
+    if (d.nick) for (const c of (d.lobbies || [])) b.set(api.doc(api.db, 'lobbies', c, 'members', meId), pub(d));
+    const drops = [...dropFrom]; for (const c of drops) b.delete(api.doc(api.db, 'lobbies', c, 'members', meId));
+    await b.commit(); drops.forEach(c => dropFrom.delete(c)); } catch (e) { toast('Could not save. Check your connection.'); } writing = false; pump(); }
 function enter(c) { changeMe(p => { p.lobbies = (p.lobbies || []).filter(x => x !== c); p.lobbies.push(c); }); cur = c; ui = ''; location.hash = 'r-' + c; sync(); }
 function sync() {
   const my = (me && me.lobbies) || [];
@@ -598,11 +610,12 @@ function render() {
   const my = (me && me.lobbies) || [];
   if (!(ui === 'new' && $('newForm'))) $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
   const mode = (lobby() && lobby().lang) || 'best', ms = monthStart(), tk = todayKey();
-  const rows = Object.keys(players).filter(id => (players[id].lobbies || []).includes(cur)).map(id => ({id, p: players[id], sc: earned(players[id], ms, tk).pts}));
+  const rows = Object.keys(players).map(id => ({id, p: players[id], sc: earned(players[id], ms, tk).pts}));
   const mx = Math.max(1, ...rows.map(r => r.sc));
   const by = rows.slice().sort((a, b) => b.sc - a.sc);
   const tr = $('track');
   if (!cur) tr.innerHTML = '<p class="empty">' + (ready ? 'Pick a race above, create one, or join with a code.' : 'Sign in below to start racing.') + '</p>';
+  else if (!(me && (me.lobbies || []).includes(cur))) tr.innerHTML = '<p class="empty">Join this race to see who is in it and their scores.</p>';
   else if (!rows.length) tr.innerHTML = '<p class="empty">No runners in this race yet.</p>';
   else tr.innerHTML = by.map((r, i) => '<div class="lane"><div class="who">' + esc(nick(r.p)) + (r.id === meId ? ' (you)' : '') + '<small>' + ord(i) + '</small></div><div class="run"><span class="runner' + (r.id === meId ? ' me' : '') + '" style="left:calc(17px + (100% - 44px) * ' + (r.sc / mx) + ');background:' + colorOf(r.id) + '" aria-hidden="true">' + esc(nick(r.p).trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + r.sc + '</b><small>pts</small></div></div>').join('');
   const lead = $('lead');
@@ -715,7 +728,9 @@ async function start() {
     authReady = true; if (meUnsub) { meUnsub(); meUnsub = null; }
     meId = u ? u.uid : null; meEmail = u && u.email ? u.email : ''; meName = u && u.displayName ? u.displayName.split(' ')[0] : ''; me = null;
     if (u && !testsUnsub) testsUnsub = F.onSnapshot(F.collection(db, 'tests'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); tests = a; render(); }, () => {});
-    if (u) meUnsub = F.onSnapshot(F.doc(db, 'players', u.uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast('Could not load your profile'));
+    if (u) meUnsub = F.onSnapshot(F.doc(db, 'users', u.uid), async s => {
+      if (!s.exists() && !pending && !writing) { try { const old = await F.getDoc(F.doc(db, 'players', u.uid)); if (old.exists()) { const d = old.data(); const b = F.writeBatch(db); b.set(F.doc(db, 'users', u.uid), d); if (d.nick) for (const c of (d.lobbies || [])) b.set(F.doc(db, 'lobbies', c, 'members', u.uid), pub(d)); await b.commit(); try { await F.deleteDoc(F.doc(db, 'players', u.uid)); } catch (e) {} return; } } catch (e) {} }
+      if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast('Could not load your profile'));
     else { players = {}; watching = null; if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; } }
     sync();
   });
