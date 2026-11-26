@@ -360,6 +360,21 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .rainmsg{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:21;background:var(--panel);color:var(--ink);border:2px solid var(--gold);border-radius:20px;padding:18px 22px;font-size:20px;font-weight:700;text-align:center;max-width:86vw;box-shadow:0 10px 40px #0007;animation:rainfade 7s ease forwards;pointer-events:none}
 .rainpanel{margin-top:10px}
 .rainpanel .chips{gap:6px}
+.sbgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px}
+.sbbtn{font:inherit;font-weight:700;font-size:15px;min-height:56px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer;padding:6px 10px}
+.sbbtn:active{transform:scale(.96)}.sbbtn:focus-visible{outline:3px solid var(--gold2)}
+.warnchip{border-color:#E8453C!important;color:#E8453C}
+.warnbtn{background:#E8453C!important;color:#fff!important}
+.warnpanel{border-color:#E8453C}
+.warnov{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:repeating-linear-gradient(-45deg,#B3121288 0 26px,#11111188 26px 52px);backdrop-filter:blur(3px)}
+.warnov.on{animation:warnflash .5s steps(2) 6}
+@keyframes warnflash{0%{background-color:#E8453C66}100%{background-color:transparent}}
+.warnbox{background:#1A0B0B;color:#fff;border:4px solid #FFD23F;border-radius:22px;padding:24px 22px;max-width:420px;width:100%;text-align:center;box-shadow:0 0 0 6px #E8453C,0 20px 60px #000c}
+.warnbox h2{margin:8px 0 6px;font-size:34px;letter-spacing:.04em;color:#FFD23F}
+.warnbox .wmsg{font-size:20px;font-weight:700;margin:8px 0 18px;line-height:1.5}
+.warnbox .wfrom{color:#F5B7B1;margin:0 0 18px}
+.warnbox .btn{background:#FFD23F;color:#1A0B0B;min-width:160px}
+@media(prefers-reduced-motion:reduce){.warnov.on{animation:none}}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1",hamster:"#FFE6EF"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -376,6 +391,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <div id="bac"></div>
   <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
   <p class="note">Each runner's spot is their points this month. Every lesson counts by its subject's exam marks.</p>
+  <div id="surpBox"></div>
   <div id="chBox"></div>
   <div id="teamBox"></div>
   <div id="hwBox"></div>
@@ -601,8 +617,21 @@ function sync() {
   const my = (me && me.lobbies) || [];
   if (!hashCode() && (!cur || (me && !my.includes(cur)))) cur = my[0] || null;
   try { if (cur) localStorage.setItem('bac-cur', cur); } catch (e) {}
-  if (hasAccess()) { my.forEach(watchLobby); if (cur) watchLobby(cur); } watchRace(); render();
+  if (hasAccess()) { my.forEach(watchLobby); if (cur) watchLobby(cur); watchSurprises(my); } watchRace(); render();
 }
+// Surprises sent by race-mates: shown once, then deleted.
+const surpUnsub = new Map(); let surpShown = new Set();
+function watchSurprises(my) {
+  if (!api || !meId) return;
+  for (const [c, f] of surpUnsub) if (!my.includes(c)) { f(); surpUnsub.delete(c); }
+  for (const c of my) { if (surpUnsub.has(c)) continue;
+    surpUnsub.set(c, api.onSnapshot(api.query(api.collection(api.db, 'lobbies', c, 'surprises'), api.where('to', '==', meId)), q => {
+      let k = 0; q.forEach(d => { if (surpShown.has(d.id)) return; surpShown.add(d.id); const v = d.data() || {};
+        const from = typeof v.fromNick === 'string' && v.fromNick ? v.fromNick.slice(0, 24) : '', msg = typeof v.msg === 'string' ? v.msg.slice(0, 80) : '';
+        setTimeout(() => runRain(Array.isArray(v.items) ? v.items.slice(0, 10) : [], (from ? L('From ', 'من ') + from + (msg ? ': ' : '') : '') + msg), 700 + 4000 * k++);
+        api.deleteDoc(d.ref).catch(() => {}); }); }, () => {})); }
+}
+function stopSurprises() { for (const f of surpUnsub.values()) f(); surpUnsub.clear(); }
 
 // ---- view ----
 function lobbyHTML(my) {
@@ -807,6 +836,7 @@ function rulesHTML() {
     '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>أول مراجعة للدرس تعطي <b>نصف</b> قيمته، وكل مراجعة بعدها تعطي <b>ربع</b> قيمته. تُحسب مراجعة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
     '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>المذاكرات والامتحانات لها موعد ويعلنها المدير مسبقاً. التقييم يأتي فجأة، فيضيفه المدير بعد حدوثه (الاسم والمادة). عند صدور العلامات يكتب المدير العلامة الكاملة، فتظهر رسالة لكل الناس في كل السباقات تسألهم كم أخذوا.</li><li>يوم المذاكرة أو الامتحان تُفتح العلامات من العلامة الحقيقية لما يشمله (يمكن للمدير تعديلها)، ويدخل كل شخص علامته الحقيقية. العلامة الكاملة تعطي 100 نقطة في السباق الشهري، والنقاط حسب نسبتها (مثلاً 15 من 20 = 75 نقطة).</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
     '<h2>التحديات</h2><ul><li>منشئ السباق ومساعدو التحديات الذين يختارهم يمكنهم إنشاء تحدٍّ لسباقهم: هدف بدروس وموعد، مثل «أنهوا الوحدة الرابعة في الكيمياء قبل الجمعة». (المذاكرات والتقييمات تكون في صفحة الاختبارات.)</li><li>يُحسب التحدي مثل الاختبار: من العلامة الحقيقية للمادة، مقسومة على الدروس الداخلة فيه، والدروس المدروسة من يوم بدئه حتى موعده. التحدي خاص بهذا السباق فقط.</li></ul>' +
+    '<h2>المفاجآت</h2><ul><li>يمكنك إرسال مفاجأة لأي شخص في سباقك: قلوب أو ورود أو نجوم وغيرها مع رسالة قصيرة. تتساقط على شاشته في المرة القادمة التي يفتح فيها الموقع.</li></ul>' +
     '<h2>الفرق</h2><ul><li>منشئ السباق يمكنه تقسيم أعضاء سباقه إلى فرق (حتى 6 فرق) ووضع كل عضو في فريق.</li><li>نقاط الفريق هي <b>متوسط</b> نقاط أعضائه هذا الشهر، فالفريق الأكبر لا يربح لمجرد أنه أكبر.</li></ul>' +
     '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
     '<h2>الواجبات</h2><ul><li>ينشر الواجبات مدير الموقع والأشخاص الذين يختارهم فقط. يمكنهم نشرها لكل السباقات («للجميع») أو لسباق واحد. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
@@ -816,6 +846,7 @@ function rulesHTML() {
     '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>The first review of a lesson earns <b>half</b> its value, and every review after that earns <b>a quarter</b>. One review per lesson per day counts.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
     '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>A مذاكرة or امتحان is on a schedule and announced early. A تقييم comes without warning, so the admin adds it after it happens (name, subject). When the marks come out, the admin types what it was out of, and everyone in every race gets a message asking how much they got.</li><li>On the day of a مذاكرة or امتحان, marks open out of the real exam marks of what it covers (the admin can change that), and everyone enters their real mark. A full mark gives 100 points in the monthly race, scaled (for example 15 out of 20 = 75 points).</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
     '<h2>Challenges</h2><ul><li>A race\'s creator and the challenge helpers they pick can set their race a challenge: a goal with lessons and a deadline, like "finish Chemistry unit 4 by Friday". (Quizzes and تقييم go on the Tests page.)</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
+    '<h2>Surprises</h2><ul><li>You can send anyone in your race a surprise: hearts, flowers, stars and more, with a short message. It falls on their screen the next time they open the site.</li></ul>' +
     '<h2>Teams</h2><ul><li>A race\'s creator can split its members into teams (up to 6) and put each member in one.</li><li>A team\'s score is the <b>average</b> of its members\' points this month, so a bigger team doesn\'t win just by being bigger.</li></ul>' +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
     '<h2>Homework</h2><ul><li>Only the website admin and the people they choose can post homework, either for every race (marked Everyone) or for one race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
@@ -872,16 +903,21 @@ function peopleHTML() {
   return '<section class="card" style="margin-top:14px"><h2>' + L('People & special themes', 'الأشخاص والأشكال الخاصة') + '</h2><p class="note">' + L('Homework: lets that person post homework for all races. ★ theme: unlock it for them (gold = on). "Set" also switches them to it right away.', 'الواجبات: يسمح للشخص بنشر واجبات لكل السباقات. شكل ★: افتحه له (الذهبي = مفعّل). «طبّق» يغيّر شكله إليه فوراً.') + '</p>' +
     ppl.filter(p => p.uid).map(p => { const pk = perksAll[p.uid] || {}, have = Array.isArray(pk.themes) ? pk.themes : [];
       return '<div class="person"><div class="pn" dir="ltr">' + esc(p.name) + (pk.set ? ' <span class="tag">' + esc((ALLTHEMES.find(t => t[0] === pk.set) || [, pk.set])[1]) + '</span>' : '') + '</div><div class="chips">' +
-        '<button type="button" class="tk" data-rainopen="' + esc(p.uid) + '" data-rainname="' + esc(p.name) + '">' + L('Surprise', 'مفاجأة') + '</button><button type="button" class="tk' + (pk.hw ? ' on' : '') + '" data-perkhw="' + esc(p.uid) + '">' + L('Homework', 'الواجبات') + (pk.hw ? ' ✓' : '') + '</button>' + SPECIAL.map(([k, en, ar, bg, ac]) => '<span class="pchip"><button type="button" class="tk' + (have.includes(k) ? ' on' : '') + '" data-perk="' + esc(p.uid) + '" data-k="' + k + '"><i class="dot" style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (LANG === 'ar' ? ar : en) + '</button><button type="button" class="linkbtn" data-perkset="' + esc(p.uid) + '" data-k="' + k + '">' + L('Set', 'طبّق') + '</button></span>').join('') + '</div>' + (rainFor === p.uid ? rainPanelHTML(p.uid, p.name) : '') + '</div>'; }).join('') + '</section>';
+        '<button type="button" class="tk" data-rainopen="' + esc(p.uid) + '" data-rainname="' + esc(p.name) + '">' + L('Surprise', 'مفاجأة') + '</button>' + (p.uid !== meId ? '<button type="button" class="tk warnchip" data-warnopen="' + esc(p.uid) + '">' + L('Warning', 'تنبيه') + '</button>' : '') + '<button type="button" class="tk' + (pk.hw ? ' on' : '') + '" data-perkhw="' + esc(p.uid) + '">' + L('Homework', 'الواجبات') + (pk.hw ? ' ✓' : '') + '</button>' + SPECIAL.map(([k, en, ar, bg, ac]) => '<span class="pchip"><button type="button" class="tk' + (have.includes(k) ? ' on' : '') + '" data-perk="' + esc(p.uid) + '" data-k="' + k + '"><i class="dot" style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (LANG === 'ar' ? ar : en) + '</button><button type="button" class="linkbtn" data-perkset="' + esc(p.uid) + '" data-k="' + k + '">' + L('Set', 'طبّق') + '</button></span>').join('') + '</div>' + (rainFor === p.uid ? rainPanelHTML(p.uid, p.name) : '') + (warnFor === p.uid ? warnPanelHTML(p.uid, p.name) : '') + '</div>'; }).join('') + '</section>';
 }
 function adminHTML() {
   const used = codes.filter(c => c.usedBy).length;
   return '<p class="infobox">' + L('Only you see this page. Accounts with access: ', 'أنت فقط ترى هذه الصفحة. الحسابات التي لها دخول: ') + '<b class="num">' + used + '</b></p>' + codesHTML() +
-    peopleHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Other admin tools', 'أدوات أخرى') + '</h2><ul class="alist"><li>' + L('Announce tests on the Tests page (+ Announce a test).', 'أعلن الاختبارات من صفحة الاختبارات (+ أعلن اختباراً).') + '</li><li>' + L('Post homework for everyone from the homework box on the race page: keep "Send to all races" ticked.', 'انشر واجباً للجميع من صندوق الواجبات في صفحة السباق مع إبقاء «أرسله لكل السباقات» معلّماً.') + '</li></ul>' +
+    peopleHTML() + soundboardHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Other admin tools', 'أدوات أخرى') + '</h2><ul class="alist"><li>' + L('Announce tests on the Tests page (+ Announce a test).', 'أعلن الاختبارات من صفحة الاختبارات (+ أعلن اختباراً).') + '</li><li>' + L('Post homework for everyone from the homework box on the race page: keep "Send to all races" ticked.', 'انشر واجباً للجميع من صندوق الواجبات في صفحة السباق مع إبقاء «أرسله لكل السباقات» معلّماً.') + '</li></ul>' +
     '<p style="margin-top:12px"><button class="btn ghost" data-page="tests">' + L('Go to Tests', 'إلى الاختبارات') + '</button> <button class="btn ghost" data-page="race">' + L('Go to homework', 'إلى الواجبات') + '</button></p></section>';
 }
 // ---- teams (set by the race creator; team score = average of its members' points this month) ----
 const TEAMCOL = ['#F3D37A', '#7FD3F7', '#B9F27C', '#FFA3C7', '#C9B6FF', '#FFB36B'];
+function surpHTML() {
+  const LB = lobby(); if (!LB || !(me && me.nick && (me.lobbies || []).includes(cur))) return '';
+  const others = Object.keys(players).filter(id => id !== meId); if (!others.length) return '';
+  return ui === 'surp' ? rainPanelHTML('', '', true) : '<p class="inl" style="margin-top:10px"><button type="button" class="btn ghost" data-act="surp">' + L('Send a surprise to someone', 'أرسل مفاجأة لأحد') + '</button></p>';
+}
 function teamsHTML(rows) {
   const LB = lobby(); if (!LB || !(me && (me.lobbies || []).includes(cur))) return '';
   const teams = Array.isArray(LB.teams) ? LB.teams.filter(t => t && t.id && typeof t.name === 'string') : [], of = LB.teamOf || {}, creator = isCreator();
@@ -929,6 +965,7 @@ function render() {
   $('bac').innerHTML = BAC_DATE ? (() => { const n = Math.round((new Date(BAC_DATE + 'T00:00') - dayAgo(0)) / 864e5); return '<span class="tag">First Bakaloria exam in ' + (n > 0 ? n + ' days' : n === 0 ? 'today' : '—') + '</span>'; })() : '';
   if (!(ui === 'hw' && $('hwForm'))) $('hwBox').innerHTML = hwHTML();
   if (!(ui === 'ch' && $('chForm'))) $('chBox').innerHTML = challengesHTML(rows, mode);
+  if (!(ui === 'surp' && $('surpBox').contains(document.activeElement))) { const keepTo = $('rainTo') ? $('rainTo').value : '', keepMsg = ui === 'surp' && $('rainMsg') ? $('rainMsg').value : ''; $('surpBox').innerHTML = surpHTML(); if (keepTo && $('rainTo')) $('rainTo').value = keepTo; if (keepMsg && $('rainMsg')) $('rainMsg').value = keepMsg; }
   if (!(ui === 'teams' && $('teamForm') && $('teamForm').contains(document.activeElement))) $('teamBox').innerHTML = teamsHTML(rows);
   const bw = rows.slice().sort((a, b) => weekOf(b.p) - weekOf(a.p)), hm = Math.max(1, ...rows.map(r => weekOf(r.p)));
   $('hours').innerHTML = rows.length ? bw.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + (streakOf(r.p) > 1 ? '<small>' + streakOf(r.p) + '-day streak</small>' : '') + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (weekOf(r.p) / hm * 100) + '%"></i></div><span class="v num">' + fmtH(weekOf(r.p)) + 'h</span></div>').join('') + '<p class="note">Last 7 days · all-time leader: ' + esc(nick(rows.slice().sort((a, b) => totalH(b.p) - totalH(a.p))[0].p)) + '</p>' : '<p class="note">No hours in this race yet.</p>';
@@ -980,12 +1017,24 @@ document.addEventListener('click', async ev => {
   if (to) { const k = to.closest('.trow').nextElementSibling; k.hidden = !k.hidden; to.classList.toggle('open', !k.hidden); return; }
   const mk = ev.target.closest('[data-mk]');
   if (mk && isAdmin() && api) { const n = +mk.dataset.mk; try { const b = api.writeBatch(api.db); for (let i = 0; i < n; i++) { let c = ''; for (let j = 0; j < 8; j++) c += CH[Math.floor(Math.random() * CH.length)]; b.set(api.doc(api.db, 'codes', c.toUpperCase()), {n: Date.now()}); } await b.commit(); toast(L(n + ' new code' + (n > 1 ? 's' : ''), n + ' كود جديد')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  const sbb = ev.target.closest('[data-sb]'); if (sbb) { playSB(sbb.dataset.sb); return; }
+  if (ev.target.closest('[data-sbsay]')) { say($('sbSay') ? $('sbSay').value.trim() : ''); return; }
+  const wo = ev.target.closest('[data-warnopen]');
+  if (wo && isAdmin()) { warnFor = wo.dataset.warnopen && warnFor !== wo.dataset.warnopen ? wo.dataset.warnopen : null; rainFor = null; render(); return; }
+  const ws = ev.target.closest('[data-warnsound]');
+  if (ws && isAdmin()) { warnSound = ws.dataset.warnsound; const keep = $('warnMsg') ? $('warnMsg').value : ''; render(); if ($('warnMsg')) $('warnMsg').value = keep; if (warnSound) playSB(warnSound); return; }
+  if (ev.target.closest('[data-warnprev]')) { runWarn({msg: $('warnMsg') ? $('warnMsg').value.trim() : '', sound: warnSound}); return; }
+  const wsd = ev.target.closest('[data-warnsend]');
+  if (wsd && isAdmin() && api) { const uid = wsd.dataset.warnsend, msg = $('warnMsg') ? $('warnMsg').value.trim().slice(0, 120) : '';
+    try { await api.setDoc(api.doc(api.db, 'perks', uid), {warn: {msg, sound: warnSound, at: Date.now()}}, {merge: true}); warnFor = null; render(); toast(L('Warning sent', 'أُرسل التنبيه')); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   const ro = ev.target.closest('[data-rainopen]');
-  if (ro && isAdmin()) { rainFor = ro.dataset.rainopen && rainFor !== ro.dataset.rainopen ? ro.dataset.rainopen : null; rainPick = new Set(); render(); return; }
+  if (ro && isAdmin()) { warnFor = null; rainFor = ro.dataset.rainopen && rainFor !== ro.dataset.rainopen ? ro.dataset.rainopen : null; rainPick = new Set(); render(); return; }
   const rp = ev.target.closest('[data-rainpick]');
-  if (rp && isAdmin()) { const k = rp.dataset.rainpick; rainPick.has(k) ? rainPick.delete(k) : rainPick.add(k); const keep = $('rainMsg') ? $('rainMsg').value : ''; render(); if ($('rainMsg')) $('rainMsg').value = keep; return; }
+  if (rp && (isAdmin() || ui === 'surp')) { const k = rp.dataset.rainpick; rainPick.has(k) ? rainPick.delete(k) : rainPick.add(k); const keep = $('rainMsg') ? $('rainMsg').value : '', keepTo = $('rainTo') ? $('rainTo').value : ''; if (ui === 'surp') $('surpBox').innerHTML = ''; render(); if ($('rainMsg')) $('rainMsg').value = keep; if (keepTo && $('rainTo')) $('rainTo').value = keepTo; return; }
   if (ev.target.closest('[data-rainprev]')) { if (rainPick.size) runRain([...rainPick], $('rainMsg') ? $('rainMsg').value.trim() : ''); else toast(L('Pick something first', 'اختر شيئاً أولاً')); return; }
   const rs = ev.target.closest('[data-rainsend]');
+  if (rs && rs.dataset.race && api && rainPick.size && $('rainTo')) { const to = $('rainTo').value, msg = $('rainMsg') ? $('rainMsg').value.trim().slice(0, 80) : '';
+    try { await api.addDoc(api.collection(api.db, 'lobbies', cur, 'surprises'), {to, from: meId, fromNick: (me.nick || '').slice(0, 24), items: [...rainPick], msg, at: Date.now()}); ui = ''; rainPick = new Set(); $('surpBox').innerHTML = ''; render(); toast(L('Sent! They\'ll see it when they open the site', 'أُرسلت! سيراها عندما يفتح الموقع')); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   if (rs && isAdmin() && api && rainPick.size) { const uid = rs.dataset.rainsend, msg = $('rainMsg') ? $('rainMsg').value.trim().slice(0, 80) : '';
     try { await api.setDoc(api.doc(api.db, 'perks', uid), {rain: {items: [...rainPick], msg, at: Date.now()}}, {merge: true}); rainFor = null; rainPick = new Set(); render(); toast(L('Sent! They\'ll see it next time they open the site', 'أُرسلت! سيراها عندما يفتح الموقع')); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   const phw = ev.target.closest('[data-perkhw]');
@@ -1031,7 +1080,7 @@ document.addEventListener('click', async ev => {
   if (act === 'soundtest') { const was = SOUND; SOUND = true; playSound('lesson'); setTimeout(() => playSound('hw'), 500); SOUND = was; return; }
   if (act === 'reload') { location.reload(); return; }
   if (act === 'out2') { if (!outArm2) { outArm2 = true; render(); setTimeout(() => { outArm2 = false; render(); }, 4000); return; } outArm2 = false; page = 'race'; if (api) await api.signOut(api.auth); return; }
-  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch', 'quiz'].includes(act)) { ui = ui === act ? '' : act; if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
+  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch', 'quiz', 'surp'].includes(act)) { ui = ui === act ? '' : act; if (act === 'surp') { rainPick = new Set(); $('surpBox').innerHTML = ''; } if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
   if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = LANG === 'ar' ? 'انضم لسباق البكالوريا "' + lname(cur) + '": ' + link + ' (الرمز ' + cur.toUpperCase() + ')' : 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
   if (act === 'enter' && cur) { enter(cur); toast('You joined ' + lname(cur)); return; }
@@ -1132,13 +1181,14 @@ function runRain(items, msg) {
 }
 function checkRain() { const r = perks && perks.rain; if (!r || !Array.isArray(r.items) || !r.at) return; let seen = 0; try { seen = +localStorage.getItem('bac-rain-at') || 0; } catch (e) {} if (r.at <= seen) return; try { localStorage.setItem('bac-rain-at', String(r.at)); } catch (e) {} setTimeout(() => runRain(r.items, typeof r.msg === 'string' ? r.msg.slice(0, 80) : ''), 600); }
 let rainFor = null, rainPick = new Set();
-function rainPanelHTML(uid, name) {
-  return '<div class="panel rainpanel"><p><b>' + L('Surprise for ', 'مفاجأة لـ ') + '<span dir="ltr">' + esc(name) + '</span></b><br><span class="note">' + L('Pick one or more. They fall on their screen the next time they open the site.', 'اختر شيئاً أو أكثر. سيتساقط على شاشته في المرة القادمة التي يفتح فيها الموقع.') + '</span></p><div class="chips">' +
+function rainPanelHTML(uid, name, race) {
+  const others = race ? Object.keys(players).filter(id => id !== meId) : [];
+  return '<div class="panel rainpanel"><p><b>' + (race ? L('Send a surprise', 'أرسل مفاجأة') : L('Surprise for ', 'مفاجأة لـ ') + '<span dir="ltr">' + esc(name) + '</span>') + '</b><br><span class="note">' + L('Pick one or more. They fall on their screen the next time they open the site.', 'اختر شيئاً أو أكثر. سيتساقط على شاشته في المرة القادمة التي يفتح فيها الموقع.') + '</span></p>' + (race ? '<div class="stackf" style="margin-bottom:12px"><label class="fl">' + L('To', 'إلى') + '<select id="rainTo">' + others.map(id => '<option value="' + esc(id) + '">' + esc(nick(players[id])) + '</option>').join('') + '</select></label></div>' : '') + '<div class="chips">' +
     RAIN.map(([k, e, en, ar]) => '<button type="button" class="tk' + (rainPick.has(k) ? ' on' : '') + '" data-rainpick="' + k + '" aria-pressed="' + rainPick.has(k) + '"><span aria-hidden="true">' + e + '</span> ' + (LANG === 'ar' ? ar : en) + '</button>').join('') + '</div>' +
     '<div class="stackf" style="margin-top:12px"><label class="fl">' + L('Message (optional)', 'رسالة (اختياري)') + '<input type="text" id="rainMsg" maxlength="80" placeholder="' + L('Like: well done this week!', 'مثلاً: برافو عليك هالأسبوع!') + '"></label></div>' +
-    '<div class="inl" style="margin-top:12px"><button type="button" class="btn" data-rainsend="' + esc(uid) + '"' + (rainPick.size ? '' : ' disabled') + '>' + L('Send', 'أرسل') + '</button><button type="button" class="btn ghost" data-rainprev>' + L('Preview on my screen', 'جرّب على شاشتي') + '</button><button type="button" class="btn ghost" data-rainopen="">' + L('Cancel', 'إلغاء') + '</button></div></div>';
+    '<div class="inl" style="margin-top:12px"><button type="button" class="btn" data-rainsend="' + esc(uid) + '" data-race="' + (race ? 1 : '') + '"' + (rainPick.size ? '' : ' disabled') + '>' + L('Send', 'أرسل') + '</button><button type="button" class="btn ghost" data-rainprev>' + L('Preview on my screen', 'جرّب على شاشتي') + '</button><button type="button" class="btn ghost" ' + (race ? 'data-act="surp"' : 'data-rainopen=""') + '>' + L('Cancel', 'إلغاء') + '</button></div></div>';
 }
-function onPerks(p) { perks = p || {}; checkRain();
+function onPerks(p) { perks = p || {}; checkRain(); checkWarn();
   if (perks.set && ALLTHEMES.some(t => t[0] === perks.set)) { let seen = 0; try { seen = +localStorage.getItem('bac-theme-at') || 0; } catch (e) {} if ((perks.setAt || 0) > seen) { applyTheme(perks.set); try { localStorage.setItem('bac-theme-at', String(perks.setAt || 0)); } catch (e) {} toast(L('You got a special theme!', 'حصلت على شكل خاص!')); } }
   if (SPECIAL.some(t => t[0] === THEME) && !myThemes().some(t => t[0] === THEME)) applyTheme('night');
   paintThemes(); }
@@ -1148,6 +1198,54 @@ function paintThemes() { const box = $('themes'); if (!box) return;
 let SOUND = true; try { SOUND = localStorage.getItem('bac-sound') !== 'off'; } catch (e) {}
 let actx = null;
 function tone(f, t0, dur, type, vol) { const o = actx.createOscillator(), g = actx.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol || 0.18, t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); o.connect(g); g.connect(actx.destination); o.start(t0); o.stop(t0 + dur + 0.02); return o; }
+// ---- soundboard (admin) + warnings ----
+function ac() { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; }
+function noise(t0, dur, vol, hp) { const c = ac(), b = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const s = c.createBufferSource(), g = c.createGain(), f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp || 4000; s.buffer = b; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); s.connect(f); f.connect(g); g.connect(c.destination); s.start(t0); }
+function say(text) { try { if (!('speechSynthesis' in window) || !text) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); const ar = /[؀-ۿ]/.test(text); u.lang = ar ? 'ar-SA' : 'en-US'; const v = speechSynthesis.getVoices().find(x => x.lang && x.lang.toLowerCase().startsWith(ar ? 'ar' : 'en')); if (v) u.voice = v; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {} }
+const SB = [
+  ['siren', 'Siren', 'صفارة إنذار', () => { const c = ac(), t = c.currentTime; const o = tone(700, t, 2.6, 'sawtooth', 0.12); for (let i = 0; i < 5; i++) { o.frequency.linearRampToValueAtTime(1250, t + i * 0.5 + 0.25); o.frequency.linearRampToValueAtTime(700, t + i * 0.5 + 0.5); } }],
+  ['buzzer', 'Wrong buzzer', 'غلط!', () => { const t = ac().currentTime; tone(110, t, 0.7, 'square', 0.16); tone(116, t, 0.7, 'square', 0.12); }],
+  ['trombone', 'Sad trombone', 'ترومبون حزين', () => { const t = ac().currentTime; [392, 370, 349].forEach((f, i) => tone(f, t + i * 0.45, 0.42, 'sawtooth', 0.12)); const o = tone(330, t + 1.35, 1.2, 'sawtooth', 0.12); for (let i = 0; i < 10; i++) o.frequency.setValueAtTime(i % 2 ? 318 : 330, t + 1.4 + i * 0.09); }],
+  ['badum', 'Ba-dum-tss', 'با دوم تسس', () => { const t = ac().currentTime; const a = tone(180, t, 0.18, 'sine', 0.3); a.frequency.exponentialRampToValueAtTime(70, t + 0.15); const b = tone(150, t + 0.22, 0.2, 'sine', 0.3); b.frequency.exponentialRampToValueAtTime(60, t + 0.4); noise(t + 0.48, 0.6, 0.25, 6000); }],
+  ['boing', 'Boing', 'بوينغ', () => { const t = ac().currentTime; const o = tone(600, t, 0.7, 'sine', 0.2); o.frequency.exponentialRampToValueAtTime(140, t + 0.6); for (let i = 0; i < 6; i++) o.detune.setValueAtTime(i % 2 ? 60 : -60, t + i * 0.08); }],
+  ['airhorn', 'Air horn', 'زمّور', () => { const t = ac().currentTime; [0, 0.32, 0.64].forEach((d, i) => [466, 554, 698].forEach(f => tone(f, t + d, i === 2 ? 0.7 : 0.24, 'sawtooth', 0.08))); }],
+  ['tick', 'Tick tock', 'تك تك', () => { const t = ac().currentTime; for (let i = 0; i < 8; i++) tone(i % 2 ? 900 : 1300, t + i * 0.38, 0.05, 'square', 0.12); }],
+  ['shayfak', '"شايفك بس عايفك"', 'شايفك بس عايفك', () => say('شايفك بس عايفك')],
+  ['rakkez', '"ركّز!"', 'ركّز!', () => say('ركّز!')],
+  ['3eib', '"عيب!"', 'عيب!', () => say('عيب عليك!')],
+  ['yalla', '"يلا ادرس"', 'يلا ادرس', () => say('يلا، قوم ادرس!')],
+  ['bravo', '"برافو عليك"', 'برافو عليك', () => say('برافو عليك!')]
+];
+function playSB(id) { const s = SB.find(x => x[0] === id); if (!s) return; try { s[3](); } catch (e) {} }
+function soundboardHTML() {
+  return '<section class="card" style="margin-top:14px"><h2>' + L('Soundboard', 'لوحة الأصوات') + '</h2><p class="note">' + L('Tap to play. Spoken ones use your phone\'s Arabic voice, so they sound a bit robotic.', 'اضغط للتشغيل. الأصوات المحكية تستخدم صوت الهاتف العربي، فقد تبدو آلية قليلاً.') + '</p><div class="sbgrid">' +
+    SB.map(([k, en, ar]) => '<button type="button" class="sbbtn" data-sb="' + k + '" dir="auto">' + (LANG === 'ar' ? ar : en) + '</button>').join('') + '</div>' +
+    '<div class="inl" style="margin-top:12px"><input type="text" id="sbSay" maxlength="80" placeholder="' + L('Type anything to say it out loud', 'اكتب أي شيء ليُقال بصوت عالٍ') + '" dir="auto"><button type="button" class="btn ghost" data-sbsay>' + L('Say it', 'قلها') + '</button></div></section>';
+}
+let warnFor = null, warnSound = 'shayfak';
+function warnPanelHTML(uid, name) {
+  return '<div class="panel warnpanel"><p><b>' + L('Warning for ', 'تنبيه لـ ') + '<span dir="ltr">' + esc(name) + '</span></b><br><span class="note">' + L('A red alarm screen with a siren appears the next time they open the site. They have to tap to close it.', 'شاشة إنذار حمراء مع صفارة تظهر في المرة القادمة التي يفتح فيها الموقع، ويجب أن يضغط لإغلاقها.') + '</span></p>' +
+    '<div class="stackf"><label class="fl">' + L('Message', 'الرسالة') + '<input type="text" id="warnMsg" maxlength="120" value="' + L('We got a complaint about you. Sort it out!', 'وصلتنا شكوى عنك. انتبه!') + '" dir="auto"></label></div>' +
+    '<p class="note" style="margin-top:10px">' + L('Extra sound after the siren:', 'صوت إضافي بعد الصفارة:') + '</p><div class="chips">' + [['', L('None', 'بدون')], ...SB.filter(x => x[0] !== 'siren').map(x => [x[0], LANG === 'ar' ? x[2] : x[1]])].map(([k, n]) => '<button type="button" class="tk' + (warnSound === k ? ' on' : '') + '" data-warnsound="' + k + '" dir="auto">' + n + '</button>').join('') + '</div>' +
+    '<div class="inl" style="margin-top:12px"><button type="button" class="btn warnbtn" data-warnsend="' + esc(uid) + '">' + L('Send warning', 'أرسل التنبيه') + '</button><button type="button" class="btn ghost" data-warnprev>' + L('Preview on my screen', 'جرّب على شاشتي') + '</button><button type="button" class="btn ghost" data-warnopen="">' + L('Cancel', 'إلغاء') + '</button></div></div>';
+}
+function runWarn(w) {
+  const ov = document.createElement('div'); ov.className = 'warnov'; ov.setAttribute('role', 'alertdialog'); ov.setAttribute('aria-modal', 'true');
+  const tri = '<svg viewBox="0 0 24 24" width="84" height="84" aria-hidden="true"><path d="M12 2 1 21h22z" fill="#FFD23F" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 9v5" stroke="#111" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="#111"/></svg>';
+  ov.innerHTML = '<div class="warnbox">' + tri + '<h2>' + L('WARNING', 'تنبيه') + '</h2><p class="wfrom">' + L('From the site admin', 'من مدير الموقع') + '</p><button type="button" class="btn warnopen">' + L('Open', 'افتح') + '</button></div>';
+  document.body.appendChild(ov);
+  ov.querySelector('.warnopen').onclick = () => {
+    const box = ov.querySelector('.warnbox'); ov.classList.add('on');
+    box.innerHTML = tri + '<h2>' + L('WARNING', 'تنبيه') + '</h2><p class="wmsg"></p><button type="button" class="btn warnok">' + L('OK, got it', 'حاضر، فهمت') + '</button>';
+    box.querySelector('.wmsg').textContent = (w.msg || '').slice(0, 120);
+    try { playSB('siren'); if (w.sound) setTimeout(() => playSB(w.sound), 2700); } catch (e) {}
+    box.querySelector('.warnok').onclick = () => { try { speechSynthesis.cancel(); } catch (e) {} ov.remove(); };
+    box.querySelector('.warnok').focus();
+  };
+  ov.querySelector('.warnopen').focus();
+}
+function checkWarn() { const w = perks && perks.warn; if (!w || !w.at) return; let seen = 0; try { seen = +localStorage.getItem('bac-warn-at') || 0; } catch (e) {} if (w.at <= seen) return; try { localStorage.setItem('bac-warn-at', String(w.at)); } catch (e) {} setTimeout(() => runWarn(w), 500); }
 function playSound(kind) {
   if (!SOUND) return;
   try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); const t = actx.currentTime + 0.01;
@@ -1159,7 +1257,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795721560";
+const BUILD = "1795722401";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
@@ -1187,7 +1285,7 @@ async function start() {
     meUnsub = F.onSnapshot(F.doc(db, 'users', uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast(L('Could not load your profile', 'تعذّر تحميل ملفك')));
   };
   const startCodes = () => { if (codesUnsub || !isAdmin()) return; perksAllUnsub = F.onSnapshot(F.collection(db, 'perks'), q => { const o = {}; q.forEach(x => o[x.id] = x.data()); perksAll = o; render(); }, () => {}); codesUnsub = F.onSnapshot(F.collection(db, 'codes'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); codes = a; render(); }, () => { codesUnsub = null; }); };
-  const stopAll = () => { for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub, perksUnsub, perksAllUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = perksUnsub = perksAllUnsub = null; perks = null; perksAll = {}; dataOn = false; };
+  const stopAll = () => { stopSurprises(); for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub, perksUnsub, perksAllUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = perksUnsub = perksAllUnsub = null; perks = null; perksAll = {}; dataOn = false; };
   U.onAuthStateChanged(auth, u => {
     if (u && !(u.providerData || []).some(p => p.providerId === 'password')) { U.signOut(auth); return; } // old Google/guest sessions
     stopAll(); authReady = true; meId = u ? u.uid : null; me = null; access = null; adminUids = null; codes = []; tests = []; ghw = []; players = {}; homework = []; watching = null;
