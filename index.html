@@ -926,7 +926,7 @@ function rulesHTML() {
     '<h2>Challenges</h2><ul><li>A race\'s creator and the challenge helpers they pick can set their race a challenge: a goal with lessons and a deadline, like "finish Chemistry unit 4 by Friday". (Quizzes and تقييم go on the Tests page.)</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
     '<h2>Surprises</h2><ul><li>You can send anyone in your race a surprise: hearts, flowers, stars and more, with a short message. It falls on their screen the next time they open the site.</li></ul>' +
     '<h2>Teams</h2><ul><li>A race\'s creator can split its members into teams (up to 6) and put each member in one.</li><li>A team\'s score is the <b>average</b> of its members\' points in the current round, so a bigger team doesn\'t win just by being bigger.</li></ul>' +
-    '<h2>School & parents</h2><ul><li>Teachers post homework for everyone and can send good notes ⭐.</li><li>The supervisor can send good ⭐ or bad 👎 notes.</li><li>Your notes are on the My week page, and new ones pop up when you open the site.</li><li>Your parents can only watch your progress, hours and notes. They can\'t change anything.</li></ul>' +
+    '<h2>School & parents</h2><ul><li>Teachers post homework for everyone. Teachers and the supervisor can send good ⭐ or bad 👎 notes.</li><li>Your notes are on the My week page, and new ones pop up when you open the site.</li><li>Your parents can only watch your progress, hours and notes. They can\'t change anything.</li></ul>' +
     (BDAY_ON ? '<h2>Birthday</h2><ul><li>On your birthday you get a little cake with a song, and <b>20 points</b> in the race. Once per Bakaloria year.</li><li>If your birthday already passed or is more than 7 months away, you get the cake and the points right away.</li><li>Your race-mates see 🎂 next to your name on that day only. Nobody sees your date of birth.</li></ul>' : '') +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
     '<h2>Homework</h2><ul><li>Only the website admin and the people they choose can post homework, either for every race (marked Everyone) or for one race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
@@ -976,9 +976,15 @@ function parentChips(c) { const ps = codes.filter(x => x.role === 'parent' && x.
 function staffList() { const out = [], seen = new Set();
   for (const sb of SUBJECTS) for (const g of sb.groups) { const w = (g.who || '').trim(); if (!w || seen.has(w)) continue; seen.add(w); out.push({who: w, role: 'teacher', subj: sb.name, label: w + ' · ' + sb.name}); }
   out.push({who: 'Mrs. Rawad', role: 'supervisor', subj: '', label: 'Mrs. Rawad · المشرفة'}); return out; }
+// Make sure every student who has an account is in the students list (only the admin's app does this).
+let stubbing = false;
+async function fillStudents() { if (stubbing || !isAdmin() || !api || !codesLoaded || !studentsLoaded) return; const have = new Set(students.map(x => x.uid));
+  const miss = codes.filter(c => c.usedBy && (!c.role || c.role === 'student') && !have.has(c.usedBy)); if (!miss.length) return; stubbing = true;
+  try { const b = api.writeBatch(api.db); miss.slice(0, 400).forEach(c => b.set(api.doc(api.db, 'students', c.usedBy), {nick: String(c.usedName || 'student').slice(0, 24), stub: true, n: Date.now()}, {merge: true})); await b.commit(); } catch (e) {} stubbing = false; }
+let codesLoaded = false, studentsLoaded = false;
 function staffCodesHTML() {
   const st = codes.filter(c => c.role === 'teacher' || c.role === 'supervisor').sort((a, b) => (b.n || 0) - (a.n || 0));
-  return '<section class="card" style="margin-bottom:14px"><h2>' + L('Teacher & supervisor codes', 'أكواد الأساتذة والمشرفة') + '</h2><p class="note">' + L('Teachers can post homework and send good notes. The supervisor can send good and bad notes.', 'الأساتذة بينشروا واجبات وبيبعتوا ملاحظات حلوة. المشرفة بتبعت ملاحظات حلوة وسيئة.') + '</p>' +
+  return '<section class="card" style="margin-bottom:14px"><h2>' + L('Teacher & supervisor codes', 'أكواد الأساتذة والمشرفة') + '</h2><p class="note">' + L('Teachers can post homework. Teachers and the supervisor can send good and bad notes.', 'الأساتذة بينشروا واجبات. الأساتذة والمشرفة بيبعتوا ملاحظات حلوة وسيئة.') + '</p>' +
     '<form id="staffCode" class="stackf" style="margin:10px 0"><select id="scRole" aria-label="' + L('Role', 'الصفة') + '"><option value="teacher">' + L('Teacher', 'أستاذ') + '</option><option value="supervisor">' + L('Supervisor', 'المشرفة') + '</option></select><input type="text" id="scLabel" maxlength="30" placeholder="' + L('Who is it for? Like: Mr. Mo', 'لمين؟ مثلاً: أستاذ محمد') + '" dir="auto"><div class="inl"><button class="btn">' + L('Make code', 'أنشئ كود') + '</button></div></form>' +
     (staffList().some(x => !codes.some(c => c.label === x.label)) ? '<p style="margin:6px 0 10px"><button type="button" class="btn" data-act="mkstaffall">' + L('Make a code for every teacher + Mrs. Rawad', 'أنشئ كود لكل أستاذ + Mrs. Rawad') + '</button></p>' : '') +
     (st.some(c => !c.usedBy) ? '<p style="margin:0 0 10px"><button type="button" class="btn ghost" data-act="cpystaff">' + L('Copy all unused staff codes', 'انسخ كل أكواد الأساتذة غير المستخدمة') + '</button></p>' : '') +
@@ -1035,7 +1041,7 @@ let lastHwSubj = '';
 const hwSubjDefault = () => lastHwSubj || (accData && accData.subj) || '';
 function staffHTML() {
   const r = ROLE(), hi = '<p class="infobox">' + L('Hi ', 'أهلاً ') + '<b dir="auto">' + esc(me.nick) + '</b> · ' + ROLE_NAME(r) + '</p>';
-  if (r === 'teacher') return hi + staffHwHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Send a good note', 'أرسل ملاحظة حلوة') + '</h2><p class="note">' + L('The student and their parents see it.', 'بيشوفها الطالب وأهله.') + '</p>' + noteFormHTML(false) + '<h2 style="margin-top:18px">' + L('Notes you sent', 'الملاحظات اللي أرسلتها') + '</h2>' + notesListHTML(sentNotes, true, true) + '</section>';
+  if (r === 'teacher') return hi + staffHwHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Send a note', 'أرسل ملاحظة') + '</h2><p class="note">' + L('Good or bad. The student and their parents see it.', 'حلوة أو سيئة. بيشوفها الطالب وأهله.') + '</p>' + noteFormHTML(true) + '<h2 style="margin-top:18px">' + L('Notes you sent', 'الملاحظات اللي أرسلتها') + '</h2>' + notesListHTML(sentNotes, true, true) + '</section>';
   if (r === 'supervisor') return hi + '<section class="card"><h2>' + L('Send a note', 'أرسل ملاحظة') + '</h2><p class="note">' + L('Good or bad. The student and their parents see it.', 'حلوة أو سيئة. بيشوفها الطالب وأهله.') + '</p>' + noteFormHTML(true) + '</section><section class="card" style="margin-top:14px"><h2>' + L('All notes', 'كل الملاحظات') + '</h2>' + notesListHTML(sentNotes, true, true) + '</section>';
   if (r === 'parent') {
     if (!kid) return hi + '<p class="note">' + L('Your child\'s progress shows here after they open the site once.', 'تقدّم ابنك/بنتك بيظهر هون بعد ما يفتح الموقع مرة.') + '</p>' + (kidNotes.length ? '<section class="card"><h2>' + L('Notes from school', 'ملاحظات من المدرسة') + '</h2>' + notesListHTML(kidNotes, false) + '</section>' : '');
@@ -1311,7 +1317,7 @@ document.addEventListener('submit', async ev => {
   if (f.id === 'staffHw') { const text = $('shText').value.trim().slice(0, 160), due = $('shDue').value, subj = $('shSub').value; if (!text || !due || !api) return; lastHwSubj = subj; const btn = f.querySelector('.btn'); btn.disabled = true;
     try { await api.addDoc(api.collection(api.db, 'allhw'), {text, due, subj, by: meId, byNick: (me.nick || '').slice(0, 24), n: Date.now()}); $('shText').value = ''; document.activeElement && document.activeElement.blur(); toast(L('Homework posted', 'انتشر الواجب')); render(); } catch (e) { toast(L('Could not post', 'تعذّر النشر') + ' (' + ((e && e.code) || 'error') + ')'); } btn.disabled = false; return; }
   if (f.id === 'noteForm') { const to = $('noteTo').value, text = $('noteText').value.trim().slice(0, 300), st = students.find(x => x.uid === to); if (!to || !text || !api) return;
-    const kind = (isAdmin() || ROLE() === 'supervisor') ? noteKind : 'good', btn = f.querySelector('.btn'); btn.disabled = true;
+    const kind = noteKind === 'bad' ? 'bad' : 'good', btn = f.querySelector('.btn'); btn.disabled = true;
     try { await api.addDoc(api.collection(api.db, 'notes'), {to, toNick: ((st && st.nick) || '').slice(0, 24), from: meId, fromNick: (me.nick || '').slice(0, 24), role: isAdmin() ? 'admin' : ROLE(), kind, text, at: Date.now()}); $('noteText').value = ''; document.activeElement && document.activeElement.blur(); toast(L('Note sent', 'انبعتت الملاحظة')); render(); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } btn.disabled = false; return; }
   if (f.id === 'staffCode') { if (!isAdmin() || !api) return; const role = $('scRole').value === 'supervisor' ? 'supervisor' : 'teacher', label = $('scLabel').value.trim().slice(0, 30);
     try { const c = newCode(); await api.setDoc(api.doc(api.db, 'codes', c), {n: Date.now(), role, label}); $('scLabel').value = ''; toast(L('Code made: ', 'انعمل الكود: ') + c); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
@@ -1474,7 +1480,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795725479";
+const BUILD = "1795726071";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
@@ -1506,15 +1512,15 @@ async function start() {
     if (r === 'student' || r === 'admin') { testsUnsub = col(F.collection(db, 'tests'), a => tests = a); extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('to', '==', uid)), a => myNotes = a)); }
     if (r === 'admin' || r === 'supervisor') extraUnsubs.push(col(F.collection(db, 'notes'), a => sentNotes = a));
     if (r === 'teacher') extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('from', '==', uid)), a => sentNotes = a));
-    if (r !== 'student' && r !== 'parent') extraUnsubs.push(col(F.collection(db, 'students'), a => students = a.map(x => ({uid: x.id, nick: x.nick}))));
+    if (r !== 'student' && r !== 'parent') extraUnsubs.push(col(F.collection(db, 'students'), a => { students = a.map(x => ({uid: x.id, nick: x.nick})); studentsLoaded = true; fillStudents(); }));
     if (r === 'parent' && accData && accData.child) { extraUnsubs.push(F.onSnapshot(F.doc(db, 'students', accData.child), x => { kid = x.exists() ? x.data() : null; render(); }, () => {})); extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('to', '==', accData.child)), a => kidNotes = a)); }
     perksUnsub = F.onSnapshot(F.doc(db, 'perks', uid), s => onPerks(s.exists() ? s.data() : {}), () => {});
     meUnsub = F.onSnapshot(F.doc(db, 'users', uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null;
       if (!stuPub && me && me.nick && hasAccess()) { stuPub = true; F.setDoc(F.doc(db, 'students', uid), stuDoc(me)).catch(() => { stuPub = false; }); }
       sync(); }, () => toast(L('Could not load your profile', 'تعذّر تحميل ملفك')));
   };
-  const startCodes = () => { if (codesUnsub || !isAdmin()) return; perksAllUnsub = F.onSnapshot(F.collection(db, 'perks'), q => { const o = {}; q.forEach(x => o[x.id] = x.data()); perksAll = o; render(); }, () => {}); codesUnsub = F.onSnapshot(F.collection(db, 'codes'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); codes = a; render(); }, () => { codesUnsub = null; }); };
-  const stopAll = () => { stopSurprises(); extraUnsubs.forEach(f => f()); extraUnsubs = []; students = []; kid = null; myNotes = []; sentNotes = []; kidNotes = []; stuPub = false; accData = null; for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub, perksUnsub, perksAllUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = perksUnsub = perksAllUnsub = null; perks = null; perksAll = {}; dataOn = false; };
+  const startCodes = () => { if (codesUnsub || !isAdmin()) return; perksAllUnsub = F.onSnapshot(F.collection(db, 'perks'), q => { const o = {}; q.forEach(x => o[x.id] = x.data()); perksAll = o; render(); }, () => {}); codesUnsub = F.onSnapshot(F.collection(db, 'codes'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); codes = a; codesLoaded = true; fillStudents(); render(); }, () => { codesUnsub = null; }); };
+  const stopAll = () => { stopSurprises(); extraUnsubs.forEach(f => f()); extraUnsubs = []; codesLoaded = studentsLoaded = false; students = []; kid = null; myNotes = []; sentNotes = []; kidNotes = []; stuPub = false; accData = null; for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub, perksUnsub, perksAllUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = perksUnsub = perksAllUnsub = null; perks = null; perksAll = {}; dataOn = false; };
   U.onAuthStateChanged(auth, u => {
     if (u && !(u.providerData || []).some(p => p.providerId === 'password')) { U.signOut(auth); return; } // old Google/guest sessions
     stopAll(); authReady = true; meId = u ? u.uid : null; me = null; access = null; adminUids = null; codes = []; tests = []; ghw = []; players = {}; homework = []; watching = null;
