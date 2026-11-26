@@ -972,10 +972,16 @@ function gateHTML() {
 }
 function parentChips(c) { const ps = codes.filter(x => x.role === 'parent' && x.parentOf === c.id);
   return '<div class="pcodes">' + (ps.length ? ps.map(p => '<span class="tag" dir="ltr">' + L('Parent', 'أهل') + ': <b class="num">' + esc(p.id) + '</b>' + (p.usedBy ? ' ✓' : ' <button type="button" class="linkbtn" data-cpy="' + esc(p.id) + '">' + L('Copy', 'نسخ') + '</button>') + '</span>').join('') : '') + (ps.length < 2 ? '<button type="button" class="linkbtn" data-mkpar="' + esc(c.id) + '">' + L('+ parent codes', '+ أكواد للأهل') + '</button>' : '') + '</div>'; }
+// Everyone who teaches us (from the subject lists) + the supervisor.
+function staffList() { const out = [], seen = new Set();
+  for (const sb of SUBJECTS) for (const g of sb.groups) { const w = (g.who || '').trim(); if (!w || seen.has(w)) continue; seen.add(w); out.push({who: w, role: 'teacher', subj: sb.name, label: w + ' · ' + sb.name}); }
+  out.push({who: 'Mrs. Rawad', role: 'supervisor', subj: '', label: 'Mrs. Rawad · المشرفة'}); return out; }
 function staffCodesHTML() {
   const st = codes.filter(c => c.role === 'teacher' || c.role === 'supervisor').sort((a, b) => (b.n || 0) - (a.n || 0));
   return '<section class="card" style="margin-bottom:14px"><h2>' + L('Teacher & supervisor codes', 'أكواد الأساتذة والمشرفة') + '</h2><p class="note">' + L('Teachers can post homework and send good notes. The supervisor can send good and bad notes.', 'الأساتذة بينشروا واجبات وبيبعتوا ملاحظات حلوة. المشرفة بتبعت ملاحظات حلوة وسيئة.') + '</p>' +
     '<form id="staffCode" class="stackf" style="margin:10px 0"><select id="scRole" aria-label="' + L('Role', 'الصفة') + '"><option value="teacher">' + L('Teacher', 'أستاذ') + '</option><option value="supervisor">' + L('Supervisor', 'المشرفة') + '</option></select><input type="text" id="scLabel" maxlength="30" placeholder="' + L('Who is it for? Like: Mr. Mo', 'لمين؟ مثلاً: أستاذ محمد') + '" dir="auto"><div class="inl"><button class="btn">' + L('Make code', 'أنشئ كود') + '</button></div></form>' +
+    (staffList().some(x => !codes.some(c => c.label === x.label)) ? '<p style="margin:6px 0 10px"><button type="button" class="btn" data-act="mkstaffall">' + L('Make a code for every teacher + Mrs. Rawad', 'أنشئ كود لكل أستاذ + Mrs. Rawad') + '</button></p>' : '') +
+    (st.some(c => !c.usedBy) ? '<p style="margin:0 0 10px"><button type="button" class="btn ghost" data-act="cpystaff">' + L('Copy all unused staff codes', 'انسخ كل أكواد الأساتذة غير المستخدمة') + '</button></p>' : '') +
     (st.length ? '<ul class="hwl">' + st.map(c => '<li><div class="t"><span><span class="num code" dir="ltr">' + esc(c.id) + '</span> <span class="tag">' + ROLE_NAME(c.role) + '</span></span><span class="due" dir="auto">' + esc(c.label || '') + (c.usedBy ? ' · ' + L('used by ', 'استخدمه ') + esc(c.usedName || '') : '') + '</span></div>' + (c.usedBy ? '<button class="tk" data-revoke="' + esc(c.id) + '">' + (revokeArm === c.id ? L('Tap again', 'اضغط مرة ثانية') : L('Remove access', 'إلغاء الدخول')) + '</button>' : '<button class="tk" data-cpy="' + esc(c.id) + '">' + L('Copy', 'نسخ') + '</button><button class="' + (cdelArm === c.id ? 'tk on' : 'x') + '" data-cdel="' + esc(c.id) + '" aria-label="' + L('Delete code', 'احذف الكود') + '">' + (cdelArm === c.id ? L('Sure?', 'متأكد؟') : '×') + '</button>') + '</li>').join('') + '</ul>' : '') + '</section>';
 }
 function codesHTML() {
@@ -1019,13 +1025,14 @@ function noteFormHTML(canBad) {
     '<div class="inl"><button class="btn' + (canBad && noteKind === 'bad' ? ' warnbtn' : '') + '">' + L('Send note', 'أرسل الملاحظة') + '</button></div></form>';
 }
 function staffHwHTML() {
-  const today = todayKey(), tm = dkey(dayAgo(-1)), opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option' + (s.name === lastHwSubj ? ' selected' : '') + '>' + esc(s.name) + '</option>').join('');
+  const today = todayKey(), tm = dkey(dayAgo(-1)), opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option' + (s.name === hwSubjDefault() ? ' selected' : '') + '>' + esc(s.name) + '</option>').join('');
   const mine = ghw.filter(w => w.by === meId && typeof w.text === 'string').sort((a, b) => a.due < b.due ? -1 : 1);
   return '<section class="card"><h2>' + L('Give homework', 'أعطِ واجباً') + '</h2><p class="note">' + L('Every student sees it in their homework list and ticks it when it\'s done.', 'بيشوفه كل الطلاب بقائمة الواجبات وبيعلّموا عليه لما يخلصوه.') + '</p>' +
     '<form id="staffHw" class="stackf" style="margin-top:10px"><label class="fl">' + L('Subject', 'المادة') + '<select id="shSub">' + opts + '</select></label><label class="fl">' + L('Homework', 'الواجب') + '<textarea id="shText" maxlength="160" required rows="3" dir="auto" placeholder="' + L('Like: solve exercises 1 to 5, page 24', 'مثلاً: حل التمارين من 1 لـ 5 صفحة 24') + '"></textarea></label><label class="fl">' + L('Due', 'موعد التسليم') + '<input type="date" id="shDue" required value="' + tm + '" min="' + today + '" dir="ltr"></label><div class="inl"><button class="btn">' + L('Post homework', 'انشر الواجب') + '</button></div></form>' +
     '<h2 style="margin-top:18px">' + L('Homework you gave', 'الواجبات اللي أعطيتها') + '</h2>' + (mine.length ? '<ul class="hwl">' + mine.map(w => '<li><div class="t"><span dir="auto">' + esc(w.text) + '</span><span class="due"><span class="tag">' + esc(w.subj || '') + '</span> ' + L('due ', 'التسليم ') + esc(fmtDate(w.due)) + (w.due < today ? ' · ' + L('finished', 'انتهى') : '') + '</span></div><button class="x" data-hwdel="' + esc(w.id) + '" data-g="1" aria-label="' + L('Delete homework', 'احذف الواجب') + '">×</button></li>').join('') + '</ul>' : '<p class="note">' + L('Nothing yet.', 'لا شيء بعد.') + '</p>') + '</section>';
 }
 let lastHwSubj = '';
+const hwSubjDefault = () => lastHwSubj || (accData && accData.subj) || '';
 function staffHTML() {
   const r = ROLE(), hi = '<p class="infobox">' + L('Hi ', 'أهلاً ') + '<b dir="auto">' + esc(me.nick) + '</b> · ' + ROLE_NAME(r) + '</p>';
   if (r === 'teacher') return hi + staffHwHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Send a good note', 'أرسل ملاحظة حلوة') + '</h2><p class="note">' + L('The student and their parents see it.', 'بيشوفها الطالب وأهله.') + '</p>' + noteFormHTML(false) + '<h2 style="margin-top:18px">' + L('Notes you sent', 'الملاحظات اللي أرسلتها') + '</h2>' + notesListHTML(sentNotes, true, true) + '</section>';
@@ -1101,7 +1108,7 @@ function render() {
   else if (!meId) { if (!$('authForm') || $('authForm').dataset.mode !== authMode) j.innerHTML = authHTML(); }
   else if (access === null || adminUids === null) j.innerHTML = '<p class="note" style="margin-top:16px">' + L('Checking your access…', 'جارٍ التحقق من صلاحيتك…') + '</p>';
   else if (!hasAny()) { const na = String(Array.isArray(adminUids) && !adminUids.length); if (!$('codeGate') || $('codeGate').dataset.na !== na) j.innerHTML = gateHTML(); }
-  else if (staffMode() && (!me || !me.nick)) { if (!$('staffJoin')) j.innerHTML = '<form id="staffJoin" class="panel"><p><b>' + L('Welcome!', 'أهلاً!') + '</b> ' + L('You are signed in as: ', 'دخلت بصفة: ') + '<b>' + ROLE_NAME(ROLE()) + '</b></p><p class="note">' + (ROLE() === 'parent' ? L('Your name (only the site admin sees it).', 'اسمك (بيشوفه مدير الموقع بس).') : L('Your name as students will see it, like Mr. Mo.', 'اسمك متل ما رح يشوفه الطلاب، مثلاً: أستاذ محمد.')) + '</p><div class="inl"><input type="text" id="staffNick" maxlength="24" required aria-label="' + L('Name', 'الاسم') + '" dir="auto"><button class="btn">' + L('Start', 'ابدأ') + '</button></div></form>'; }
+  else if (staffMode() && (!me || !me.nick)) { if (!$('staffJoin')) j.innerHTML = '<form id="staffJoin" class="panel"><p><b>' + L('Welcome!', 'أهلاً!') + '</b> ' + L('You are signed in as: ', 'دخلت بصفة: ') + '<b>' + ROLE_NAME(ROLE()) + '</b></p><p class="note">' + (ROLE() === 'parent' ? L('Your name (only the site admin sees it).', 'اسمك (بيشوفه مدير الموقع بس).') : L('Your name as students will see it, like Mr. Mo.', 'اسمك متل ما رح يشوفه الطلاب، مثلاً: أستاذ محمد.')) + '</p><div class="inl"><input type="text" id="staffNick" maxlength="24" required value="' + esc((accData && accData.who) || '') + '" aria-label="' + L('Name', 'الاسم') + '" dir="auto"><button class="btn">' + L('Start', 'ابدأ') + '</button></div></form>'; }
   else if (staffMode()) j.innerHTML = '';
   else if (!me || !me.nick || !me.religion) { if (!$('joinForm')) j.innerHTML = '<form id="joinForm" class="panel"><p><b>Welcome!</b> Pick the name your friends will see.</p><div class="inl" style="margin-bottom:14px"><input type="text" id="nickIn" maxlength="24" required value="' + esc((me && me.nick) || meName) + '" aria-label="Your name"></div>' +
     '<p>Which religion subject do you take?</p><label class="opt"><input type="radio" name="rel" value="i"' + ((me && me.religion) !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="rel" value="c"' + ((me && me.religion) === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
@@ -1248,6 +1255,9 @@ document.addEventListener('click', async ev => {
   if (act === 'pw') { const i = $(a.dataset.pw || 'auPass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; a.setAttribute('aria-pressed', String(show)); a.querySelector('span').textContent = show ? L('Hide', 'إخفاء') : L('Show', 'إظهار'); return; }
   if (act === 'resetnow' && isCreator() && api) { if (!resetArm) { resetArm = true; render(); setTimeout(() => { resetArm = false; render(); }, 4000); return; } resetArm = false; const tk = todayKey(), rs = [...new Set([...(Array.isArray(lobby().resets) ? lobby().resets : []), tk])].sort().slice(-60);
     try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {resets: rs}); toast(L('New round started', 'بلشت جولة جديدة')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
+  if (act === 'mkstaffall' && isAdmin() && api) { const miss = staffList().filter(x => !codes.some(c => c.label === x.label)); try { const b = api.writeBatch(api.db); miss.forEach((x, i) => b.set(api.doc(api.db, 'codes', newCode()), {n: Date.now() + i, role: x.role, label: x.label, who: x.who, subj: x.subj})); await b.commit(); toast(L(miss.length + ' codes made', 'انعمل ' + miss.length + ' كود')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  if (act === 'cpystaff') { const link = location.origin + location.pathname; const txt = codes.filter(c => (c.role === 'teacher' || c.role === 'supervisor') && !c.usedBy).sort((a, b) => (a.n || 0) - (b.n || 0)).map(c => (c.label || ROLE_NAME(c.role)) + ': ' + c.id).join('\n') + '\n\n' + link;
+    try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast(L('Copied', 'نُسخ')); } catch (e) { toast(L('Could not copy', 'تعذّر النسخ')); } return; }
   if (act === 'notesseen') { const mx = Math.max(0, ...myNotes.map(n => n.at || 0)); try { localStorage.setItem('bac-notes-seen', String(mx)); } catch (e) {} render(); return; }
   if (act === 'doblater') { dobLater = true; render(); return; }
   if (act === 'authmode') { const ku = $('auUser') ? $('auUser').value : '', kp = $('auPass') ? $('auPass').value : ''; authMode = authMode === 'login' ? 'signup' : 'login'; render(); if ($('auUser')) $('auUser').value = ku; if ($('auPass')) $('auPass').value = kp; const u = $('auUser'); if (u) u.focus(); return; }
@@ -1464,7 +1474,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795724740";
+const BUILD = "1795725479";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
@@ -1479,7 +1489,7 @@ setTimeout(() => checkUpdate(), 3000);
 const KIDMSG = () => L('Your child has not made their account yet. Try this code again after they sign up.', 'ابنك/بنتك لسا ما عمل حساب. جرّب الكود مرة تانية بعد ما يسجّل.');
 async function redeem(code, uid) {
   const cs = await api.getDoc(api.doc(api.db, 'codes', code)); if (!cs.exists()) throw new Error('bad'); const cd = cs.data(); if (cd.usedBy) throw new Error('used');
-  const acc = {code, n: Date.now()}; if (cd.role) acc.role = cd.role;
+  const acc = {code, n: Date.now()}; if (cd.role) acc.role = cd.role; if (cd.who) acc.who = String(cd.who).slice(0, 24); if (cd.subj) acc.subj = String(cd.subj).slice(0, 40);
   if (cd.role === 'parent') { const ks = await api.getDoc(api.doc(api.db, 'codes', cd.parentOf || '-')); const ku = ks.exists() ? ks.data().usedBy : ''; if (!ku) { const e = new Error('kid'); e.kid = true; throw e; } acc.child = ku; }
   const b = api.writeBatch(api.db); b.update(api.doc(api.db, 'codes', code), {usedBy: uid, usedAt: Date.now(), usedName: myUsername()}); b.set(api.doc(api.db, 'access', uid), acc); await b.commit(); }
 async function start() {
