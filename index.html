@@ -511,6 +511,7 @@ const lobby = () => (cur && lobbyDocs[cur] && !lobbyDocs[cur].missing) ? lobbyDo
 const lname = c => lobbyDocs[c] && lobbyDocs[c].name ? lobbyDocs[c].name : 'Race ' + c.toUpperCase();
 const nick = p => (p && p.nick) || 'Someone';
 const isAdmin = () => !!meId && Array.isArray(adminUids) && adminUids.includes(meId);
+const canPostAll = () => isAdmin() || !!(perks && perks.hw);
 const hasAccess = () => access === true || isAdmin();
 const normUser = u => String(u || '').trim().toLowerCase();
 const isCreator = () => !!(lobby() && lobby().by === meId);
@@ -571,8 +572,8 @@ function lobbyHTML(my) {
   return h;
 }
 function hwHTML() {
-  const LB = lobby(), member = !!(LB && me && (me.lobbies || []).includes(cur)); if (!member && !isAdmin()) return '';
-  const canPost = (member && canPostHw()) || isAdmin();
+  const LB = lobby(), member = !!(LB && me && (me.lobbies || []).includes(cur)); if (!member && !canPostAll()) return '';
+  const canPost = (member && canPostHw()) || canPostAll();
   const today = dkey(dayAgo(0)), tm = dkey(dayAgo(-1));
   const list = [...(member ? homework.map(w => ({...w, g: false})) : []), ...ghw.map(w => ({...w, g: true}))].filter(w => typeof w.text === 'string' && w.due >= today).sort((a, b) => a.due < b.due ? -1 : 1);
   const mine = (me && me.hw) || {};
@@ -580,12 +581,12 @@ function hwHTML() {
     (canPost ? '<button class="btn ghost" data-act="hw">' + (ui === 'hw' ? 'Close' : '+ Add homework') + '</button>' : '') + '</div>';
   if (ui === 'hw' && canPost) {
     const opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option>' + esc(s.name) + '</option>').join('');
-    h += '<form id="hwForm" class="inl" style="margin-bottom:10px"><select id="hwSub" aria-label="Subject">' + opts + '</select><input type="date" id="hwDue" required value="' + tm + '" min="' + today + '" aria-label="Due date"><input type="text" id="hwText" maxlength="160" required placeholder="What to do" aria-label="Homework" style="flex:2 1 14em">' + (isAdmin() ? '<label class="allck"><input type="checkbox" id="hwAll" checked' + (member ? '' : ' disabled') + '> ' + L('Send to all races on the website', 'أرسله لكل السباقات على الموقع') + '</label>' : '') + '<button class="btn">Post</button></form>';
+    h += '<form id="hwForm" class="inl" style="margin-bottom:10px"><select id="hwSub" aria-label="Subject">' + opts + '</select><input type="date" id="hwDue" required value="' + tm + '" min="' + today + '" aria-label="Due date"><input type="text" id="hwText" maxlength="160" required placeholder="What to do" aria-label="Homework" style="flex:2 1 14em">' + (canPostAll() ? '<label class="allck"><input type="checkbox" id="hwAll" checked' + (member ? '' : ' disabled') + '> ' + L('Send to all races on the website', 'أرسله لكل السباقات على الموقع') + '</label>' : '') + '<button class="btn">Post</button></form>';
   }
   if (!list.length) h += '<p class="note">' + (canPost ? 'No homework yet. Add what the teachers gave.' : 'No homework posted for now.') + '</p>';
   else h += '<ul class="hwl">' + list.map(w => { const d = mine[w.g ? 'g_' + w.id : cur + '_' + w.id]; const soon = w.due <= tm;
     return '<li class="' + (d ? 'done' : '') + '"><input type="checkbox" data-hwdone="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '"' + (d ? ' checked' : '') + ' aria-label="Done"><div class="t"><span dir="auto">' + esc(w.text) + '</span><span class="due' + (soon ? ' soon' : '') + '"><span class="tag">' + esc(w.subj || '') + '</span>' + (w.g ? '<span class="tag gtag">' + L('Everyone', 'للجميع') + '</span>' : '') + ' due ' + (w.due === today ? 'today' : w.due === tm ? 'tomorrow' : esc(fmtDate(w.due))) + '</span></div>' +
-      (((w.g && isAdmin()) || (!w.g && (isCreator() || w.by === meId))) ? '<button class="x" data-hwdel="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '" aria-label="Delete homework">×</button>' : '') + '</li>'; }).join('') + '</ul>';
+      (((w.g && (isAdmin() || w.by === meId)) || (!w.g && (isCreator() || w.by === meId))) ? '<button class="x" data-hwdel="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '" aria-label="Delete homework">×</button>' : '') + '</li>'; }).join('') + '</ul>';
   if (member && isCreator()) {
     if (ui === 'helpers') {
       const others = Object.keys(players).filter(id => id !== meId);
@@ -757,10 +758,10 @@ function codesHTML() {
 let revokeArm = null, cdelArm = null;
 function peopleHTML() {
   const ppl = [{uid: meId, name: L('You', 'أنت') + (myUsername() ? ' (' + myUsername() + ')' : '')}, ...codes.filter(c => c.usedBy && c.usedBy !== meId).map(c => ({uid: c.usedBy, name: c.usedName || ('#' + c.usedBy.slice(0, 6))}))];
-  return '<section class="card" style="margin-top:14px"><h2>' + L('People & special themes', 'الأشخاص والأشكال الخاصة') + '</h2><p class="note">' + L('Tap a ★ theme to unlock it for that person (gold = unlocked). "Set" also switches them to it right away.', 'اضغط على شكل ★ لتفتحه لهذا الشخص (الذهبي = مفتوح). «طبّق» يغيّر شكله إليه فوراً.') + '</p>' +
-    ppl.map(p => { const pk = perksAll[p.uid] || {}, have = Array.isArray(pk.themes) ? pk.themes : [];
+  return '<section class="card" style="margin-top:14px"><h2>' + L('People & special themes', 'الأشخاص والأشكال الخاصة') + '</h2><p class="note">' + L('Homework: lets that person post homework for all races. ★ theme: unlock it for them (gold = on). "Set" also switches them to it right away.', 'الواجبات: يسمح للشخص بنشر واجبات لكل السباقات. شكل ★: افتحه له (الذهبي = مفعّل). «طبّق» يغيّر شكله إليه فوراً.') + '</p>' +
+    ppl.filter(p => p.uid).map(p => { const pk = perksAll[p.uid] || {}, have = Array.isArray(pk.themes) ? pk.themes : [];
       return '<div class="person"><div class="pn" dir="ltr">' + esc(p.name) + (pk.set ? ' <span class="tag">' + esc((ALLTHEMES.find(t => t[0] === pk.set) || [, pk.set])[1]) + '</span>' : '') + '</div><div class="chips">' +
-        SPECIAL.map(([k, en, ar, bg, ac]) => '<span class="pchip"><button type="button" class="tk' + (have.includes(k) ? ' on' : '') + '" data-perk="' + esc(p.uid) + '" data-k="' + k + '"><i class="dot" style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (LANG === 'ar' ? ar : en) + '</button><button type="button" class="linkbtn" data-perkset="' + esc(p.uid) + '" data-k="' + k + '">' + L('Set', 'طبّق') + '</button></span>').join('') + '</div></div>'; }).join('') + '</section>';
+        '<button type="button" class="tk' + (pk.hw ? ' on' : '') + '" data-perkhw="' + esc(p.uid) + '">' + L('Homework', 'الواجبات') + (pk.hw ? ' ✓' : '') + '</button>' + SPECIAL.map(([k, en, ar, bg, ac]) => '<span class="pchip"><button type="button" class="tk' + (have.includes(k) ? ' on' : '') + '" data-perk="' + esc(p.uid) + '" data-k="' + k + '"><i class="dot" style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (LANG === 'ar' ? ar : en) + '</button><button type="button" class="linkbtn" data-perkset="' + esc(p.uid) + '" data-k="' + k + '">' + L('Set', 'طبّق') + '</button></span>').join('') + '</div></div>'; }).join('') + '</section>';
 }
 function adminHTML() {
   const used = codes.filter(c => c.usedBy).length;
@@ -844,6 +845,8 @@ document.addEventListener('click', async ev => {
   if (to) { const k = to.closest('.trow').nextElementSibling; k.hidden = !k.hidden; to.classList.toggle('open', !k.hidden); return; }
   const mk = ev.target.closest('[data-mk]');
   if (mk && isAdmin() && api) { const n = +mk.dataset.mk; try { const b = api.writeBatch(api.db); for (let i = 0; i < n; i++) { let c = ''; for (let j = 0; j < 8; j++) c += CH[Math.floor(Math.random() * CH.length)]; b.set(api.doc(api.db, 'codes', c.toUpperCase()), {n: Date.now()}); } await b.commit(); toast(L(n + ' new code' + (n > 1 ? 's' : ''), n + ' كود جديد')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  const phw = ev.target.closest('[data-perkhw]');
+  if (phw && isAdmin() && api) { const uid = phw.dataset.perkhw, on = !(perksAll[uid] || {}).hw; try { await api.setDoc(api.doc(api.db, 'perks', uid), {hw: on}, {merge: true}); toast(on ? L('Can post homework for everyone now', 'يمكنه الآن نشر واجبات للجميع') : L('Homework permission removed', 'أُزيلت صلاحية الواجبات')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   const pkb = ev.target.closest('[data-perk],[data-perkset]');
   if (pkb && isAdmin() && api) { const uid = pkb.dataset.perk || pkb.dataset.perkset, k = pkb.dataset.k, cur0 = perksAll[uid] || {}, th = new Set(Array.isArray(cur0.themes) ? cur0.themes : []); const upd = {};
     if (pkb.dataset.perk) { th.has(k) ? th.delete(k) : th.add(k); upd.themes = [...th]; if (!th.has(k) && cur0.set === k) { upd.set = ''; } }
@@ -924,7 +927,7 @@ document.addEventListener('submit', async ev => {
     if (!name || !start || !date) return; if (date < start) { toast(L('The test date must be after the start date', 'موعد الاختبار يجب أن يكون بعد تاريخ البدء')); return; } if (!items.length) { toast(L('Pick at least one lesson', 'اختر درساً واحداً على الأقل')); return; }
     try { await api.addDoc(api.collection(api.db, 'tests'), {name, start, date, items, n: Date.now()}); ui = ''; $('testsBox').innerHTML = ''; render(); toast(L('Test announced', 'أُعلن الاختبار')); } catch (e) { toast(L('Could not save the test', 'تعذّر حفظ الاختبار')); } return; }
   if (f.id === 'hwForm' && api) { const text = $('hwText').value.trim().slice(0, 160), due = $('hwDue').value, subj = $('hwSub').value; if (!text || !due) return;
-    const all = isAdmin() && (!$('hwAll') || $('hwAll').checked || !(lobby() && (me.lobbies || []).includes(cur)));
+    const all = canPostAll() && (!$('hwAll') || $('hwAll').checked || !(lobby() && (me.lobbies || []).includes(cur)));
     try { await api.addDoc(all ? api.collection(api.db, 'allhw') : api.collection(api.db, 'lobbies', cur, 'homework'), {text, due, subj, by: meId, n: Date.now()}); $('hwText').value = ''; toast('Homework posted'); ui = ''; $('hwBox').innerHTML = ''; render(); } catch (e) { toast('Could not post homework'); } }
 });
 window.addEventListener('hashchange', () => { const c = hashCode(); if (c) { cur = c; ui = ''; sync(); } });
@@ -949,7 +952,7 @@ function onPerks(p) { perks = p || {};
 function paintThemes() { const box = $('themes'); if (!box) return;
   box.innerHTML = myThemes().map(([k, en, ar, bg, ac]) => '<button type="button" class="sw" data-theme-pick="' + k + '" aria-pressed="' + (THEME === k) + '"><i style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (SPECIAL.some(t => t[0] === k) ? '★ ' : '') + (LANG === 'ar' ? ar : en) + '</button>').join(''); }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795710339";
+const BUILD = "1795712287";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
