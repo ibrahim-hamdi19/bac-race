@@ -275,6 +275,16 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .code{letter-spacing:.08em}
 .fl input,.fl select{flex:none;width:100%}
 .stackf .fl{flex:none}
+.tabs{display:flex}
+.tabs button{flex:1 1 0}
+.tabs button[hidden]{display:none}
+.tabs.seven button{font-size:10.5px}
+.langbtn[hidden]{display:none}
+.pwrap{position:relative;display:block}
+.pwrap input{padding-inline-end:96px}
+.eye{all:unset;position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border-radius:10px;color:var(--gold2);font-size:14px;font-weight:600;cursor:pointer}
+.eye:focus-visible{outline:2px solid var(--gold2)}
+.alist{margin:0;padding-inline-start:20px}.alist li{margin:6px 0}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -301,6 +311,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <div id="pg-subj" hidden><h2 class="pgt">المواد</h2><div class="score" id="myScore"></div><p class="note">Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.</p>
   <div class="subjects" id="subjects"></div></div>
   <div id="pg-tests" hidden><h2 class="pgt">الاختبارات</h2><div id="testsBox"></div></div>
+  <div id="pg-admin" hidden><h2 class="pgt">لوحة المدير</h2><div id="adminBox"></div></div>
   <div id="pg-rules" hidden><h2 class="pgt">القوانين وطريقة الاستخدام</h2><div id="rulesBox"></div></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
@@ -310,6 +321,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <button data-page="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg><span lang="ar">الساعات</span></button>
   <button data-page="tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v3H9zM6 5h3M15 5h3v16H6V5M9 12l2 2 4-4"/></svg><span lang="ar">الاختبارات</span></button>
   <button data-page="subj"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5"/></svg><span lang="ar">المواد</span></button>
+  <button data-page="admin" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span lang="ar">المدير</span></button>
   <button data-page="rules"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span lang="ar">القوانين</span></button>
 </nav>
 
@@ -622,7 +634,7 @@ function testFormHTML() {
     '<div class="inl" style="margin-top:12px"><button class="btn">' + L('Announce test', 'أعلن الاختبار') + '</button><button type="button" class="btn ghost" data-act="test">' + L('Cancel', 'إلغاء') + '</button></div></form>';
 }
 function testsHTML(rows, mode) {
-  let h = isAdmin() ? codesHTML() : '';
+  let h = '';
   if (isAdmin()) h += ui === 'test' ? testFormHTML() : '<p><button class="btn" data-act="test">' + L('+ Announce a test', '+ أعلن اختباراً') + '</button></p>';
   const tk = todayKey(), valid = tests.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
   const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1);
@@ -667,7 +679,7 @@ function authHTML() {
   return '<form id="authForm" data-mode="' + authMode + '" class="panel"><p><b>' + (su ? L('Create your account', 'أنشئ حسابك') : L('Log in', 'تسجيل الدخول')) + '</b></p>' +
     (su ? '<p class="note">' + L('You need an access code to join. Pick a username and password you will remember: they can\'t be reset.', 'تحتاج كود دخول للاشتراك. اختر اسم مستخدم وكلمة سر تتذكرهما: لا يمكن استرجاعهما.') + '</p>' : '') +
     '<div class="stackf"><label class="fl">' + L('Username', 'اسم المستخدم') + '<input type="text" id="auUser" required minlength="3" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" pattern="[A-Za-z0-9_.]{3,20}"></label>' +
-    '<label class="fl">' + L('Password', 'كلمة السر') + '<input type="password" id="auPass" required minlength="6" autocomplete="' + (su ? 'new-password' : 'current-password') + '" dir="ltr"></label>' +
+    '<label class="fl">' + L('Password', 'كلمة السر') + '<span class="pwrap"><input type="password" id="auPass" required minlength="6" autocomplete="' + (su ? 'new-password' : 'current-password') + '" dir="ltr"><button type="button" class="eye" data-act="pw" aria-label="' + L('Show password', 'أظهر كلمة السر') + '" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>' + L('Show', 'إظهار') + '</span></button></span></label>' +
     (su ? '<label class="fl">' + L('Access code', 'كود الدخول') + '<input type="text" id="auCode" maxlength="12" autocapitalize="characters" autocomplete="off" spellcheck="false" dir="ltr"></label>' : '') + '</div>' +
     '<div class="inl" style="margin-top:12px"><button class="btn">' + (su ? L('Create account', 'إنشاء الحساب') : L('Log in', 'دخول')) + '</button></div>' +
     '<p class="note" style="margin-top:12px"><button type="button" class="linkbtn" data-act="authmode">' + (su ? L('I already have an account', 'عندي حساب') : L('New here? Create an account with a code', 'جديد؟ أنشئ حساباً بكود')) + '</button></p>' +
@@ -688,6 +700,12 @@ function codesHTML() {
     (used.length ? '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Used codes', 'الأكواد المستخدمة') + '</summary><ul class="hwl">' + used.map(c => '<li><div class="t"><span class="num" dir="ltr">' + esc(c.id) + '</span><span class="due">' + L('used ', 'استُخدم ') + esc(fmtDate(dkey(new Date(c.usedAt || 0)))) + '</span></div><button class="tk" data-revoke="' + esc(c.id) + '">' + (revokeArm === c.id ? L('Tap again', 'اضغط مرة ثانية') : L('Remove access', 'إلغاء الدخول')) + '</button></li>').join('') + '</ul></details>' : '') + '</section>';
 }
 let revokeArm = null;
+function adminHTML() {
+  const used = codes.filter(c => c.usedBy).length;
+  return '<p class="infobox">' + L('Only you see this page. Accounts with access: ', 'أنت فقط ترى هذه الصفحة. الحسابات التي لها دخول: ') + '<b class="num">' + used + '</b></p>' + codesHTML() +
+    '<section class="card"><h2>' + L('Other admin tools', 'أدوات أخرى') + '</h2><ul class="alist"><li>' + L('Announce tests on the Tests page (+ Announce a test).', 'أعلن الاختبارات من صفحة الاختبارات (+ أعلن اختباراً).') + '</li><li>' + L('Post homework for everyone from the homework box on the race page: keep "Send to all races" ticked.', 'انشر واجباً للجميع من صندوق الواجبات في صفحة السباق مع إبقاء «أرسله لكل السباقات» معلّماً.') + '</li></ul>' +
+    '<p style="margin-top:12px"><button class="btn ghost" data-page="tests">' + L('Go to Tests', 'إلى الاختبارات') + '</button> <button class="btn ghost" data-page="race">' + L('Go to homework', 'إلى الواجبات') + '</button></p></section>';
+}
 function render() {
   const j = $('join');
   if (!authReady) j.innerHTML = '';
@@ -727,9 +745,12 @@ function render() {
   $('weekBox').innerHTML = weekHTML(rows, mode);
   if (!(ui === 'test' && $('testForm'))) $('testsBox').innerHTML = testsHTML(rows, mode);
   $('rulesBox').innerHTML = rulesHTML();
+  if (page === 'admin' && !isAdmin()) page = 'race';
+  { const ta = document.querySelector('.tabs [data-page="admin"]'); if (ta) ta.hidden = !isAdmin(); document.querySelector('.tabs').classList.toggle('seven', isAdmin()); }
+  $('adminBox').innerHTML = isAdmin() ? adminHTML() : '';
   { const ob = $('outBtn'); if (ob) { ob.hidden = !meId; $('outTxt').textContent = outArm ? L('Sure?', 'متأكد؟') : ''; ob.classList.toggle('arm', outArm); } }
   translateDOM(document.body);
-  for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('[data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
+  for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules', 'admin']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('.tabs [data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
 }
 
 // ---- events ----
@@ -775,7 +796,8 @@ document.addEventListener('click', async ev => {
   if (hp && isCreator() && api) { const id = hp.dataset.helper, hs = new Set(lobby().helpers || []); hs.has(id) ? hs.delete(id) : hs.add(id);
     try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {helpers: [...hs]}); } catch (e) { toast('Could not update helpers'); } return; }
   const a = ev.target.closest('[data-act]'); if (!a) return; const act = a.dataset.act;
-  if (act === 'authmode') { authMode = authMode === 'login' ? 'signup' : 'login'; render(); const u = $('auUser'); if (u) u.focus(); return; }
+  if (act === 'pw') { const i = $('auPass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; a.setAttribute('aria-pressed', String(show)); a.querySelector('span').textContent = show ? L('Hide', 'إخفاء') : L('Show', 'إظهار'); return; }
+  if (act === 'authmode') { const ku = $('auUser') ? $('auUser').value : '', kp = $('auPass') ? $('auPass').value : ''; authMode = authMode === 'login' ? 'signup' : 'login'; render(); if ($('auUser')) $('auUser').value = ku; if ($('auPass')) $('auPass').value = kp; const u = $('auUser'); if (u) u.focus(); return; }
   if (act === 'claim' && api) { try { await api.setDoc(api.doc(api.db, 'meta', 'admins'), {uids: [meId]}); toast(L('You are the admin now', 'أصبحت المدير')); } catch (e) { toast(L('Someone is already the admin', 'يوجد مدير بالفعل')); } return; }
   if (act === 'signout' && api) { await api.signOut(api.auth); return; }
   if (act === 'profile') { changeMe(p => { delete p.religion; }); return; }
