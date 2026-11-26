@@ -17,7 +17,7 @@
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,'IBM Plex Sans Arabic',system-ui,sans-serif;overflow-x:clip;
   background-image:radial-gradient(1px 1px at 12% 8%,#fff8 50%,transparent 51%),radial-gradient(1px 1px at 78% 4%,#fff6 50%,transparent 51%),radial-gradient(1.5px 1.5px at 55% 14%,#F3D37A88 50%,transparent 51%),radial-gradient(1px 1px at 30% 22%,#fff5 50%,transparent 51%),radial-gradient(1px 1px at 90% 18%,#fff7 50%,transparent 51%),radial-gradient(ellipse at 50% -10%,#1B2B5E 0%,transparent 60%);background-repeat:no-repeat}
-.wrap{max-width:900px;margin:0 auto;padding:clamp(20px,4vw,44px) max(4vw,14px) 72px}
+.wrap{max-width:900px;margin:0 auto;padding:clamp(20px,4vw,44px) max(4vw,14px) 120px}
 .ar,[lang=ar]{font-family:'IBM Plex Sans Arabic',Inter,sans-serif}
 .num{font-family:'Barlow Condensed',Inter,sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
 h2{margin:0 0 12px;font-size:21px;line-height:1.2}
@@ -116,30 +116,61 @@ input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
 .opt input{accent-color:var(--gold);width:20px;height:20px;margin:2px 0 0;flex:none}
 .opt small{display:block;color:var(--mute)}
 .linkbtn{all:unset;color:var(--gold2);font-weight:600;cursor:pointer;text-decoration:underline}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--gold);color:var(--onGold);font-weight:600;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--gold);color:var(--onGold);font-weight:600;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
 .toast.on{opacity:1}
 @media(max-width:640px){.grid2{grid-template-columns:minmax(0,1fr)}.lane{grid-template-columns:minmax(0,5.5em) minmax(0,1fr) 4.4em;gap:8px;padding:0 12px}.lane .pct b{font-size:20px}.big{font-size:44px}.step{margin-left:0}.body{padding:4px 12px 14px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.pgt{font-family:'IBM Plex Sans Arabic',sans-serif;font-size:26px;margin:26px 0 12px;color:var(--gold2);text-align:right}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#0A1128EE;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.tabs button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;justify-content:center;border-radius:12px;color:var(--mute);font-size:13px;font-weight:600}
+.tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabs button[aria-current=page]{color:var(--gold2);background:var(--panel)}
+.tabs button:focus-visible{outline:2px solid var(--gold2)}
+.unitbox{border-bottom:1px solid var(--line)}
+.unitbtn{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 2px;cursor:pointer;font-weight:600}
+.unitbtn span:first-child{flex:1}
+.unitbtn:focus-visible{outline:2px solid var(--gold2)}
+.uc{font-size:13px;color:var(--mute);white-space:nowrap}
+.uc.full{color:var(--gold2)}
+.chev{width:18px;height:18px;color:var(--mute);transition:transform .2s;flex:none}
+.unitbox.open .chev{transform:rotate(180deg)}
+.unitbody{padding:0 0 10px 10px;border-left:2px solid var(--gold)}
+.wk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+.wk div{display:flex;flex-direction:column;align-items:center;background:var(--panel2);border-radius:14px;padding:12px 4px}
+.wk b{font-size:34px;color:var(--gold2);line-height:1.1}
+.wk span{font-size:13px;color:var(--mute)}
+@media(max-width:480px){.wk{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
 <main class="wrap">
   <header class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span>Bakaloria race · Scientific</span><span lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></header>
+  <div id="join"></div>
+  <div id="pg-race">
   <div id="lobby" class="lobby"></div>
   <p class="lead" id="lead">Loading…</p>
   <div id="bac"></div>
   <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
   <p class="note">Each runner's spot is their predicted score: every subject counts for its real exam points.</p>
-  <div id="join"></div>
   <div id="hwBox"></div>
-  <div class="grid2">
-    <section class="card"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
-    <section class="card" id="mine"></section>
   </div>
-  <section><div class="score" id="myScore"></div><h2 style="margin-top:8px">Your subjects</h2><p class="note">Tap a button when you finish it, and again every time you review it.</p>
-  <div class="subjects" id="subjects"></div></section>
+  <div id="pg-week" hidden><h2 class="pgt">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
+  <div id="pg-hours" hidden><h2 class="pgt">ساعات الدراسة</h2>
+    <section class="card" id="mine"></section>
+    <section class="card" style="margin-top:14px"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
+  </div>
+  <div id="pg-subj" hidden><h2 class="pgt">المواد</h2><div class="score" id="myScore"></div><p class="note">Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.</p>
+  <div class="subjects" id="subjects"></div></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
+<nav class="tabs" aria-label="Pages">
+  <button data-page="race"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4M6 4h11l-2 4 2 4H6"/></svg><span lang="ar">السباق</span></button>
+  <button data-page="week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg><span lang="ar">إنجازك</span></button>
+  <button data-page="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg><span lang="ar">الساعات</span></button>
+  <button data-page="subj"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5"/></svg><span lang="ar">المواد</span></button>
+</nav>
+
 <script>
 const SUBJECTS=[{"k": "math", "name": "رياضيات", "pts": 600, "groups": [{"t": "أشعة", "who": "أ. طنجور", "units": [{"t": "الأشعة في الفراغ", "items": [{"id": "ma1-1", "t": "عموميات"}, {"id": "ma1-2", "t": "الارتباط الخطي لثلاثة أشعة"}, {"id": "ma1-3", "t": "المعلم في الفراغ"}, {"id": "ma1-4", "t": "المسافة في الفراغ"}, {"id": "ma1-5", "t": "مركز الأبعاد المتناسبة في الفراغ"}]}, {"t": "الجداء السلمي في الفراغ", "items": [{"id": "ma2-1", "t": "الجداء السلمي في المستوي (تذكرة)"}, {"id": "ma2-2", "t": "الجداء السلمي في الفراغ"}, {"id": "ma2-3", "t": "التعامد في الفراغ"}, {"id": "ma2-4", "t": "المعادلة الديكارتية لمستوٍ"}]}, {"t": "المستقيمات والمستويات في الفراغ", "items": [{"id": "ma3-1", "t": "المستقيم والمستوي بصفتهما مراكز أبعاد متناسبة"}, {"id": "ma3-2", "t": "التمثيلات الوسيطية"}, {"id": "ma3-3", "t": "تقاطع مستقيمات ومستويات"}, {"id": "ma3-4", "t": "تقاطع ثلاثة مستويات"}]}]}, {"t": "عقدية واحتمالات", "who": "أ. أنس", "units": [{"t": "الأعداد العقدية", "items": [{"id": "mb1-1", "t": "مجموعة الأعداد العقدية"}, {"id": "mb1-2", "t": "مرافق عدد عقدي"}, {"id": "mb1-3", "t": "الشكل المثلثي لعدد عقدي"}, {"id": "mb1-4", "t": "طويلة عدد عقدي وزاويته"}, {"id": "mb1-5", "t": "الشكل الأسي لعدد عقدي"}, {"id": "mb1-6", "t": "المعادلات من الدرجة الثانية ذات الأمثال الحقيقية"}]}, {"t": "تطبيقات الأعداد العقدية في الهندسة", "items": [{"id": "mb2-1", "t": "تمثيل الأشعة بأعداد عقدية"}, {"id": "mb2-2", "t": "استعمال العدد العقدي الممثل لشعاع"}, {"id": "mb2-3", "t": "الكتابة العقدية للتحويلات الهندسية"}]}, {"t": "التحليل التوافقي", "items": [{"id": "mb3-1", "t": "إنشاء قوائم من عناصر مجموعة"}, {"id": "mb3-2", "t": "التوافيق"}, {"id": "mb3-3", "t": "خواص عدد التوافيق ومنشور ذي الحدين"}]}, {"t": "الاحتمالات", "items": [{"id": "mb4-1", "t": "الاحتمالات المشروطة"}, {"id": "mb4-2", "t": "المتحولات العشوائية"}, {"id": "mb4-3", "t": "الاستقلال الاحتمالي لمتحولين عشوائيين"}, {"id": "mb4-4", "t": "المتحولات العشوائية الحدانية"}]}]}, {"t": "متتاليات وتكامل", "who": "أ. أنس", "units": [{"t": "تذكرة بالمتتاليات، والإثبات بالتدريج", "items": [{"id": "mc1-1", "t": "عموميات عن المتتاليات"}, {"id": "mc1-2", "t": "البرهان بالتدريج أو بالاستقراء الرياضي"}]}, {"t": "نهاية متتالية", "items": [{"id": "mc2-1", "t": "نهاية متتالية: تذكرة"}, {"id": "mc2-2", "t": "مبرهنات تخص النهايات"}, {"id": "mc2-3", "t": "تقارب المتتاليات المطردة"}, {"id": "mc2-4", "t": "متتاليات متجاورة"}]}, {"t": "التكامل والتوابع الأصلية", "items": [{"id": "mc3-1", "t": "التوابع الأصلية"}, {"id": "mc3-2", "t": "بعض قواعد حساب التوابع الأصلية"}, {"id": "mc3-3", "t": "التكامل المحدد وخواصه"}, {"id": "mc3-4", "t": "التكامل المحدد وحساب المساحة"}]}]}, {"t": "تحليل", "who": "أ. ماهر", "units": [{"t": "التوابع: النهايات والاستمرار", "items": [{"id": "md1-1", "t": "نهاية تابع عند اللانهاية"}, {"id": "md1-2", "t": "نهاية تابع عند عدد حقيقي"}, {"id": "md1-3", "t": "العمليات على النهايات"}, {"id": "md1-4", "t": "مبرهنات المقارنة"}, {"id": "md1-5", "t": "نهاية تابع مركب"}, {"id": "md1-6", "t": "المقارب المائل"}, {"id": "md1-7", "t": "الاستمرار"}, {"id": "md1-8", "t": "التوابع المستمرة وحل المعادلات"}]}, {"t": "التوابع: الاشتقاق", "items": [{"id": "md2-1", "t": "تعاريف (تذكرة)"}, {"id": "md2-2", "t": "مشتقات بعض التوابع المألوفة (تذكرة)"}, {"id": "md2-3", "t": "تطبيقات الاشتقاق"}, {"id": "md2-4", "t": "اشتقاق تابع مركب"}, {"id": "md2-5", "t": "المشتقات من مراتب عليا"}]}, {"t": "التابع اللوغاريتمي النيبري", "items": [{"id": "md3-1", "t": "التابع اللوغاريتمي النيبري"}, {"id": "md3-2", "t": "لوغاريتم جداء ضرب"}, {"id": "md3-3", "t": "دراسة التابع اللوغاريتمي ln"}, {"id": "md3-4", "t": "مشتق التابع المركب ln∘u"}, {"id": "md3-5", "t": "نهايات مهمة تتعلق بالتابع اللوغاريتمي"}]}, {"t": "التابع الأسي", "items": [{"id": "md4-1", "t": "التابع الأسي النيبري"}, {"id": "md4-2", "t": "خواص التابع الأسي"}, {"id": "md4-3", "t": "دراسة التابع الأسي"}, {"id": "md4-4", "t": "نهايات مهمة تتعلق بالتابع الأسي"}, {"id": "md4-5", "t": "دراسة توابع من النمط x↦aˣ (a>0)"}, {"id": "md4-6", "t": "معادلات تفاضلية بسيطة"}]}]}]}, {"k": "phy", "name": "فيزياء", "pts": 400, "groups": [{"t": "فيزياء", "who": "أ. بالو", "units": [{"t": "", "items": [{"id": "ph1", "t": "الحركة التوافقية البسيطة"}, {"id": "ph2", "t": "الاهتزازات الجيبية الدورانية: نواس الفتل غير المتخامد"}, {"id": "ph3", "t": "الاهتزازات غير التوافقية: النواس الثقلي غير المتخامد"}, {"id": "ph7", "t": "فعل الحقل المغناطيسي في التيار الكهربائي", "nick": "الكهرطيسية"}]}]}, {"t": "فيزياء", "who": "أ. حاطوري", "units": [{"t": "", "items": [{"id": "ph4", "t": "ميكانيك الموائع", "nick": "ميكانيك السوائل"}, {"id": "ph5", "t": "النسبية الخاصة"}, {"id": "ph6", "t": "المغناطيسية"}]}]}, {"t": "ما بنعرف مين بده يعطينا لسه", "who": "", "units": [{"t": "", "items": [{"id": "ph8", "t": "التحريض الكهرطيسي"}, {"id": "ph9", "t": "الدارات المهتزة والتيارات عالية التواتر"}, {"id": "ph10", "t": "التيار المتناوب الجيبي"}, {"id": "ph11", "t": "المحولات الكهربائية"}, {"id": "ph12", "t": "الأمواج المستقرة العرضية"}, {"id": "ph13", "t": "الأمواج المستقرة الطولية"}, {"id": "ph14", "t": "النماذج الذرية والطيوف"}, {"id": "ph15", "t": "انتزاع الإلكترونات وتسريعها"}, {"id": "ph16", "t": "الأشعة المهبطية"}, {"id": "ph17", "t": "الفعل الكهرحراري"}, {"id": "ph18", "t": "نظرية الكم والفعل الكهرضوئي"}, {"id": "ph19", "t": "الأشعة السينية X-Ray"}, {"id": "ph20", "t": "أشعة الليزر"}, {"id": "ph21", "t": "الفيزياء الفلكية"}]}]}]}, {"k": "chem", "name": "كيمياء", "pts": 200, "groups": [{"t": "كيمياء", "who": "أ. سعد الدين", "units": [{"t": "الكيمياء النووية", "items": [{"id": "ch1-1", "t": "الكيمياء النووية"}]}, {"t": "الغازات", "items": [{"id": "ch2-1", "t": "الغازات"}]}, {"t": "حركية التفاعلات الكيميائية", "items": [{"id": "ch3-1", "t": "سرعة التفاعل الكيميائي"}, {"id": "ch3-2", "t": "التوازن الكيميائي"}]}, {"t": "الكيمياء التحليلية", "items": [{"id": "ch4-1", "t": "الحموض والأسس"}, {"id": "ch4-2", "t": "المحاليل المائية للأملاح"}, {"id": "ch4-3", "t": "المعايرة الحجمية"}]}, {"t": "الكيمياء العضوية", "items": [{"id": "ch5-1", "t": "الأغوال"}, {"id": "ch5-2", "t": "الألدهيدات والكيتونات"}, {"id": "ch5-3", "t": "الحموض العضوية (الكربوكسيلية)"}, {"id": "ch5-4", "t": "مشتقات الحموض الكربوكسيلية"}, {"id": "ch5-5", "t": "الأمينات"}]}]}]}, {"k": "bio", "name": "علوم", "pts": 300, "groups": [{"t": "علم الأحياء", "who": "أ. خالد ميداني", "units": [{"t": "الوحدة الأولى · أولاً: التنسيق العصبي", "items": [{"id": "bi1-1", "t": "الجهاز العصبي"}, {"id": "bi1-2", "t": "النسيج العصبي"}, {"id": "bi1-3", "t": "الجهاز العصبي المحيطي (الطرفي)"}, {"id": "bi1-4", "t": "خواص الأعصاب"}, {"id": "bi1-5", "t": "الظواهر الكهربائية في الخلايا الحية"}, {"id": "bi1-6", "t": "النقل في الأعصاب"}, {"id": "bi1-7", "t": "وظائف الجهاز العصبي المركزي (1)"}, {"id": "bi1-8", "t": "وظائف الجهاز العصبي المركزي (2)"}, {"id": "bi1-9", "t": "وظائف الجهاز العصبي المركزي (3)"}, {"id": "bi1-10", "t": "الفعل المنعكس"}, {"id": "bi1-11", "t": "بعض أمراض الجهاز العصبي"}]}, {"t": "الوحدة الأولى · ثانياً: المستقبلات الحسية", "items": [{"id": "bi2-1", "t": "مفهوم المستقبلات الحسية"}, {"id": "bi2-2", "t": "المستقبلات الحسية في الجلد"}, {"id": "bi2-3", "t": "المستقبلات الكيميائية"}, {"id": "bi2-4", "t": "المستقبلات الصوتية ومستقبلات التوازن"}, {"id": "bi2-5", "t": "المستقبلات الضوئية (1)"}, {"id": "bi2-6", "t": "المستقبلات الضوئية (2)"}]}, {"t": "الوحدة الأولى · ثالثاً: التنسيق الهرموني", "items": [{"id": "bi3-1", "t": "التنسيق الهرموني (الحاثي) عند الإنسان"}, {"id": "bi3-2", "t": "دراسة بعض الغدد الصم وآلية تأثير الهرمونات"}, {"id": "bi3-3", "t": "آليات السيطرة على إفراز الغدد الصم"}, {"id": "bi3-4", "t": "التنسيق الكيميائي لدى النبات"}]}, {"t": "الوحدة الثانية: تكاثر الكائنات الحية", "items": [{"id": "bi4-1", "t": "تكاثر الفيروسات"}, {"id": "bi4-2", "t": "التكاثر عند الأحياء"}, {"id": "bi4-3", "t": "التقانات الحيوية في التكاثر – الخلايا الجذعية"}, {"id": "bi4-4", "t": "التكاثر لدى الجراثيم والفطريات"}, {"id": "bi4-5", "t": "التكاثر الجنسي عند النباتات البذرية: عاريات البذور"}, {"id": "bi4-6", "t": "التكاثر الجنسي عند النباتات البذرية: مغلفات البذور"}, {"id": "bi4-7", "t": "التكاثر الجنسي لدى الإنسان: منشأ جهاز التكاثر"}, {"id": "bi4-8", "t": "التكاثر الجنسي لدى الإنسان: جهاز التكاثر الذكري"}, {"id": "bi4-9", "t": "تشكل النطاف وأهميتها"}, {"id": "bi4-10", "t": "جهاز التكاثر الأنثوي"}, {"id": "bi4-11", "t": "الدورة الجنسية والآليات الهرمونية المنظمة لها"}, {"id": "bi4-12", "t": "التنامي الجنيني: الإلقاح"}, {"id": "bi4-13", "t": "التنامي الجنيني: التعشيش والحمل"}, {"id": "bi4-14", "t": "الولادة والإرضاع"}, {"id": "bi4-15", "t": "الصحة الإنجابية وبعض الأمراض الجنسية"}]}, {"t": "الوحدة الثالثة: الوراثة", "items": [{"id": "bi5-1", "t": "تجارب مندل في الوراثة"}, {"id": "bi5-2", "t": "تأثر المورثات وتعديلات النسب المندلية (اللامندلية)"}, {"id": "bi5-3", "t": "تحديد الجنس لدى الأحياء"}, {"id": "bi5-4", "t": "الوراثة عند الإنسان"}, {"id": "bi5-5", "t": "الطفرات"}, {"id": "bi5-6", "t": "الهندسة الوراثية"}]}]}]}, {"k": "arb", "name": "عربي", "pts": 400, "groups": [{"t": "عربي", "who": "أ. حوراني", "units": [{"t": "", "items": [{"id": "ar0-r", "t": "مراجعة أول النوطة"}]}, {"t": "الوحدة الأولى: قضايا وطنية وقومية", "items": [{"id": "ar1-q", "t": "قراءة تمهيدية: أدب القضايا الوطنية والقومية"}, {"id": "ar1-p1", "t": "عرس المجد", "sub": "عمر أبو ريشة", "tasks": [{"id": "ar1-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar1-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar1-p2", "t": "الجسر", "sub": "محمود درويش", "tasks": [{"id": "ar1-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar1-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar1-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الثانية: الغربة والاغتراب في الأدب المهجري", "items": [{"id": "ar2-q", "t": "قراءة تمهيدية: الأدب المهجري"}, {"id": "ar2-p1", "t": "وطني", "sub": "جورج صيدح", "tasks": [{"id": "ar2-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar2-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar2-p2", "t": "المهاجر", "sub": "نسيب عريضة", "tasks": [{"id": "ar2-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar2-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar2-p3", "t": "الغاب", "sub": "جبران خليل جبران", "tasks": [{"id": "ar2-p3a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar2-p3b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar2-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الثالثة: فن الرواية", "items": [{"id": "ar3-q", "t": "قراءة تمهيدية: فن الرواية"}, {"id": "ar3-n1", "t": "المصابيح الزرق", "sub": "حنا مينة · شرح النص وأسئلته"}, {"id": "ar3-n2", "t": "دمشق يا بسمة الحزن", "sub": "ألفة الإدلبي · شرح النص وأسئلته"}, {"id": "ar3-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الرابعة: ظواهر وجدانية", "items": [{"id": "ar4-q", "t": "قراءة تمهيدية: الشعر الوجداني"}, {"id": "ar4-p1", "t": "الوطن", "sub": "عدنان مردم بك", "tasks": [{"id": "ar4-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar4-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar4-p2", "t": "لوعة الفراق", "sub": "بدر الدين الحامد", "tasks": [{"id": "ar4-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar4-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar4-p3", "t": "الأمير الدمشقي", "sub": "نزار قباني", "tasks": [{"id": "ar4-p3a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar4-p3b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar4-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الخامسة: أدب القضايا الاجتماعية", "items": [{"id": "ar5-q", "t": "قراءة تمهيدية: الأدب الاجتماعي"}, {"id": "ar5-p1", "t": "قوة العلم", "sub": "محمود سامي البارودي", "tasks": [{"id": "ar5-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar5-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar5-p2", "t": "مروءة وسخاء", "sub": "خير الدين الزركلي", "tasks": [{"id": "ar5-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar5-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar5-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "قواعد", "box": true, "items": [{"id": "aq1", "t": "النداء"}, {"id": "aq2", "t": "أسلوب التعجب"}, {"id": "aq3", "t": "الجمل وإعرابها"}, {"id": "aq4", "t": "الاستثناء"}, {"id": "aq5", "t": "المدح والذم"}, {"id": "aq6", "t": "الحال"}, {"id": "aq7", "t": "المفعول فيه"}, {"id": "aq8", "t": "عمل اسم الفاعل"}, {"id": "aq9", "t": "الممنوع من الصرف"}, {"id": "aq10", "t": "علامات الإعراب الأصلية والفرعية"}, {"id": "aq11", "t": "المبتدأ والخبر"}, {"id": "aq12", "t": "الصفة"}, {"id": "aq13", "t": "إعراب أدوات الاستفهام"}, {"id": "aq14", "t": "النفي"}, {"id": "aq15", "t": "الأمر"}, {"id": "aq16", "t": "توكيد الجمل"}, {"id": "aq17", "t": "الأحرف الزائدة"}, {"id": "aq18", "t": "كم الخبرية والاستفهامية"}, {"id": "aq19", "t": "المصدر المؤول"}, {"id": "aq20", "t": "التوكيد"}, {"id": "aq21", "t": "الأسماء الخمسة"}, {"id": "aq22", "t": "أسماء الأفعال"}, {"id": "aq23", "t": "البدل"}, {"id": "aq24", "t": "أسلوب الشرط"}, {"id": "aq25", "t": "جزم الفعل المضارع"}, {"id": "aq26", "t": "المفعول المطلق"}, {"id": "aq27", "t": "التمييز"}, {"id": "aq28", "t": "المضارع المنصوب"}, {"id": "aq29", "t": "العطف"}, {"id": "aq30", "t": "الإعلال (صرف)"}, {"id": "aq31", "t": "الإبدال (صرف)"}]}]}]}, {"k": "rel_i", "name": "التربية الإسلامية", "pts": 200, "rel": "i", "groups": [{"t": "التربية الإسلامية", "who": "أ. عبد المنعم", "units": [{"t": "القرآن الكريم (التلاوة)", "items": [{"id": "ri1-1", "t": "نعم الله تعالى مدعاة للتوحيد والشكر"}, {"id": "ri1-2", "t": "الله وحده هو الخالق المتصرف"}, {"id": "ri1-3", "t": "الله وحده القادر المعبود"}, {"id": "ri1-4", "t": "من مظاهر قدرة الله تعالى وعظيم فضله"}, {"id": "ri1-5", "t": "دلائل عظمة الخالق عز وجل"}, {"id": "ri1-6", "t": "مبادئ وقيم خالدة"}, {"id": "ri1-7", "t": "أسس الدعوة إلى الله تعالى"}]}, {"t": "القرآن الكريم (التفسير والاستحفاظ)", "items": [{"id": "ri2-1", "t": "صيانة الحقوق وتوثيق العقود", "tasks": [{"id": "ri2-1s", "t": "دراسة"}, {"id": "ri2-1h", "t": "حفظ"}]}, {"id": "ri2-2", "t": "إيمان ودعاء", "tasks": [{"id": "ri2-2s", "t": "دراسة"}, {"id": "ri2-2h", "t": "حفظ"}]}, {"id": "ri2-3", "t": "القرآن الكريم وعظيم قدرة الله تعالى", "tasks": [{"id": "ri2-3s", "t": "دراسة"}, {"id": "ri2-3h", "t": "حفظ"}]}, {"id": "ri2-4", "t": "سعة علم الله تعالى وكمال قدرته", "tasks": [{"id": "ri2-4s", "t": "دراسة"}, {"id": "ri2-4h", "t": "حفظ"}]}]}, {"t": "الحديث النبوي الشريف", "items": [{"id": "ri3-1", "t": "بيعة صادقة", "tasks": [{"id": "ri3-1s", "t": "دراسة"}, {"id": "ri3-1h", "t": "حفظ"}]}, {"id": "ri3-2", "t": "الإيمان قوة وعمل", "tasks": [{"id": "ri3-2s", "t": "دراسة"}, {"id": "ri3-2h", "t": "حفظ"}]}, {"id": "ri3-3", "t": "حكم القاضي لا يحل الحرام", "tasks": [{"id": "ri3-3s", "t": "دراسة"}, {"id": "ri3-3h", "t": "حفظ"}]}, {"id": "ri3-4", "t": "مكانة الشهيد وعظيم أجره", "tasks": [{"id": "ri3-4s", "t": "دراسة"}, {"id": "ri3-4h", "t": "حفظ"}]}, {"id": "ri3-5", "t": "عموم المسؤولية", "tasks": [{"id": "ri3-5s", "t": "دراسة"}, {"id": "ri3-5h", "t": "حفظ"}]}, {"id": "ri3-6", "t": "توجيه نبوي حكيم", "tasks": [{"id": "ri3-6s", "t": "دراسة"}, {"id": "ri3-6h", "t": "حفظ"}]}]}, {"t": "التربية الإنسانية", "items": [{"id": "ri4-1", "t": "بناء الحضارة في الإسلام"}, {"id": "ri4-2", "t": "مقومات الحضارة الإنسانية في الإسلام"}, {"id": "ri4-3", "t": "مظاهر الحضارة الإسلامية"}]}, {"t": "التربية الأسرية والاجتماعية", "items": [{"id": "ri5-1", "t": "نظام الأسرة في الإسلام"}, {"id": "ri5-2", "t": "المحرمات من النساء في الزواج"}, {"id": "ri5-3", "t": "الخطبة والأسس الإسلامية للزواج"}, {"id": "ri5-4", "t": "عقد الزواج"}, {"id": "ri5-5", "t": "حقوق الزوجين"}, {"id": "ri5-6", "t": "الطلاق"}]}, {"t": "التربية الاقتصادية والمالية", "items": [{"id": "ri6-1", "t": "نظام المال في الإسلام"}, {"id": "ri6-2", "t": "قيود الملكية (الفردية – الجماعية)"}]}, {"t": "العلاقات الدولية", "items": [{"id": "ri7-1", "t": "أسس العلاقات الدولية في الإسلام"}, {"id": "ri7-2", "t": "الجهاد في الإسلام"}, {"id": "ri7-3", "t": "من آداب الجهاد وأحكامه"}]}, {"t": "السيرة النبوية والأعلام", "items": [{"id": "ri8-1", "t": "هدي النبي ﷺ في القيادة"}, {"id": "ri8-2", "t": "أم سليم بنت ملحان"}, {"id": "ri8-3", "t": "الإمام جعفر الصادق"}]}]}]}, {"k": "rel_c", "name": "التربية المسيحية", "pts": 200, "rel": "c", "groups": [{"t": "التربية المسيحية", "who": "", "units": []}]}, {"k": "eng", "name": "English", "pts": 300, "lang": true, "groups": [{"t": "English", "who": "Mr. Mo", "units": [{"t": "Module 1 · Learning for Life", "items": [{"id": "en1", "t": "Unit 1 · Life Choices"}, {"id": "en2", "t": "Unit 2 · Success"}]}, {"t": "Module 2 · Sciences", "items": [{"id": "en3", "t": "Unit 3 · Medicine"}, {"id": "en4", "t": "Unit 4 · Engineering"}]}, {"t": "Module 3 · Politics", "items": [{"id": "en5", "t": "Unit 5 · Civil Rights"}, {"id": "en6", "t": "Unit 6 · United Nations"}]}, {"t": "Module 4 · Biology", "items": [{"id": "en7", "t": "Unit 7 · Microorganism"}, {"id": "en8", "t": "Unit 8 · Facts about Human Body"}]}, {"t": "Module 5 · Culture", "items": [{"id": "en9", "t": "Unit 9 · Citizenship"}, {"id": "en10", "t": "Unit 10 · Culture Shock"}]}, {"t": "Module 6 · Technology", "items": [{"id": "en11", "t": "Unit 11 · Artificial Intelligence"}, {"id": "en12", "t": "Unit 12 · Digital Literacy"}]}]}]}, {"k": "fr", "name": "Français", "pts": 300, "lang": true, "groups": [{"t": "Français", "who": "M. Rami", "units": [{"t": "", "items": [{"id": "fr1", "t": "Unité 1 · On fête ensemble…", "tasks": [{"id": "fr1a", "t": "نصوص ومفردات"}, {"id": "fr1b", "t": "قواعد"}, {"id": "fr1c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr2", "t": "Unité 2 · Chacun pour tous", "tasks": [{"id": "fr2a", "t": "نصوص ومفردات"}, {"id": "fr2b", "t": "قواعد"}, {"id": "fr2c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr3", "t": "Unité 3 · Le salon, un espace culturel", "tasks": [{"id": "fr3a", "t": "نصوص ومفردات"}, {"id": "fr3b", "t": "قواعد"}, {"id": "fr3c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr4", "t": "Unité 4 · La femme dans la littérature", "tasks": [{"id": "fr4a", "t": "نصوص ومفردات"}, {"id": "fr4b", "t": "قواعد"}, {"id": "fr4c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr5", "t": "Unité 5 · L'intelligence artificielle", "tasks": [{"id": "fr5a", "t": "نصوص ومفردات"}, {"id": "fr5b", "t": "قواعد"}, {"id": "fr5c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr6", "t": "Unité 6 · La conquête de l'espace", "tasks": [{"id": "fr6a", "t": "نصوص ومفردات"}, {"id": "fr6b", "t": "قواعد"}, {"id": "fr6c", "t": "موضوع حفظ وترتيب حوار"}]}]}]}]}];
 </script>
@@ -198,8 +229,8 @@ function totalH(p) { const h = (p && p.hours) || {}; let t = 0; for (const k in 
 // ---- state ----
 let api = null, meId = null, meName = '', authReady = false, me = null;
 let players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
-let cur = null, ui = '', leaveArm = false, open = new Set(), pending = null, writing = false, toastT = null;
-try { cur = localStorage.getItem('bac-cur') || null; open = new Set(JSON.parse(localStorage.getItem('bac-open2') || '[]')); } catch (e) {}
+let page = 'race', cur = null, ui = '', leaveArm = false, open = new Set(), pending = null, writing = false, toastT = null;
+try { page = localStorage.getItem('bac-page') || 'race'; cur = localStorage.getItem('bac-cur') || null; open = new Set(JSON.parse(localStorage.getItem('bac-open2') || '[]')); } catch (e) {}
 if (hashCode()) cur = hashCode();
 const DEMO = window.__DEMO || null;
 
@@ -277,6 +308,16 @@ function hwHTML() {
   }
   return h + '</section>';
 }
+function itemsHTML(items, d, can) {
+  return '<ul class="ls">' + items.map(it => {
+    const tasks = it.tasks || [{id: it.id, t: 'Studied', solo: true}];
+    return '<li><span class="t" dir="auto"><span>' + esc(it.t) + '</span>' + (it.sub || it.nick ? '<small>' + esc(it.nick ? 'بالمدرسة: ' + it.nick : it.sub) + '</small>' : '') + '</span><span class="tks">' +
+      tasks.map(t => { const c = +d[t.id] || 0;
+        return (c > 0 && can ? '<button class="x" data-unrev="' + t.id + '" aria-label="Undo one">−</button>' : '') +
+          '<button class="tk' + (c > 0 ? ' on' : '') + '" data-rev="' + t.id + '"' + (can ? '' : ' disabled') + '>' + (t.solo ? (c > 0 ? '✓' : 'Studied') : esc(t.t) + (c > 0 ? ' ✓' : '')) + (c > 1 ? ' ×' + c : '') + '</button>'; }).join('') + '</span></li>';
+  }).join('') + '</ul>';
+}
+const taskIds = items => items.flatMap(it => it.tasks ? it.tasks.map(t => t.id) : [it.id]);
 function subjectsHTML() {
   const d = (me && me.done) || {}, can = !!(me && me.nick), rk = relKey(me);
   const mode = (lobby() && lobby().lang) || 'best';
@@ -286,22 +327,41 @@ function subjectsHTML() {
     const langNote = s.lang ? (mode === 'both' ? ' · counts' : ' · best of two counts') : '';
     let body = '';
     if (!ids.length) body = '<p class="note" style="margin-top:12px">Lessons for this subject are coming soon.</p>';
-    for (const g of s.groups) {
-      if (!g.units.length) continue;
+    s.groups.forEach((g, gi) => {
+      if (!g.units.length) return;
       if (s.groups.length > 1 || g.who) body += '<div class="grp"><span dir="auto">' + esc(g.t) + '</span><span>' + esc(g.who) + '</span></div>';
-      for (const u of g.units) {
-        if (u.t) body += '<div class="unit" dir="auto">' + esc(u.t) + '</div>';
-        body += '<ul class="ls">' + u.items.map(it => {
-          const tasks = it.tasks || [{id: it.id, t: 'Studied', solo: true}];
-          return '<li><span class="t" dir="auto"><span>' + esc(it.t) + '</span>' + (it.sub || it.nick ? '<small>' + esc(it.nick ? 'بالمدرسة: ' + it.nick : it.sub) + '</small>' : '') + '</span><span class="tks">' +
-            tasks.map(t => { const c = +d[t.id] || 0;
-              return (c > 0 && can ? '<button class="x" data-unrev="' + t.id + '" aria-label="Undo one">−</button>' : '') +
-                '<button class="tk' + (c > 0 ? ' on' : '') + '" data-rev="' + t.id + '"' + (can ? '' : ' disabled') + '>' + (t.solo ? (c > 0 ? '✓' : 'Studied') : esc(t.t) + (c > 0 ? ' ✓' : '')) + (c > 1 ? ' ×' + c : '') + '</button>'; }).join('') + '</span></li>';
-        }).join('') + '</ul>';
-      }
-    }
+      g.units.forEach((u, ui) => {
+        const key = s.k + '|' + gi + '|' + ui, uo = open.has(key), tids = taskIds(u.items);
+        const un = tids.filter(i => d[i] > 0).length, title = u.t || (s.groups.length > 1 ? 'الدروس' : 'Lessons');
+        body += '<div class="unitbox' + (uo ? ' open' : '') + '"><button type="button" class="unitbtn" data-open="' + key + '" aria-expanded="' + uo + '"><span dir="auto">' + esc(title) + '</span><span class="uc' + (un === tids.length ? ' full' : '') + '">' + un + '/' + tids.length + '</span><svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg></button>' +
+          (uo ? '<div class="unitbody">' + itemsHTML(u.items, d, can) + '</div>' : '') + '</div>';
+      });
+    });
     return '<div class="sbj' + (o ? ' open' : '') + '"><button type="button" data-open="' + s.k + '" aria-expanded="' + o + '"><span class="nm" dir="auto">' + esc(s.name) + ' <small>' + n + '/' + ids.length + langNote + '</small></span><span class="ct num">' + pts + '<small> / ' + s.pts + '</small></span><span class="bar"><i style="width:' + (ids.length ? n / ids.length * 100 : 0) + '%"></i></span></button><div class="body">' + body + '</div></div>';
   }).join('');
+}
+// ---- this week ----
+function weekStart() { const d = dayAgo(0); d.setDate(d.getDate() - d.getDay()); return d; } // Sunday
+function weekInfo(p, mode) {
+  const ws = dkey(weekStart()), f = (p && p.first) || {}, done = (p && p.done) || {};
+  const fresh = Object.keys(f).filter(id => f[id] >= ws && done[id] > 0 && TITLE[id]);
+  const before = Object.assign({}, p, {done: Object.fromEntries(Object.entries(done).filter(([k]) => !fresh.includes(k)))});
+  const gain = score(p, mode) - score(before, mode);
+  let reviews = 0; const lg = (p && p.log) || {}; for (const k in lg) if (k >= ws) for (const id in lg[k]) reviews += +lg[k][id] || 0;
+  let hours = 0; const h = (p && p.hours) || {}; for (const k in h) if (k >= ws) hours += +h[k] || 0;
+  return {fresh, gain, reviews: Math.max(0, reviews - fresh.length), hours, ws};
+}
+function weekHTML(rows, mode) {
+  if (!(me && me.nick)) return '<p class="note">Sign in to see your week.</p>';
+  const w = weekInfo(me, mode), f = me.first || {};
+  const byDay = {}; for (const id of w.fresh) (byDay[f[id]] = byDay[f[id]] || []).push(id);
+  const subjOf = id => { for (const s of SUBJECTS) if (TASKS[s.k].includes(id)) return s.name; return ''; };
+  let h = '<section class="card"><p class="note">Since Sunday ' + esc(fmtDate(w.ws)) + '</p><div class="wk"><div><b class="num">+' + w.gain + '</b><span>points</span></div><div><b class="num">' + w.fresh.length + '</b><span>new lessons</span></div><div><b class="num">' + w.reviews + '</b><span>reviews</span></div><div><b class="num">' + fmtH(w.hours) + '</b><span>hours</span></div></div></section>';
+  const days = Object.keys(byDay).sort().reverse();
+  h += '<section class="card" style="margin-top:14px"><h2>Finished this week</h2>' + (days.length ? days.map(k => '<div class="unit">' + esc(fmtDate(k)) + '</div><ul class="ls">' + byDay[k].map(id => '<li><span class="t" dir="auto"><span>' + esc(TITLE[id]) + '</span><small>' + esc(subjOf(id)) + '</small></span></li>').join('') + '</ul>').join('') : '<p class="note">Nothing finished yet this week. Your first lesson starts the count.</p>') + '</section>';
+  if (rows.length) { const r2 = rows.map(r => ({...r, w: weekInfo(r.p, mode)})).sort((a, b) => b.w.gain - a.w.gain), mx = Math.max(1, ...r2.map(r => r.w.gain));
+    h += '<section class="card" style="margin-top:14px"><h2>This week in ' + esc(lname(cur)) + '</h2><div class="rows">' + r2.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + '<small>' + r.w.fresh.length + ' lessons</small></span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (r.w.gain / mx * 100) + '%"></i></div><span class="v num">+' + r.w.gain + '</span></div>').join('') + '</div></section>'; }
+  return h;
 }
 function render() {
   const j = $('join');
@@ -335,17 +395,25 @@ function render() {
   const sc = ready ? score(me, mode) : 0;
   $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">/ ' + mx + ' predicted score' + (cur ? ' in ' + esc(lname(cur)) : '') + '</span>' : '';
   $('subjects').innerHTML = subjectsHTML();
+  $('weekBox').innerHTML = weekHTML(rows, mode);
+  for (const pgId of ['race', 'week', 'hours', 'subj']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('[data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
 }
 
 // ---- events ----
 document.addEventListener('click', async ev => {
+  const pg = ev.target.closest('[data-page]');
+  if (pg) { page = pg.dataset.page; try { localStorage.setItem('bac-page', page); } catch (e) {} render(); window.scrollTo(0, 0); return; }
   const o = ev.target.closest('[data-open]');
   if (o) { const k = o.dataset.open; open.has(k) ? open.delete(k) : open.add(k); try { localStorage.setItem('bac-open2', JSON.stringify([...open])); } catch (e) {} render(); const b = document.querySelector('[data-open="' + k + '"]'); if (b) b.focus(); return; }
   const h = ev.target.closest('[data-h]');
   if (h && me && me.nick) { const k = dkey(dayAgo(0)); changeMe(p => { p.hours = p.hours || {}; p.hours[k] = Math.max(0, Math.min(24, (+p.hours[k] || 0) + (+h.dataset.h))); }); return; }
   const rv = ev.target.closest('[data-rev],[data-unrev]');
   if (rv && me && me.nick) { const up = !!rv.dataset.rev, id = up ? rv.dataset.rev : rv.dataset.unrev; let n = 0;
-    changeMe(p => { p.done = p.done || {}; n = Math.max(0, (+p.done[id] || 0) + (up ? 1 : -1)); if (n) p.done[id] = n; else delete p.done[id]; });
+    changeMe(p => { p.done = p.done || {}; p.first = p.first || {}; p.log = p.log || {}; const today = dkey(dayAgo(0));
+      n = Math.max(0, (+p.done[id] || 0) + (up ? 1 : -1)); if (n) p.done[id] = n; else { delete p.done[id]; delete p.first[id]; }
+      if (up && n === 1) p.first[id] = today;
+      const L = p.log[today] = p.log[today] || {}; L[id] = Math.max(0, (+L[id] || 0) + (up ? 1 : -1)); if (!L[id]) delete L[id]; if (!Object.keys(L).length) delete p.log[today];
+      const cut = dkey(dayAgo(60)); for (const k in p.log) if (k < cut) delete p.log[k]; });
     if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
   const hd = ev.target.closest('[data-hwdel]');
   if (hd && api) { try { await api.deleteDoc(api.doc(api.db, 'lobbies', cur, 'homework', hd.dataset.hwdel)); toast('Homework removed'); } catch (e) { toast('Could not remove'); } return; }
