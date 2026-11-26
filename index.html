@@ -115,8 +115,8 @@ h2{margin:0 0 12px;font-size:21px;line-height:1.2}
 .tk:disabled{opacity:.5;cursor:default}
 .x{all:unset;width:36px;height:40px;display:grid;place-items:center;color:var(--mute);cursor:pointer;border-radius:10px;flex:none;font-size:20px}
 .x:hover{background:var(--panel2);color:var(--ink)}
-input[type=text],input[type=date],select{flex:1;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px;color-scheme:dark}
-input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
+input[type=text],input[type=password],input[type=date],select{flex:1;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px;color-scheme:dark}
+input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold);border-color:transparent}
 .inl{display:flex;gap:8px;flex-wrap:wrap}
 .panel{background:var(--panel);border:1px solid var(--gold);border-radius:18px;padding:18px 20px;margin-top:18px}
 .panel p{margin:0 0 10px}
@@ -230,6 +230,11 @@ input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
 .gtag{margin-inline-start:6px;background:var(--gold);color:var(--onGold);border-color:var(--gold)}
 #hwForm select,#hwForm input[type=date]{flex:1 1 9em}
 #hwForm #hwText{flex:1 1 100%}
+.stackf{display:flex;flex-direction:column;gap:10px}
+.stackf input{width:100%}
+.code{letter-spacing:.08em}
+.fl input,.fl select{flex:none;width:100%}
+.stackf .fl{flex:none}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",emerald:"#06201A",royal:"#160B2E",rose:"#2A0F1E",ocean:"#04202B",paper:"#F6F1E6"};document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -283,8 +288,8 @@ const FIREBASE_CONFIG = {
 };
 // First Bakaloria exam date "YYYY-MM-DD", or "" until announced.
 const BAC_DATE = "";
-// Only this Google account can add tests.
-const ADMIN_EMAIL = "ibrahim72hamdi@gmail.com";
+// Accounts are username + password; Firebase needs an email shape, so a username becomes name@bac-race.app (never a real inbox).
+const USER_DOMAIN = "bac-race.app";
 // ============================================================
 const FB = "https://www.gstatic.com/firebasejs/11.0.2/";
 const COLORS = ['#F3D37A','#7FD3F7','#B9F27C','#FFA3C7','#C9B6FF','#FFB36B','#8CF0D4','#F7F3E8'];
@@ -361,7 +366,7 @@ function totalH(p) { const h = (p && p.hours) || {}; let t = 0; for (const k in 
 
 // ---- state ----
 let api = null, meId = null, meName = '', authReady = false, me = null;
-let tests = [], testsUnsub = null, ghw = [], ghwUnsub = null, meEmail = '', players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
+let tests = [], testsUnsub = null, ghw = [], ghwUnsub = null, access = null, adminUids = null, codes = [], codesUnsub = null, authMode = 'login', players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
 let page = 'race', cur = null, ui = '', leaveArm = false, open = new Set(), pending = null, writing = false, toastT = null;
 try { page = localStorage.getItem('bac-page') || 'race'; cur = localStorage.getItem('bac-cur') || null; open = new Set(JSON.parse(localStorage.getItem('bac-open2') || '[]')); } catch (e) {}
 if (hashCode()) cur = hashCode();
@@ -416,7 +421,9 @@ function toast(m) { m = tr(m); const t = $('toast'); t.textContent = m; t.classL
 const lobby = () => (cur && lobbyDocs[cur] && !lobbyDocs[cur].missing) ? lobbyDocs[cur] : null;
 const lname = c => lobbyDocs[c] && lobbyDocs[c].name ? lobbyDocs[c].name : 'Race ' + c.toUpperCase();
 const nick = p => (p && p.nick) || 'Someone';
-const isAdmin = () => !!meEmail && meEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+const isAdmin = () => !!meId && Array.isArray(adminUids) && adminUids.includes(meId);
+const hasAccess = () => access === true || isAdmin();
+const normUser = u => String(u || '').trim().toLowerCase();
 const isCreator = () => !!(lobby() && lobby().by === meId);
 const canPostHw = () => !!(lobby() && (lobby().by === meId || (lobby().helpers || []).includes(meId)));
 const colorOf = id => { const ids = Object.keys(players).sort((a, b) => (players[a].joined || '').localeCompare(players[b].joined || '')); const i = ids.indexOf(id); return COLORS[(i < 0 ? 0 : i) % COLORS.length]; };
@@ -453,7 +460,7 @@ function sync() {
   const my = (me && me.lobbies) || [];
   if (!hashCode() && (!cur || (me && !my.includes(cur)))) cur = my[0] || null;
   try { if (cur) localStorage.setItem('bac-cur', cur); } catch (e) {}
-  my.forEach(watchLobby); if (cur) watchLobby(cur); watchRace(); render();
+  if (hasAccess()) { my.forEach(watchLobby); if (cur) watchLobby(cur); } watchRace(); render();
 }
 
 // ---- view ----
@@ -575,7 +582,7 @@ function testFormHTML() {
     '<div class="inl" style="margin-top:12px"><button class="btn">' + L('Announce test', 'أعلن الاختبار') + '</button><button type="button" class="btn ghost" data-act="test">' + L('Cancel', 'إلغاء') + '</button></div></form>';
 }
 function testsHTML(rows, mode) {
-  let h = '';
+  let h = isAdmin() ? codesHTML() : '';
   if (isAdmin()) h += ui === 'test' ? testFormHTML() : '<p><button class="btn" data-act="test">' + L('+ Announce a test', '+ أعلن اختباراً') + '</button></p>';
   const tk = todayKey(), valid = tests.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
   const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1);
@@ -605,25 +612,53 @@ function rulesHTML() {
     '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
     '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
     '<h2>الواجبات</h2><ul><li>ينشر الواجبات منشئ السباق ومن يختارهم كمساعدين فقط. الواجبات المعلّمة «للجميع» ينشرها مدير الموقع وتظهر في كل السباقات. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
-    '<h2>طريقة الاستخدام</h2><ol><li>سجّل الدخول بحساب Google (يحفظ تقدمك على أي هاتف) أو كضيف (على هذا الجهاز فقط).</li><li>اختر اسمك ومادة الديانة التي تدرسها.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
+    '<h2>طريقة الاستخدام</h2><ol><li>أنشئ حساباً باسم مستخدم وكلمة سر وكود الدخول الذي أخذته. احفظ كلمة السر: لا يمكن استرجاعها. ادخل بنفس الحساب من أي هاتف.</li><li>اختر اسمك ومادة الديانة التي تدرسها.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
     '<h2>الأمانة</h2><p>السباق قائم على الثقة بين الأصدقاء. علّم الدرس فقط عندما تدرسه فعلاً. الهدف أن ننجح كلنا. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ.</p></section>';
   return '<section class="card rules">' +
     '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>A review earns <b>half</b> a lesson\'s value, once per lesson per day.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
     '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
     '<h2>Homework</h2><ul><li>Only the race creator and the helpers they choose can post homework. Homework marked Everyone comes from the website admin and shows in every race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
-    '<h2>How to use</h2><ol><li>Sign in with Google (keeps your progress on any phone) or as a guest (this device only).</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
+    '<h2>How to use</h2><ol><li>Create an account with a username, a password and the access code you were given. Remember your password: it can\'t be reset. Log in with the same account on any phone.</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
     '<h2>Honesty</h2><p>The race runs on trust between friends. Only tick a lesson when you really studied it. The goal is for all of us to pass. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</p></section>';
 }
+function authHTML() {
+  const su = authMode === 'signup';
+  return '<form id="authForm" data-mode="' + authMode + '" class="panel"><p><b>' + (su ? L('Create your account', 'أنشئ حسابك') : L('Log in', 'تسجيل الدخول')) + '</b></p>' +
+    (su ? '<p class="note">' + L('You need an access code to join. Pick a username and password you will remember: they can\'t be reset.', 'تحتاج كود دخول للاشتراك. اختر اسم مستخدم وكلمة سر تتذكرهما: لا يمكن استرجاعهما.') + '</p>' : '') +
+    '<div class="stackf"><label class="fl">' + L('Username', 'اسم المستخدم') + '<input type="text" id="auUser" required minlength="3" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" pattern="[A-Za-z0-9_.]{3,20}"></label>' +
+    '<label class="fl">' + L('Password', 'كلمة السر') + '<input type="password" id="auPass" required minlength="6" autocomplete="' + (su ? 'new-password' : 'current-password') + '" dir="ltr"></label>' +
+    (su ? '<label class="fl">' + L('Access code', 'كود الدخول') + '<input type="text" id="auCode" maxlength="12" autocapitalize="characters" autocomplete="off" spellcheck="false" dir="ltr"></label>' : '') + '</div>' +
+    '<div class="inl" style="margin-top:12px"><button class="btn">' + (su ? L('Create account', 'إنشاء الحساب') : L('Log in', 'دخول')) + '</button></div>' +
+    '<p class="note" style="margin-top:12px"><button type="button" class="linkbtn" data-act="authmode">' + (su ? L('I already have an account', 'عندي حساب') : L('New here? Create an account with a code', 'جديد؟ أنشئ حساباً بكود')) + '</button></p>' +
+    '<p class="note" style="margin-top:6px">' + L('Usernames: 3–20 English letters, numbers, _ or .', 'اسم المستخدم: من 3 إلى 20 حرفاً إنكليزياً أو أرقاماً أو _ أو .') + '</p></form>';
+}
+function gateHTML() {
+  return '<form id="codeGate" class="panel"><p><b>' + L('Enter your access code', 'أدخل كود الدخول') + '</b></p><p class="note">' + L('Ask the site owner for a code. Each code works once.', 'اطلب الكود من صاحب الموقع. كل كود يعمل مرة واحدة.') + '</p>' +
+    '<div class="inl" style="margin:10px 0"><input type="text" id="gateCode" required maxlength="12" autocapitalize="characters" autocomplete="off" spellcheck="false" dir="ltr" aria-label="' + L('Access code', 'كود الدخول') + '"><button class="btn">' + L('Unlock', 'فتح') + '</button></div>' +
+    (Array.isArray(adminUids) && !adminUids.length ? '<div class="infobox" style="margin-top:12px">' + L('No admin yet. If you are the site owner, tap this now. It only works once, for the first person.', 'لا يوجد مدير بعد. إذا كنت صاحب الموقع اضغط هنا الآن. يعمل مرة واحدة فقط لأول شخص.') + '<p style="margin:10px 0 0"><button type="button" class="btn" data-act="claim">' + L('Make me the admin', 'اجعلني المدير') + '</button></p></div>' : '') +
+    '<p class="note"><button type="button" class="linkbtn" data-act="signout">' + L('Sign out', 'تسجيل الخروج') + '</button></p></form>';
+}
+function codesHTML() {
+  const free = codes.filter(c => !c.usedBy).sort((a, b) => (b.n || 0) - (a.n || 0)), used = codes.filter(c => c.usedBy).sort((a, b) => (b.usedAt || 0) - (a.usedAt || 0));
+  return '<section class="card" style="margin-bottom:14px"><div class="head" style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">' + L('Access codes', 'أكواد الدخول') + '</h2><span class="tag">' + L(free.length + ' unused · ' + used.length + ' used', free.length + ' متاح · ' + used.length + ' مستخدم') + '</span></div>' +
+    '<p class="note">' + L('Give one code to each person. A code works once.', 'أعط كل شخص كوداً. الكود يعمل مرة واحدة.') + '</p>' +
+    '<div class="inl" style="margin:10px 0"><button class="btn" data-mk="1">' + L('+ 1 code', '+ كود') + '</button><button class="btn ghost" data-mk="10">' + L('+ 10 codes', '+ 10 أكواد') + '</button></div>' +
+    (free.length ? '<ul class="hwl">' + free.map(c => '<li><div class="t"><span class="num code" dir="ltr">' + esc(c.id) + '</span></div><button class="tk" data-cpy="' + esc(c.id) + '">' + L('Copy', 'نسخ') + '</button><button class="x" data-cdel="' + esc(c.id) + '" aria-label="' + L('Delete code', 'احذف الكود') + '">×</button></li>').join('') + '</ul>' : '') +
+    (used.length ? '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Used codes', 'الأكواد المستخدمة') + '</summary><ul class="hwl">' + used.map(c => '<li><div class="t"><span class="num" dir="ltr">' + esc(c.id) + '</span><span class="due">' + L('used ', 'استُخدم ') + esc(fmtDate(dkey(new Date(c.usedAt || 0)))) + '</span></div><button class="tk" data-revoke="' + esc(c.id) + '">' + (revokeArm === c.id ? L('Tap again', 'اضغط مرة ثانية') : L('Remove access', 'إلغاء الدخول')) + '</button></li>').join('') + '</ul></details>' : '') + '</section>';
+}
+let revokeArm = null;
 function render() {
   const j = $('join');
   if (!authReady) j.innerHTML = '';
-  else if (!meId) j.innerHTML = '<div class="panel"><p><b>Sign in to race.</b> Google keeps your progress on any phone. Guest works on this device only.</p><div class="inl"><button class="btn" data-act="google">Continue with Google</button><button class="btn ghost" data-act="guest">Play as guest</button></div></div>';
+  else if (!meId) { if (!$('authForm') || $('authForm').dataset.mode !== authMode) j.innerHTML = authHTML(); }
+  else if (access === null || adminUids === null) j.innerHTML = '<p class="note" style="margin-top:16px">' + L('Checking your access…', 'جارٍ التحقق من صلاحيتك…') + '</p>';
+  else if (!hasAccess()) { if (!$('codeGate')) j.innerHTML = gateHTML(); }
   else if (!me || !me.nick || !me.religion) { if (!$('joinForm')) j.innerHTML = '<form id="joinForm" class="panel"><p><b>Welcome!</b> Pick the name your friends will see.</p><div class="inl" style="margin-bottom:14px"><input type="text" id="nickIn" maxlength="24" required value="' + esc((me && me.nick) || meName) + '" aria-label="Your name"></div>' +
     '<p>Which religion subject do you take?</p><label class="opt"><input type="radio" name="rel" value="i"' + ((me && me.religion) !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="rel" value="c"' + ((me && me.religion) === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
     '<button class="btn">Start</button></form>'; }
   else j.innerHTML = '';
-  const ready = !!(me && me.nick && me.religion);
+  const ready = !!(hasAccess() && me && me.nick && me.religion);
   const my = (me && me.lobbies) || [];
   if (!(ui === 'new' && $('newForm'))) $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
   const mode = (lobby() && lobby().lang) || 'best', ms = monthStart(), tk = todayKey();
@@ -681,6 +716,16 @@ document.addEventListener('click', async ev => {
     if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
   const to = ev.target.closest('[data-topen]');
   if (to) { const k = to.closest('.trow').nextElementSibling; k.hidden = !k.hidden; to.classList.toggle('open', !k.hidden); return; }
+  const mk = ev.target.closest('[data-mk]');
+  if (mk && isAdmin() && api) { const n = +mk.dataset.mk; try { const b = api.writeBatch(api.db); for (let i = 0; i < n; i++) { let c = ''; for (let j = 0; j < 8; j++) c += CH[Math.floor(Math.random() * CH.length)]; b.set(api.doc(api.db, 'codes', c.toUpperCase()), {n: Date.now()}); } await b.commit(); toast(L(n + ' new code' + (n > 1 ? 's' : ''), n + ' كود جديد')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  const cp = ev.target.closest('[data-cpy]');
+  if (cp) { const c = cp.dataset.cpy, link = location.origin + location.pathname; const txt = L('Your access code for the Bakaloria race: ' + c + '\nOpen ' + link + ' and tap "Create an account".', 'كود الدخول لسباق البكالوريا: ' + c + '\nافتح ' + link + ' واضغط «أنشئ حساباً بكود».');
+    try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast(L('Copied', 'نُسخ')); } catch (e) { toast(c); } return; }
+  const cd = ev.target.closest('[data-cdel]');
+  if (cd && isAdmin() && api) { try { await api.deleteDoc(api.doc(api.db, 'codes', cd.dataset.cdel)); } catch (e) { toast(L('Could not delete', 'تعذّر الحذف')); } return; }
+  const rv2 = ev.target.closest('[data-revoke]');
+  if (rv2 && isAdmin() && api) { const id = rv2.dataset.revoke; if (revokeArm !== id) { revokeArm = id; render(); setTimeout(() => { revokeArm = null; render(); }, 4000); return; }
+    revokeArm = null; const c = codes.find(x => x.id === id); try { const b = api.writeBatch(api.db); if (c && c.usedBy) b.delete(api.doc(api.db, 'access', c.usedBy)); b.delete(api.doc(api.db, 'codes', id)); await b.commit(); toast(L('Access removed', 'أُلغي الدخول')); } catch (e) { toast(L('Could not remove access', 'تعذّر إلغاء الدخول')); } return; }
   const td = ev.target.closest('[data-tdel]');
   if (td && isAdmin() && api) { const id = td.dataset.tdel; if (tdelArm !== id) { tdelArm = id; render(); setTimeout(() => { tdelArm = null; render(); }, 4000); return; }
     tdelArm = null; try { await api.deleteDoc(api.doc(api.db, 'tests', id)); toast(L('Test deleted', 'حُذف الاختبار')); } catch (e) { toast(L('Could not delete the test', 'تعذّر حذف الاختبار')); } return; }
@@ -690,8 +735,8 @@ document.addEventListener('click', async ev => {
   if (hp && isCreator() && api) { const id = hp.dataset.helper, hs = new Set(lobby().helpers || []); hs.has(id) ? hs.delete(id) : hs.add(id);
     try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {helpers: [...hs]}); } catch (e) { toast('Could not update helpers'); } return; }
   const a = ev.target.closest('[data-act]'); if (!a) return; const act = a.dataset.act;
-  if (act === 'google' && api) { const p = new api.GoogleAuthProvider(); try { await api.signInWithPopup(api.auth, p); } catch (e) { if (e && /popup/.test(e.code || '')) api.signInWithRedirect(api.auth, p); else toast('Google sign-in failed. Try guest.'); } return; }
-  if (act === 'guest' && api) { try { await api.signInAnonymously(api.auth); } catch (e) { toast('Could not sign in'); } return; }
+  if (act === 'authmode') { authMode = authMode === 'login' ? 'signup' : 'login'; render(); const u = $('auUser'); if (u) u.focus(); return; }
+  if (act === 'claim' && api) { try { await api.setDoc(api.doc(api.db, 'meta', 'admins'), {uids: [meId]}); toast(L('You are the admin now', 'أصبحت المدير')); } catch (e) { toast(L('Someone is already the admin', 'يوجد مدير بالفعل')); } return; }
   if (act === 'signout' && api) { await api.signOut(api.auth); return; }
   if (act === 'profile') { changeMe(p => { delete p.religion; }); return; }
   if (['new', 'code', 'hw', 'helpers', 'test'].includes(act)) { ui = ui === act ? '' : act; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
@@ -711,6 +756,16 @@ document.addEventListener('change', ev => {
 });
 document.addEventListener('submit', async ev => {
   ev.preventDefault(); const f = ev.target;
+  if (f.id === 'authForm' && api) { const u = normUser($('auUser').value), pw = $('auPass').value; if (!/^[a-z0-9_.]{3,20}$/.test(u)) { toast(L('Username: 3–20 English letters, numbers, _ or .', 'اسم المستخدم: 3–20 حرفاً إنكليزياً أو أرقاماً')); return; }
+    const email = u + '@' + USER_DOMAIN, btn = f.querySelector('.btn'); btn.disabled = true;
+    try {
+      if (authMode === 'signup') { const code = ($('auCode').value || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); const cr = await api.createUserWithEmailAndPassword(api.auth, email, pw);
+        if (code) { try { await redeem(code, cr.user.uid); } catch (e) { toast(L('Account made, but that code is not valid or already used', 'أُنشئ الحساب، لكن الكود غير صالح أو مستخدم')); } } }
+      else await api.signInWithEmailAndPassword(api.auth, email, pw);
+    } catch (e) { const c = (e && e.code) || ''; toast(c.includes('email-already-in-use') ? L('That username is taken', 'اسم المستخدم مأخوذ') : c.includes('weak-password') ? L('Password needs at least 6 characters', 'كلمة السر 6 أحرف على الأقل') : (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) ? L('Wrong username or password', 'اسم المستخدم أو كلمة السر خطأ') : c.includes('operation-not-allowed') ? L('Sign-in is not switched on yet', 'تسجيل الدخول غير مفعّل بعد') : L('Could not sign in. Check your internet.', 'تعذّر الدخول. تحقّق من الإنترنت.')); btn.disabled = false; }
+    return; }
+  if (f.id === 'codeGate' && api) { const code = ($('gateCode').value || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!code) return;
+    try { await redeem(code, meId); toast(L('Welcome! Your access is unlocked', 'أهلاً! تم فتح الدخول')); } catch (e) { toast(L('That code is not valid or already used', 'الكود غير صالح أو مستخدم')); } return; }
   if (f.id === 'joinForm') { const n = $('nickIn').value.trim().slice(0, 24); const r = (f.querySelector('input[name=rel]:checked') || {}).value || 'i'; if (!n) return;
     const first = !(me && me.nick);
     changeMe(p => { p.nick = n; p.religion = r; p.joined = p.joined || new Date().toISOString(); p.done = p.done || {}; p.hours = p.hours || {}; p.lobbies = p.lobbies || []; });
@@ -739,22 +794,28 @@ let THEME = 'night'; try { THEME = localStorage.getItem('bac-theme') || 'night';
 function paintThemes() { const box = $('themes'); if (!box) return;
   box.innerHTML = THEMES.map(([k, en, ar, bg, ac]) => '<button type="button" class="sw" data-theme-pick="' + k + '" aria-pressed="' + (THEME === k) + '"><i style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (LANG === 'ar' ? ar : en) + '</button>').join(''); }
 // ---- start ----
+async function redeem(code, uid) { const b = api.writeBatch(api.db); b.update(api.doc(api.db, 'codes', code), {usedBy: uid, usedAt: Date.now()}); b.set(api.doc(api.db, 'access', uid), {code, n: Date.now()}); await b.commit(); }
 async function start() {
-  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; ghw = DEMO.ghw || []; tests = DEMO.tests || []; meEmail = DEMO.email || ''; cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
+  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; ghw = DEMO.ghw || []; tests = DEMO.tests || []; access = true; adminUids = DEMO.email ? [DEMO.meId] : []; codes = DEMO.codes || []; if (DEMO.state === 'out') { meId = null; me = null; } if (DEMO.state === 'gate') { access = false; adminUids = []; } cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
   render();
   const [A, U, F] = await Promise.all([import(FB + 'firebase-app.js'), import(FB + 'firebase-auth.js'), import(FB + 'firebase-firestore.js')]);
   const app = A.initializeApp(FIREBASE_CONFIG), auth = U.getAuth(app), db = F.getFirestore(app);
   api = {auth, db, ...U, ...F};
-  let meUnsub = null;
+  let meUnsub = null, accUnsub = null, admUnsub = null, dataOn = false;
+  const startData = () => {
+    if (dataOn || !meId || !hasAccess()) return; dataOn = true; const uid = meId;
+    ghwUnsub = F.onSnapshot(F.collection(db, 'allhw'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); ghw = a; render(); }, () => {});
+    testsUnsub = F.onSnapshot(F.collection(db, 'tests'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); tests = a; render(); }, () => {});
+    meUnsub = F.onSnapshot(F.doc(db, 'users', uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast(L('Could not load your profile', 'تعذّر تحميل ملفك')));
+  };
+  const startCodes = () => { if (codesUnsub || !isAdmin()) return; codesUnsub = F.onSnapshot(F.collection(db, 'codes'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); codes = a; render(); }, () => { codesUnsub = null; }); };
+  const stopAll = () => { for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = null; dataOn = false; };
   U.onAuthStateChanged(auth, u => {
-    authReady = true; if (meUnsub) { meUnsub(); meUnsub = null; }
-    meId = u ? u.uid : null; meEmail = u && u.email ? u.email : ''; meName = u && u.displayName ? u.displayName.split(' ')[0] : ''; me = null;
-    if (u && !ghwUnsub) ghwUnsub = F.onSnapshot(F.collection(db, 'allhw'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); ghw = a; render(); }, () => {});
-    if (u && !testsUnsub) testsUnsub = F.onSnapshot(F.collection(db, 'tests'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); tests = a; render(); }, () => {});
-    if (u) meUnsub = F.onSnapshot(F.doc(db, 'users', u.uid), async s => {
-      if (!s.exists() && !pending && !writing) { try { const old = await F.getDoc(F.doc(db, 'players', u.uid)); if (old.exists()) { const d = old.data(); const b = F.writeBatch(db); b.set(F.doc(db, 'users', u.uid), d); if (d.nick) for (const c of (d.lobbies || [])) b.set(F.doc(db, 'lobbies', c, 'members', u.uid), pub(d)); await b.commit(); try { await F.deleteDoc(F.doc(db, 'players', u.uid)); } catch (e) {} return; } } catch (e) {} }
-      if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast('Could not load your profile'));
-    else { players = {}; watching = null; if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; } }
+    stopAll(); authReady = true; meId = u ? u.uid : null; me = null; access = null; adminUids = null; codes = []; tests = []; ghw = []; players = {}; homework = []; watching = null;
+    if (u) {
+      admUnsub = F.onSnapshot(F.doc(db, 'meta', 'admins'), s => { adminUids = s.exists() && Array.isArray(s.data().uids) ? s.data().uids : []; startData(); startCodes(); render(); }, () => { adminUids = []; render(); });
+      accUnsub = F.onSnapshot(F.doc(db, 'access', u.uid), s => { access = s.exists(); startData(); render(); }, () => { access = false; render(); });
+    }
     sync();
   });
 }
