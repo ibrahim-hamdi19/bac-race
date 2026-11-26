@@ -263,7 +263,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .langbtn.arm{background:var(--gold);color:var(--onGold)}
 .top{padding-top:48px}
 .topbtns{flex-wrap:nowrap}
-#outBtn{padding:0 11px}
+#outBtn,#rulesBtn{padding:0 11px}
 #outTxt:empty{display:none}
 .allck{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;color:var(--mute);flex:1 1 100%}
 .allck input{width:20px;height:20px;accent-color:var(--gold)}
@@ -357,6 +357,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .rain span{position:absolute;top:-60px;animation-name:rainfall;animation-timing-function:linear;animation-fill-mode:forwards;will-change:transform}
 @keyframes rainfall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--sway),55vh) rotate(calc(var(--rot) / 2))}100%{transform:translate(calc(var(--sway) * -1),115vh) rotate(var(--rot))}}
 @keyframes rainfade{0%{opacity:0}15%,75%{opacity:1}100%{opacity:0}}
+.rainfrom{font-size:15px;color:var(--gold);margin-bottom:6px}.rainmsg .rainfrom:only-child{margin:0;font-size:19px}
 .rainmsg{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:21;background:var(--panel);color:var(--ink);border:2px solid var(--gold);border-radius:20px;padding:18px 22px;font-size:20px;font-weight:700;text-align:center;max-width:86vw;box-shadow:0 10px 40px #0007;animation:rainfade 7s ease forwards;pointer-events:none}
 .rainpanel{margin-top:10px}
 .rainpanel .chips{gap:6px}
@@ -375,12 +376,38 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .warnbox .wfrom{color:#F5B7B1;margin:0 0 18px}
 .warnbox .btn{background:#FFD23F;color:#1A0B0B;min-width:160px}
 @media(prefers-reduced-motion:reduce){.warnov.on{animation:none}}
+
+.bdayov{position:fixed;inset:0;z-index:19;display:grid;place-items:center;padding:20px;background:#0009;backdrop-filter:blur(4px)}
+.bdaybox{background:var(--panel);color:var(--ink);border:3px solid var(--gold);border-radius:24px;padding:22px 22px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px #000a;animation:bdpop .45s cubic-bezier(.2,1.4,.4,1)}
+.bdaybox h2{margin:6px 0 2px;font-size:28px;color:var(--gold)}
+.bdaybox .bname{font-size:22px;font-weight:800;margin:0 0 6px}
+.bdaybox .bpts{display:inline-block;margin:4px 0 16px;padding:6px 14px;border-radius:999px;background:var(--gold);color:#1A1200;font-weight:800}
+.bdaybox .btn{min-width:200px}
+.bdaybox .flame{transform-origin:50% 100%;transform-box:fill-box;animation:flick .5s ease-in-out infinite alternate}
+.bdayov.out .flame{animation:none;opacity:0;transition:opacity .4s}
+@keyframes flick{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.9,1.1) rotate(3deg)}}
+@keyframes bdpop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.bdaybox,.bdaybox .flame{animation:none}}
+.bdaybox .bsorry{margin:2px 0 10px;color:var(--mute);line-height:1.6}
+
+.notes{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:10px}
+.notes .nt{border:1px solid var(--line);border-inline-start:5px solid #3BB273;border-radius:14px;padding:10px 12px;background:color-mix(in srgb,var(--panel) 92%,#3BB273)}
+.notes .nt.bad{border-inline-start-color:#E8453C;background:color-mix(in srgb,var(--panel) 90%,#E8453C)}
+.notes .nh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.notes .nt p{margin:8px 0 2px;font-size:16px;line-height:1.6;white-space:pre-wrap}
+.notebanner .notes{margin-bottom:10px}
+.tk.badk.on{background:#E8453C;color:#fff;border-color:#E8453C}
+.pcodes{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;resize:vertical}
+textarea:focus{outline:2px solid var(--gold);border-color:transparent}
+.tabs[hidden]{display:none!important}
+.notebanner{background:var(--panel);border:2px solid var(--gold);border-radius:20px;padding:14px 16px;gap:4px}.notebanner>p{margin:0}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1",hamster:"#FFE6EF"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
 <body>
 <main class="wrap">
-  <div class="topbtns"><button id="themeBtn" class="langbtn" type="button" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7" r="1.2"/></svg><span>Style</span></button><button id="langBtn" class="langbtn" type="button">عربي</button><button id="outBtn" class="langbtn" type="button" hidden aria-label="Profile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></button></div>
+  <div class="topbtns"><button id="themeBtn" class="langbtn" type="button" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7" r="1.2"/></svg><span>Style</span></button><button id="langBtn" class="langbtn" type="button">عربي</button><button id="rulesBtn" class="langbtn" type="button" aria-label="Rules"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button><button id="outBtn" class="langbtn" type="button" hidden aria-label="Profile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></button></div>
   <div class="themes" id="themes" hidden></div>
   <header class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span class="en-only">Bakaloria race · Scientific</span><span lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></header>
   <div id="markNote"></div>
@@ -390,10 +417,11 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <p class="lead" id="lead">Loading…</p>
   <div id="bac"></div>
   <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
-  <p class="note">Each runner's spot is their points this month. Every lesson counts by its subject's exam marks.</p>
+  <p class="note">Each runner's spot is their points in this round. Every lesson counts by its subject's exam marks.</p>
   <div id="surpBox"></div>
   <div id="chBox"></div>
   <div id="teamBox"></div>
+  <div id="pastBox"></div>
   <div id="hwBox"></div>
   </div>
   <div id="pg-week" hidden><h2 class="pgt" data-en="Your week">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
@@ -406,6 +434,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <div class="subjects" id="subjects"></div></div>
   <div id="pg-tests" hidden><h2 class="pgt" data-en="Tests">الاختبارات</h2><div id="testsBox"></div></div>
   <div id="pg-profile" hidden><h2 class="pgt" data-en="Profile">ملفي</h2><div id="profileBox"></div></div>
+  <div id="pg-staff" hidden><div id="staffBox"></div></div>
   <div id="pg-admin" hidden><h2 class="pgt" data-en="Admin panel">لوحة المدير</h2><div id="adminBox"></div></div>
   <div id="pg-rules" hidden><h2 class="pgt" data-en="Rules &amp; how to use">القوانين وطريقة الاستخدام</h2><div id="rulesBox"></div></div>
 </main>
@@ -417,7 +446,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <button data-page="tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v3H9zM6 5h3M15 5h3v16H6V5M9 12l2 2 4-4"/></svg><span lang="ar" data-en="Tests">الاختبارات</span></button>
   <button data-page="subj"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5"/></svg><span lang="ar" data-en="Subjects">المواد</span></button>
   <button data-page="admin" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span lang="ar" data-en="Admin">المدير</span></button>
-  <button data-page="rules"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span lang="ar" data-en="Rules">القوانين</span></button>
+
 </nav>
 
 <script>
@@ -425,6 +454,8 @@ const SUBJECTS=[{"k": "math", "name": "رياضيات", "pts": 600, "groups": [{
 </script>
 <script type="module">
 // ===== SETTINGS: only you (the site owner) change these =====
+// Birthdays: dates are collected, but the cake, song and +20 points stay off until this is true.
+const BDAY_ON = false;
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyD0alaXh9Qse0357_Z85M8hx_Rug5CgACY",
   authDomain: "bakaloria-race-636c8.firebaseapp.com",
@@ -441,6 +472,7 @@ const USER_DOMAIN = "bac-race.app";
 const FB = "https://www.gstatic.com/firebasejs/11.0.2/";
 const COLORS = ['#F3D37A','#7FD3F7','#B9F27C','#FFA3C7','#C9B6FF','#FFB36B','#8CF0D4','#F7F3E8'];
 const CH = 'abcdefghjkmnpqrstuvwxyz23456789';
+const newCode = () => { let c = ''; for (let j = 0; j < 8; j++) c += CH[Math.floor(Math.random() * CH.length)]; return c.toUpperCase(); };
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2, '0');
@@ -499,7 +531,11 @@ const MARK_PTS = 100;
 function outOfFor(t) { if (+t.outOf > 0) return +t.outOf; if (t.type === 'quiz' || !(t.date <= todayKey())) return 0; return testCalc({}, t, 'best').max || 0; }
 const TKIND = t => t.type === 'quiz' ? L('تقييم', 'تقييم') : t.kind === 'exam' ? L('امتحان', 'امتحان') : L('مذاكرة', 'مذاكرة');
 function markPts(p, from, to) { let pts = 0; const mk = (p && p.marks) || {}; for (const id in mk) { const v = mk[id], t = tests.find(x => x.id === id), o = t ? outOfFor(t) : 0; if (!v || !o || !(v.d >= from && v.d <= to)) continue; pts += Math.ceil(Math.min(+v.m, o) / o * MARK_PTS); } return pts; }
-function racePts(p, from, to) { const e = earned(p, from, to), h = hwPts(p, from, to); return {pts: Math.round(e.pts + h.pts + markPts(p, from, to)), nw: e.nw, rv: e.rv, hw: h.n}; }
+// Birthday: +20 once a year, on the day it was claimed.
+const BDAY_PTS = 20;
+function bdayPts(p, from, to) { if (!BDAY_ON) return 0; let pts = 0; const b = (p && p.bday) || {}; for (const y in b) if (typeof b[y] === 'string' && b[y] >= from && b[y] <= to) pts += BDAY_PTS; return pts; }
+const isBday = (p, tk) => BDAY_ON && Object.values((p && p.bday) || {}).includes(tk);
+function racePts(p, from, to) { const e = earned(p, from, to), h = hwPts(p, from, to); return {pts: Math.round(e.pts + h.pts + markPts(p, from, to) + bdayPts(p, from, to)), nw: e.nw, rv: e.rv, hw: h.n}; }
 const monthStart = () => { const d = dayAgo(0); d.setDate(1); return dkey(d); };
 const todayKey = () => dkey(dayAgo(0));
 // ---- tests ----
@@ -533,10 +569,10 @@ const AR = {
  'Bakaloria race · Scientific':'سباق البكالوريا · علمي','Loading…':'جارٍ التحميل…','+ New race':'+ سباق جديد','Join with code':'انضم برمز','New race':'سباق جديد',
  'How should English and French count?':'كيف تُحسب الإنكليزي والفرنسي؟','Only the higher one':'الأعلى فقط','Like the real exam':'مثل الامتحان الحقيقي','Both count':'الاثنتان تُحسبان','Rewards studying both languages':'تكافئ دراسة اللغتين',
  '· out of 2,400':'· من 2400','· out of 2,700':'· من 2700','Create race':'أنشئ السباق','Cancel':'إلغاء','Join':'انضم','Viewing':'تشاهد','· code':'· الرمز','Best language · /2400':'اللغة الأعلى · /2400','Both languages · /2700':'اللغتان · /2700',
- 'Invite':'دعوة','Join this race':'انضم لهذا السباق','Leave':'مغادرة','Tap again to leave':'اضغط مرة ثانية للمغادرة','Create a race and send the invite to your friends, or join one with a code.':'أنشئ سباقاً وأرسل الدعوة لأصدقائك، أو انضم لسباق برمز.',
+ 'Invite':'دعوة','Rename':'تغيير الاسم','Join this race':'انضم لهذا السباق','Leave':'مغادرة','Tap again to leave':'اضغط مرة ثانية للمغادرة','Create a race and send the invite to your friends, or join one with a code.':'أنشئ سباقاً وأرسل الدعوة لأصدقائك، أو انضم لسباق برمز.',
  'Homework':'الواجبات','+ Add homework':'+ أضف واجباً','Close':'إغلاق','Post':'نشر','No homework yet. Add what the teachers gave.':'لا واجبات بعد. أضف ما أعطاه الأساتذة.','No homework posted for now.':'لا واجبات حالياً.','due today':'التسليم اليوم','due tomorrow':'التسليم غداً',
  'Manage homework helpers':'إدارة مساعدي الواجبات','Homework helpers':'مساعدو الواجبات','can post homework in this race (teachers, supervisors, the classmate who always knows).':'يمكنهم نشر الواجبات في هذا السباق (أساتذة، مشرفون، أو الزميل اللي دايماً بيعرف).','Make helper':'اجعله مساعداً','Helper ✓':'مساعد ✓','Nobody else has joined yet.':'لم ينضم أحد بعد.','Done':'تم',
- "Each runner's spot is their points this month. Every lesson counts by its subject's exam marks.":'مكان كل متسابق هو نقاطه هذا الشهر. كل درس يُحسب حسب علامة مادته في الامتحان.',
+ "Each runner's spot is their points in this round. Every lesson counts by its subject's exam marks.":'مكان كل متسابق هو نقاطه بهالجولة. كل درس يُحسب حسب علامة مادته في الامتحان.',
  'Pick a race above, create one, or join with a code.':'اختر سباقاً من الأعلى، أو أنشئ واحداً، أو انضم برمز.','Sign in below to start racing.':'سجّل الدخول في الأسفل لتبدأ السباق.','No runners in this race yet.':'لا متسابقين في هذا السباق بعد.','Every lesson you study moves you toward the full mark.':'كل درس تدرسه يقرّبك من العلامة التامة.',
  'Sign in to race.':'سجّل الدخول لتتسابق.','Google keeps your progress on any phone. Guest works on this device only.':'حساب Google يحفظ تقدمك على أي هاتف. الضيف يعمل على هذا الجهاز فقط.','Continue with Google':'المتابعة مع Google','Play as guest':'العب كضيف',
  'Welcome!':'أهلاً!','Pick the name your friends will see.':'اختر الاسم الذي سيراه أصدقاؤك.','Which religion subject do you take?':'أي مادة ديانة تدرس؟','Start':'ابدأ',
@@ -578,7 +614,13 @@ const lname = c => lobbyDocs[c] && lobbyDocs[c].name ? lobbyDocs[c].name : 'Race
 const nick = p => (p && p.nick) || 'Someone';
 const isAdmin = () => !!meId && Array.isArray(adminUids) && adminUids.includes(meId);
 const canPostAll = () => isAdmin() || !!(perks && perks.hw);
-const hasAccess = () => access === true || isAdmin();
+// Roles come from the access code: student (default), teacher, supervisor, parent.
+let accData = null, students = [], kid = null, myNotes = [], sentNotes = [], kidNotes = [], stuPub = false;
+const ROLE = () => (accData && accData.role) || 'student';
+const hasAccess = () => (access === true && ROLE() === 'student') || isAdmin();
+const hasAny = () => access === true || isAdmin();
+const staffMode = () => hasAny() && !isAdmin() && ROLE() !== 'student';
+const ROLE_NAME = r => r === 'teacher' ? L('Teacher', 'أستاذ') : r === 'supervisor' ? L('Supervisor', 'المشرفة') : r === 'parent' ? L('Parent', 'وليّ أمر') : r === 'admin' ? L('Admin', 'المدير') : L('Student', 'طالب');
 const normUser = u => String(u || '').trim().toLowerCase();
 const isCreator = () => !!(lobby() && lobby().by === meId);
 const canPostHw = () => !!(lobby() && (lobby().by === meId || (lobby().helpers || []).includes(meId)));
@@ -602,7 +644,8 @@ function watchRace() {
   hwUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'homework'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); homework = a; render(); }, retry);
 }
 // What race-mates can see: never the list of races, never homework ticks.
-const pub = p => ({nick: p.nick || '', religion: p.religion || 'i', joined: p.joined || '', done: p.done || {}, first: p.first || {}, log: p.log || {}, hours: p.hours || {}, marks: p.marks || {}});
+const stuDoc = p => ({...pub(p), hw: p.hw || {}, n: Date.now()});
+const pub = p => ({nick: p.nick || '', religion: p.religion || 'i', joined: p.joined || '', done: p.done || {}, first: p.first || {}, log: p.log || {}, hours: p.hours || {}, marks: p.marks || {}, bday: p.bday || {}});
 let dropFrom = new Set();
 function changeMe(fn) { const before = new Set((me && me.lobbies) || []); const c = JSON.parse(JSON.stringify(me || {})); fn(c);
   const after = new Set(c.lobbies || []); for (const x of before) if (!after.has(x)) dropFrom.add(x); for (const x of after) dropFrom.delete(x);
@@ -610,6 +653,7 @@ function changeMe(fn) { const before = new Set((me && me.lobbies) || []); const 
 async function pump() { if (writing || !pending) return; writing = true; const d = pending; pending = null;
   try { const b = api.writeBatch(api.db); b.set(api.doc(api.db, 'users', meId), d);
     if (d.nick) for (const c of (d.lobbies || [])) b.set(api.doc(api.db, 'lobbies', c, 'members', meId), {...pub(d), hw: hwFor(d, c)});
+    if (d.nick && hasAccess()) b.set(api.doc(api.db, 'students', meId), stuDoc(d));
     const drops = [...dropFrom]; for (const c of drops) b.delete(api.doc(api.db, 'lobbies', c, 'members', meId));
     await b.commit(); drops.forEach(c => dropFrom.delete(c)); } catch (e) { toast('Could not save. Check your connection.'); } writing = false; pump(); }
 function enter(c) { changeMe(p => { p.lobbies = (p.lobbies || []).filter(x => x !== c); p.lobbies.push(c); }); cur = c; ui = ''; location.hash = 'r-' + c; sync(); }
@@ -628,12 +672,23 @@ function watchSurprises(my) {
     surpUnsub.set(c, api.onSnapshot(api.query(api.collection(api.db, 'lobbies', c, 'surprises'), api.where('to', '==', meId)), q => {
       let k = 0; q.forEach(d => { if (surpShown.has(d.id)) return; surpShown.add(d.id); const v = d.data() || {};
         const from = typeof v.fromNick === 'string' && v.fromNick ? v.fromNick.slice(0, 24) : '', msg = typeof v.msg === 'string' ? v.msg.slice(0, 80) : '';
-        setTimeout(() => runRain(Array.isArray(v.items) ? v.items.slice(0, 10) : [], (from ? L('From ', 'من ') + from + (msg ? ': ' : '') : '') + msg), 700 + 4000 * k++);
+        setTimeout(() => runRain(Array.isArray(v.items) ? v.items.slice(0, 10) : [], msg, from || L('a race-mate', 'أحد زملاء السباق')), 700 + 4000 * k++);
         api.deleteDoc(d.ref).catch(() => {}); }); }, () => {})); }
 }
 function stopSurprises() { for (const f of surpUnsub.values()) f(); surpUnsub.clear(); }
 
 // ---- view ----
+let resetArm = false;
+function cpanelHTML(LB) { const m = resetMode(LB);
+  return '<div class="panel cpanel"><p><b>' + L('Race creator panel', 'لوحة منشئ السباق') + '</b><br><span class="note">' + L('Only you, the creator, see this.', 'بس إنت، منشئ السباق، بتشوف هاد.') + '</span></p>' +
+    '<h3>' + L('Name', 'الاسم') + '</h3><form id="renameForm" class="inl"><input type="text" id="renameIn" maxlength="30" required value="' + esc(LB.name || '') + '" aria-label="' + L('Race name', 'اسم السباق') + '" dir="auto"><button class="btn">' + L('Save', 'حفظ') + '</button></form>' +
+    '<h3>' + L('Start a new round', 'بداية جولة جديدة') + '</h3><p class="note">' + L('Points go back to zero at the start of each round. Nothing is deleted: past rounds stay in "Past rounds", and you can change this any time.', 'النقاط بترجع صفر ببداية كل جولة. ما في شي بينحذف: الجولات القديمة بتضل بـ«الجولات السابقة»، وفيك تغيّر هاد بأي وقت.') + '</p><div class="chips">' +
+    RESETS.map(([k, en, ar]) => '<button type="button" class="tk' + (m === k ? ' on' : '') + '" data-reset="' + k + '" aria-pressed="' + (m === k) + '">' + (LANG === 'ar' ? ar : en) + '</button>').join('') + '</div>' +
+    (m === 'manual' ? '<p class="note" style="margin-top:8px">' + (roundNow(LB) === ALL_FROM ? L('No reset yet: points count from the start.', 'ما صار تصفير لسا: النقاط محسوبة من البداية.') : L('Current round started ', 'الجولة الحالية بلشت ') + esc(fmtDate(roundNow(LB)))) + '</p><button type="button" class="btn' + (resetArm ? ' warnbtn' : ' ghost') + '" data-act="resetnow">' + (resetArm ? L('Tap again to start a new round', 'اضغط مرة تانية لتبلش جولة جديدة') : L('Start a new round now', 'بلّش جولة جديدة هلق')) + '</button>' : '') +
+    '<h3>' + L('English and French', 'الإنكليزي والفرنسي') + '</h3><div class="chips"><button type="button" class="tk' + (LB.lang !== 'both' ? ' on' : '') + '" data-rlang="best">' + L('Only the higher one · /2400', 'الأعلى بس · /2400') + '</button><button type="button" class="tk' + (LB.lang === 'both' ? ' on' : '') + '" data-rlang="both">' + L('Both count · /2700', 'التنتين · /2700') + '</button></div>' +
+    '<h3>' + L('Teams and helpers', 'الفرق والمساعدين') + '</h3><div class="inl"><button type="button" class="btn ghost" data-act="teams">' + L('Edit teams', 'عدّل الفرق') + '</button><button type="button" class="btn ghost" data-act="helpers">' + L('Challenge helpers', 'مساعدو التحديات') + '</button></div>' +
+    '<p style="margin-top:14px"><button type="button" class="btn ghost" data-act="cpanel">' + L('Close', 'إغلاق') + '</button></p></div>';
+}
 function lobbyHTML(my) {
   let h = '<div class="chips">' + my.map(c => '<a class="chip' + (c === cur ? ' on' : '') + '" href="#r-' + c + '">' + esc(lname(c)) + '</a>').join('') +
     '<button type="button" class="chip add" data-act="new">+ New race</button><button type="button" class="chip add" data-act="code">Join with code</button></div>';
@@ -647,7 +702,8 @@ function lobbyHTML(my) {
     const L = lobbyDocs[cur], inIt = my.includes(cur);
     if (L && L.missing) h += '<p class="note">No race found with code ' + esc(cur.toUpperCase()) + '.</p>';
     else if (L) h += '<div class="info"><span>' + (inIt ? '' : 'Viewing ') + '<b>' + esc(lname(cur)) + '</b> · code <b class="num code">' + esc(cur.toUpperCase()) + '</b></span><span class="tag">' + (L.lang === 'both' ? 'Both languages · /2700' : 'Best language · /2400') + '</span>' +
-      '<button type="button" class="btn ghost" data-act="copy">Invite</button>' + (!inIt ? '<button type="button" class="btn" data-act="enter">Join this race</button>' : '<button type="button" class="btn ghost" data-act="leave">' + (leaveArm ? 'Tap again to leave' : 'Leave') + '</button>') + '</div>';
+      '<button type="button" class="btn ghost" data-act="copy">Invite</button>' + (inIt && L.by === meId ? '<button type="button" class="btn' + (ui === 'cpanel' ? '' : ' ghost') + '" data-act="cpanel" aria-expanded="' + (ui === 'cpanel') + '">' + LL('Race creator panel', 'لوحة منشئ السباق') + '</button>' : '') + (!inIt ? '<button type="button" class="btn" data-act="enter">Join this race</button>' : '<button type="button" class="btn ghost" data-act="leave">' + (leaveArm ? 'Tap again to leave' : 'Leave') + '</button>') + '</div>' +
+      (ui === 'cpanel' && inIt && L.by === meId ? cpanelHTML(L) : '');
   } else h += '<p class="note">Create a race and send the invite to your friends, or join one with a code.</p>';
   return h;
 }
@@ -665,7 +721,7 @@ function hwHTML() {
   }
   if (!list.length) h += '<p class="note">' + (canPost ? 'No homework yet. Add what the teachers gave.' : 'No homework posted for now.') + '</p>';
   else h += '<ul class="hwl">' + list.map(w => { const d = mine[w.g ? 'g_' + w.id : cur + '_' + w.id]; const soon = w.due <= tm;
-    return '<li class="' + (d ? 'done' : '') + '"><input type="checkbox" data-hwdone="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '"' + (d ? ' checked' : '') + ' aria-label="Done"><div class="t"><span dir="auto">' + esc(w.text) + '</span><span class="due' + (soon ? ' soon' : '') + '"><span class="tag">' + esc(w.subj || '') + '</span>' + (w.g ? '<span class="tag gtag">' + L('Everyone', 'للجميع') + '</span>' : '') + ' due ' + (w.due === today ? 'today' : w.due === tm ? 'tomorrow' : esc(fmtDate(w.due))) + '</span></div>' +
+    return '<li class="' + (d ? 'done' : '') + '"><input type="checkbox" data-hwdone="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '"' + (d ? ' checked' : '') + ' aria-label="Done"><div class="t"><span dir="auto">' + esc(w.text) + '</span><span class="due' + (soon ? ' soon' : '') + '"><span class="tag">' + esc(w.subj || '') + '</span>' + (w.g ? '<span class="tag gtag">' + L('Everyone', 'للجميع') + '</span>' : '') + (w.byNick ? '<span class="tag">' + esc(w.byNick) + '</span>' : '') + ' due ' + (w.due === today ? 'today' : w.due === tm ? 'tomorrow' : esc(fmtDate(w.due))) + '</span></div>' +
       (((w.g && (isAdmin() || w.by === meId)) || (!w.g && (isCreator() || w.by === meId))) ? '<button class="x" data-hwdel="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '" aria-label="Delete homework">×</button>' : '') + '</li>'; }).join('') + '</ul>';
   return h + '</section>';
 }
@@ -702,6 +758,25 @@ function subjectsHTML() {
   }).join('');
 }
 // ---- this week ----
+// ---- race rounds: set by the race creator. All study history is kept, so changing this never loses anything. ----
+const RESETS = [['week', 'Every week', 'كل أسبوع'], ['month', 'Every month', 'كل شهر'], ['3m', 'Every 3 months', 'كل 3 أشهر'], ['manual', 'When I say', 'لما بدّي'], ['none', 'Never', 'أبداً']];
+const ALL_FROM = '2000-01-01';
+const addDays = (k, n) => { const d = new Date(k + 'T00:00'); d.setDate(d.getDate() + n); return dkey(d); };
+const resetMode = LB => (LB && RESETS.some(r => r[0] === LB.reset)) ? LB.reset : 'month';
+// Start of the round that contains day k (school-year quarters: Sep, Dec, Mar, Jun).
+function roundStart(LB, k) { const m = resetMode(LB), d = new Date(k + 'T00:00');
+  if (m === 'week') { d.setDate(d.getDate() - d.getDay()); return dkey(d); }
+  if (m === 'month') return k.slice(0, 8) + '01';
+  if (m === '3m') { const mo = d.getMonth(), q = [8, 11, 2, 5].map(x => (mo - x + 12) % 12).reduce((a, b) => Math.min(a, b)); d.setDate(1); d.setMonth(mo - q); return dkey(d); }
+  if (m === 'manual') { const rs = (Array.isArray(LB.resets) ? LB.resets : []).filter(x => typeof x === 'string' && x <= k).sort(); return rs.length ? rs[rs.length - 1] : ALL_FROM; }
+  return ALL_FROM; }
+const roundNow = LB => roundStart(LB, todayKey());
+function roundLabel(LB) { const m = resetMode(LB), f = roundNow(LB);
+  return m === 'week' ? L('this week', 'هذا الأسبوع') : m === 'month' ? L('this month', 'هذا الشهر') : m === '3m' ? L('since ', 'من ') + fmtDate(f) : m === 'manual' ? (f === ALL_FROM ? L('so far', 'لحد هلق') : L('since ', 'من ') + fmtDate(f)) : L('in total', 'بالمجموع'); }
+// Earlier rounds, newest first: [{from, to}]
+function pastRounds(LB, n) { const m = resetMode(LB), out = []; if (m === 'none') return out;
+  if (m === 'manual') { const rs = (Array.isArray(LB.resets) ? LB.resets : []).filter(x => typeof x === 'string' && x <= todayKey()).sort(); for (let i = rs.length - 1; i >= 0 && out.length < n; i--) out.push({from: i ? rs[i - 1] : ALL_FROM, to: addDays(rs[i], -1)}); return out; }
+  let st = roundNow(LB); for (let i = 0; i < n; i++) { const to = addDays(st, -1), from = roundStart(LB, to); out.push({from, to}); st = from; } return out; }
 function weekStart() { const d = dayAgo(0); d.setDate(d.getDate() - d.getDay()); return d; } // Sunday
 function weekInfo(p, mode) {
   const ws = dkey(weekStart()), f = (p && p.first) || {}, done = (p && p.done) || {};
@@ -712,20 +787,21 @@ function weekInfo(p, mode) {
   let hours = 0; const h = (p && p.hours) || {}; for (const k in h) if (k >= ws) hours += +h[k] || 0;
   return {fresh, gain, reviews: e.rv, hours, ws};
 }
-function weekHTML(rows, mode) {
-  if (!(me && me.nick)) return '<p class="note">Sign in to see your week.</p>';
-  const w = weekInfo(cur && players[meId] ? players[meId] : me, mode), f = me.first || {};
+function weekHTML(rows, mode, P) {
+  if (!P && !(me && me.nick)) return '<p class="note">Sign in to see your week.</p>';
+  const w = weekInfo(P || (cur && players[meId] ? players[meId] : me), mode), f = (P || me).first || {};
   const byDay = {}; for (const id of w.fresh) (byDay[f[id]] = byDay[f[id]] || []).push(id);
   const subjOf = id => { for (const s of SUBJECTS) if (TASKS[s.k].includes(id)) return s.name; return ''; };
   let h = '<section class="card"><p class="note">Since ' + esc(fmtDate(w.ws)) + '</p><div class="wk"><div><b class="num">+' + w.gain + '</b><span>points</span></div><div><b class="num">' + w.fresh.length + '</b><span>new lessons</span></div><div><b class="num">' + w.reviews + '</b><span>reviews</span></div><div><b class="num">' + fmtH(w.hours) + '</b><span>hours</span></div></div></section>';
   const days = Object.keys(byDay).sort().reverse();
   h += '<section class="card" style="margin-top:14px"><h2>Finished this week</h2>' + (days.length ? days.map(k => '<div class="unit">' + esc(fmtDate(k)) + '</div><ul class="ls">' + byDay[k].map(id => '<li><span class="t" dir="auto"><span>' + esc(TITLE[id]) + '</span><small>' + esc(subjOf(id)) + '</small></span></li>').join('') + '</ul>').join('') : '<p class="note">Nothing finished yet this week. Your first lesson starts the count.</p>') + '</section>';
+  if (!P && myNotes.length) h += '<section class="card" style="margin-top:14px"><h2>' + L('Notes from school', 'ملاحظات من المدرسة') + '</h2>' + notesListHTML(myNotes, false) + '</section>';
   if (rows.length) { const r2 = rows.map(r => ({...r, w: weekInfo(r.p, mode)})).sort((a, b) => b.w.gain - a.w.gain), mx = Math.max(1, ...r2.map(r => r.w.gain));
     h += '<section class="card" style="margin-top:14px"><h2>This week in ' + esc(lname(cur)) + '</h2><div class="rows">' + r2.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + '<small>' + r.w.fresh.length + ' lessons</small></span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (r.w.gain / mx * 100) + '%"></i></div><span class="v num">+' + r.w.gain + '</span></div>').join('') + '</div></section>'; }
   return h;
 }
 // ---- tests page ----
-const L = (en, ar) => LANG === 'ar' ? ar : en;
+const L = (en, ar) => LANG === 'ar' ? ar : en, LL = L;
 let tdelArm = null, outArm = false;
 function testFormHTML(o) {
   o = o || {id: 'testForm', p: 't', act: 'test', title: L('New مذاكرة or امتحان', 'مذاكرة أو امتحان جديد'), btn: L('Announce', 'أعلن'), ph: L('Name, like Physics مذاكرة 1', 'الاسم، مثلاً: مذاكرة الفيزياء الأولى')};
@@ -806,7 +882,7 @@ function helpersHTML() {
       h += '<div class="panel"><p><b>' + L('Challenge helpers', 'مساعدو التحديات') + '</b> ' + L('can add challenges in this race.', 'يمكنهم إضافة تحديات في هذا السباق.') + '</p>' +
         (others.length ? '<ul class="hwl">' + others.map(id => { const on = (LB.helpers || []).includes(id); return '<li><div class="t"><span>' + esc(nick(players[id])) + '</span></div><button class="tk' + (on ? ' on' : '') + '" data-helper="' + esc(id) + '">' + (on ? 'Helper ✓' : 'Make helper') + '</button></li>'; }).join('') + '</ul>' : '<p class="note">Nobody else has joined yet.</p>') +
         '<button class="btn ghost" data-act="helpers">' + L('Done', 'تم') + '</button></div>';
-    } else h += '<p class="note" style="margin-top:10px"><button class="linkbtn" data-act="helpers">' + L('Manage challenge helpers', 'إدارة مساعدي التحديات') + '</button></p>';
+    }
   }
   return h;
 }
@@ -833,24 +909,28 @@ function rulesHTML() {
   const table = '<table class="rt"><thead><tr><th>' + L('Subject', 'المادة') + '</th><th>' + L('Exam marks', 'العلامة') + '</th><th>' + L('New lesson', 'درس جديد') + '</th><th>' + L('Review (1st → later)', 'مراجعة (أولى ← بعدها)') + '</th></tr></thead><tbody>' +
     shown.map(s => '<tr><td dir="auto">' + esc(nm(s)) + '</td><td class="num">' + s.pts + '</td><td class="num">' + VAL[s.k] + '</td><td class="num">' + Math.ceil(VAL[s.k] / 2) + ' → ' + Math.ceil(VAL[s.k] / 4) + '</td></tr>').join('') + '</tbody></table>';
   if (LANG === 'ar') return '<section class="card rules" dir="rtl">' +
-    '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>أول مراجعة للدرس تعطي <b>نصف</b> قيمته، وكل مراجعة بعدها تعطي <b>ربع</b> قيمته. تُحسب مراجعة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
+    '<h2>السباق</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>أول مراجعة للدرس تعطي <b>نصف</b> قيمته، وكل مراجعة بعدها تعطي <b>ربع</b> قيمته. تُحسب مراجعة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>السباق بيرجع من الصفر ببداية كل جولة. منشئ السباق بيختار: كل أسبوع، كل شهر، كل 3 أشهر، لما هو بدّو، أو أبداً. الجولات القديمة بتضل محفوظة.</li><li>منشئ السباق عندو «لوحة منشئ السباق» بصفحة السباق: الاسم، الجولات، طريقة حساب اللغات، الفرق ومساعدو التحديات.</li></ul>' + table +
     '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>المذاكرات والامتحانات لها موعد ويعلنها المدير مسبقاً. التقييم يأتي فجأة، فيضيفه المدير بعد حدوثه (الاسم والمادة). عند صدور العلامات يكتب المدير العلامة الكاملة، فتظهر رسالة لكل الناس في كل السباقات تسألهم كم أخذوا.</li><li>يوم المذاكرة أو الامتحان تُفتح العلامات من العلامة الحقيقية لما يشمله (يمكن للمدير تعديلها)، ويدخل كل شخص علامته الحقيقية. العلامة الكاملة تعطي 100 نقطة في السباق الشهري، والنقاط حسب نسبتها (مثلاً 15 من 20 = 75 نقطة).</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
     '<h2>التحديات</h2><ul><li>منشئ السباق ومساعدو التحديات الذين يختارهم يمكنهم إنشاء تحدٍّ لسباقهم: هدف بدروس وموعد، مثل «أنهوا الوحدة الرابعة في الكيمياء قبل الجمعة». (المذاكرات والتقييمات تكون في صفحة الاختبارات.)</li><li>يُحسب التحدي مثل الاختبار: من العلامة الحقيقية للمادة، مقسومة على الدروس الداخلة فيه، والدروس المدروسة من يوم بدئه حتى موعده. التحدي خاص بهذا السباق فقط.</li></ul>' +
     '<h2>المفاجآت</h2><ul><li>يمكنك إرسال مفاجأة لأي شخص في سباقك: قلوب أو ورود أو نجوم وغيرها مع رسالة قصيرة. تتساقط على شاشته في المرة القادمة التي يفتح فيها الموقع.</li></ul>' +
     '<h2>الفرق</h2><ul><li>منشئ السباق يمكنه تقسيم أعضاء سباقه إلى فرق (حتى 6 فرق) ووضع كل عضو في فريق.</li><li>نقاط الفريق هي <b>متوسط</b> نقاط أعضائه هذا الشهر، فالفريق الأكبر لا يربح لمجرد أنه أكبر.</li></ul>' +
+    '<h2>المدرسة والأهل</h2><ul><li>الأساتذة بينشروا واجبات بتطلع للكل، وبيبعتوا ملاحظات حلوة ⭐.</li><li>المشرفة بتبعت ملاحظات حلوة ⭐ أو سيئة 👎.</li><li>بتشوف ملاحظاتك بصفحة إنجازك، والجديدة بتطلعلك أول ما تفتح الموقع.</li><li>أهلك بيقدروا يشوفوا إنجازك وساعاتك وملاحظاتك بس. ما بيقدروا يغيّروا شي.</li></ul>' +
+    (BDAY_ON ? '<h2>عيد الميلاد</h2><ul><li>بيوم عيد ميلادك بتطلعلك كيكة صغيرة مع أغنية، وبتاخد <b>20 نقطة</b> بالسباق. مرة وحدة بسنة البكالوريا.</li><li>إذا عيد ميلادك فات أو بعد أكتر من 7 أشهر، بتاخد الكيكة والنقاط فوراً.</li><li>أصدقاؤك بيشوفوا 🎂 جنب اسمك بنفس اليوم بس. تاريخ ميلادك ما بيبين لحدا.</li></ul>' : '') +
     '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
     '<h2>الواجبات</h2><ul><li>ينشر الواجبات مدير الموقع والأشخاص الذين يختارهم فقط. يمكنهم نشرها لكل السباقات («للجميع») أو لسباق واحد. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
-    '<h2>طريقة الاستخدام</h2><ol><li>أنشئ حساباً باسم مستخدم وكلمة سر وكود الدخول الذي أخذته. احفظ كلمة السر: لا يمكن استرجاعها. ادخل بنفس الحساب من أي هاتف.</li><li>اختر اسمك ومادة الديانة التي تدرسها.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
+    '<h2>طريقة الاستخدام</h2><ol><li>أنشئ حساباً باسم مستخدم وكلمة سر وكود الدخول الذي أخذته. احفظ كلمة السر: لا يمكن استرجاعها. ادخل بنفس الحساب من أي هاتف.</li><li>اختر اسمك ومادة الديانة التي تدرسها وتاريخ ميلادك.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
     '<h2>الأمانة</h2><p>السباق قائم على الثقة بين الأصدقاء. علّم الدرس فقط عندما تدرسه فعلاً. الهدف أن ننجح كلنا. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ.</p></section>';
   return '<section class="card rules">' +
-    '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>The first review of a lesson earns <b>half</b> its value, and every review after that earns <b>a quarter</b>. One review per lesson per day counts.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
-    '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>A مذاكرة or امتحان is on a schedule and announced early. A تقييم comes without warning, so the admin adds it after it happens (name, subject). When the marks come out, the admin types what it was out of, and everyone in every race gets a message asking how much they got.</li><li>On the day of a مذاكرة or امتحان, marks open out of the real exam marks of what it covers (the admin can change that), and everyone enters their real mark. A full mark gives 100 points in the monthly race, scaled (for example 15 out of 20 = 75 points).</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
+    '<h2>The race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>The first review of a lesson earns <b>half</b> its value, and every review after that earns <b>a quarter</b>. One review per lesson per day counts.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero at the start of each round. The race creator chooses: every week, every month, every 3 months, when they say, or never. Past rounds are kept.</li><li>The race creator has a "Race creator panel" on the Race page: name, rounds, how languages count, teams and challenge helpers.</li></ul>' + table +
+    '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>A مذاكرة or امتحان is on a schedule and announced early. A تقييم comes without warning, so the admin adds it after it happens (name, subject). When the marks come out, the admin types what it was out of, and everyone in every race gets a message asking how much they got.</li><li>On the day of a مذاكرة or امتحان, marks open out of the real exam marks of what it covers (the admin can change that), and everyone enters their real mark. A full mark gives 100 points in the race, scaled (for example 15 out of 20 = 75 points).</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
     '<h2>Challenges</h2><ul><li>A race\'s creator and the challenge helpers they pick can set their race a challenge: a goal with lessons and a deadline, like "finish Chemistry unit 4 by Friday". (Quizzes and تقييم go on the Tests page.)</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
     '<h2>Surprises</h2><ul><li>You can send anyone in your race a surprise: hearts, flowers, stars and more, with a short message. It falls on their screen the next time they open the site.</li></ul>' +
-    '<h2>Teams</h2><ul><li>A race\'s creator can split its members into teams (up to 6) and put each member in one.</li><li>A team\'s score is the <b>average</b> of its members\' points this month, so a bigger team doesn\'t win just by being bigger.</li></ul>' +
+    '<h2>Teams</h2><ul><li>A race\'s creator can split its members into teams (up to 6) and put each member in one.</li><li>A team\'s score is the <b>average</b> of its members\' points in the current round, so a bigger team doesn\'t win just by being bigger.</li></ul>' +
+    '<h2>School & parents</h2><ul><li>Teachers post homework for everyone and can send good notes ⭐.</li><li>The supervisor can send good ⭐ or bad 👎 notes.</li><li>Your notes are on the My week page, and new ones pop up when you open the site.</li><li>Your parents can only watch your progress, hours and notes. They can\'t change anything.</li></ul>' +
+    (BDAY_ON ? '<h2>Birthday</h2><ul><li>On your birthday you get a little cake with a song, and <b>20 points</b> in the race. Once per Bakaloria year.</li><li>If your birthday already passed or is more than 7 months away, you get the cake and the points right away.</li><li>Your race-mates see 🎂 next to your name on that day only. Nobody sees your date of birth.</li></ul>' : '') +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
     '<h2>Homework</h2><ul><li>Only the website admin and the people they choose can post homework, either for every race (marked Everyone) or for one race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
-    '<h2>How to use</h2><ol><li>Create an account with a username, a password and the access code you were given. Remember your password: it can\'t be reset. Log in with the same account on any phone.</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
+    '<h2>How to use</h2><ol><li>Create an account with a username, a password and the access code you were given. Remember your password: it can\'t be reset. Log in with the same account on any phone.</li><li>Pick your name, your religion subject and your date of birth.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
     '<h2>Honesty</h2><p>The race runs on trust between friends. Only tick a lesson when you really studied it. The goal is for all of us to pass. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</p></section>';
 }
 function pwField(id, label, ac) {
@@ -861,10 +941,11 @@ let outArm2 = false;
 function profileHTML() {
   if (!meId) return '<p class="note">' + L('Log in to see your profile.', 'سجّل الدخول لترى ملفك.') + '</p>';
   const p = me || {};
-  return '<form id="pfName" class="card"><p class="note">' + L('Logged in as ', 'مسجّل الدخول باسم ') + '<b dir="ltr">' + esc(myUsername()) + '</b></p><h2 style="margin-top:10px">' + L('Your name and religion subject', 'اسمك ومادة الديانة') + '</h2><p class="note">' + L('This is the name your friends see in races.', 'هذا الاسم الذي يراه أصدقاؤك في السباقات.') + '</p>' +
+  return '<form id="pfName" class="card"><p class="note">' + L('Logged in as ', 'مسجّل الدخول باسم ') + '<b dir="ltr">' + esc(myUsername()) + '</b>' + (staffMode() ? ' · ' + ROLE_NAME(ROLE()) : '') + '</p><h2 style="margin-top:10px">' + L('Your name, religion subject and birthday', 'اسمك ومادة الديانة وعيد ميلادك') + '</h2><p class="note">' + L('This is the name your friends see in races.', 'هذا الاسم الذي يراه أصدقاؤك في السباقات.') + '</p>' +
     '<div class="stackf" style="margin-top:10px"><label class="fl">' + L('Name', 'الاسم') + '<input type="text" id="pfNick" required maxlength="24" value="' + esc(p.nick || '') + '"></label></div>' +
-    '<label class="opt" style="margin-top:12px"><input type="radio" name="pfRel" value="i"' + (p.religion !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="pfRel" value="c"' + (p.religion === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
-    '<button class="btn">' + L('Save', 'حفظ') + '</button></form>' +
+    (staffMode() ? '' : '<label class="opt" style="margin-top:12px"><input type="radio" name="pfRel" value="i"' + (p.religion !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="pfRel" value="c"' + (p.religion === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
+    dobField('pfDob', p.dob) + (BDAY_ON ? '<p class="note" style="margin-top:6px">' + L('The birthday bonus counts once per Bakaloria year.', 'نقاط عيد الميلاد تنحسب مرة وحدة بسنة البكالوريا.') + '</p>' : '')) +
+    '<button class="btn" style="margin-top:12px">' + L('Save', 'حفظ') + '</button></form>' +
     '<form id="pfPw" class="card" style="margin-top:14px"><h2>' + L('Password', 'كلمة السر') + '</h2>' +
     '<div class="stackf" style="margin-top:10px">' + pwField('pfPass2', L('Current password', 'كلمة السر الحالية'), 'current-password') + pwField('pfPass3', L('New password (6+ characters)', 'كلمة السر الجديدة (6 أحرف أو أكثر)'), 'new-password') + '</div>' +
     '<button class="btn" style="margin-top:12px">' + L('Change password', 'غيّر كلمة السر') + '</button></form>' +
@@ -889,17 +970,26 @@ function gateHTML() {
     (Array.isArray(adminUids) && !adminUids.length ? '<div class="infobox" style="margin-top:12px">' + L('No admin yet. If you are the site owner, tap this now. It only works once, for the first person.', 'لا يوجد مدير بعد. إذا كنت صاحب الموقع اضغط هنا الآن. يعمل مرة واحدة فقط لأول شخص.') + '<p style="margin:10px 0 0"><button type="button" class="btn" data-act="claim">' + L('Make me the admin', 'اجعلني المدير') + '</button></p></div>' : '') +
     '<p class="note"><button type="button" class="linkbtn" data-act="signout">' + L('Sign out', 'تسجيل الخروج') + '</button></p></form>';
 }
+function parentChips(c) { const ps = codes.filter(x => x.role === 'parent' && x.parentOf === c.id);
+  return '<div class="pcodes">' + (ps.length ? ps.map(p => '<span class="tag" dir="ltr">' + L('Parent', 'أهل') + ': <b class="num">' + esc(p.id) + '</b>' + (p.usedBy ? ' ✓' : ' <button type="button" class="linkbtn" data-cpy="' + esc(p.id) + '">' + L('Copy', 'نسخ') + '</button>') + '</span>').join('') : '') + (ps.length < 2 ? '<button type="button" class="linkbtn" data-mkpar="' + esc(c.id) + '">' + L('+ parent codes', '+ أكواد للأهل') + '</button>' : '') + '</div>'; }
+function staffCodesHTML() {
+  const st = codes.filter(c => c.role === 'teacher' || c.role === 'supervisor').sort((a, b) => (b.n || 0) - (a.n || 0));
+  return '<section class="card" style="margin-bottom:14px"><h2>' + L('Teacher & supervisor codes', 'أكواد الأساتذة والمشرفة') + '</h2><p class="note">' + L('Teachers can post homework and send good notes. The supervisor can send good and bad notes.', 'الأساتذة بينشروا واجبات وبيبعتوا ملاحظات حلوة. المشرفة بتبعت ملاحظات حلوة وسيئة.') + '</p>' +
+    '<form id="staffCode" class="stackf" style="margin:10px 0"><select id="scRole" aria-label="' + L('Role', 'الصفة') + '"><option value="teacher">' + L('Teacher', 'أستاذ') + '</option><option value="supervisor">' + L('Supervisor', 'المشرفة') + '</option></select><input type="text" id="scLabel" maxlength="30" placeholder="' + L('Who is it for? Like: Mr. Mo', 'لمين؟ مثلاً: أستاذ محمد') + '" dir="auto"><div class="inl"><button class="btn">' + L('Make code', 'أنشئ كود') + '</button></div></form>' +
+    (st.length ? '<ul class="hwl">' + st.map(c => '<li><div class="t"><span><span class="num code" dir="ltr">' + esc(c.id) + '</span> <span class="tag">' + ROLE_NAME(c.role) + '</span></span><span class="due" dir="auto">' + esc(c.label || '') + (c.usedBy ? ' · ' + L('used by ', 'استخدمه ') + esc(c.usedName || '') : '') + '</span></div>' + (c.usedBy ? '<button class="tk" data-revoke="' + esc(c.id) + '">' + (revokeArm === c.id ? L('Tap again', 'اضغط مرة ثانية') : L('Remove access', 'إلغاء الدخول')) + '</button>' : '<button class="tk" data-cpy="' + esc(c.id) + '">' + L('Copy', 'نسخ') + '</button><button class="' + (cdelArm === c.id ? 'tk on' : 'x') + '" data-cdel="' + esc(c.id) + '" aria-label="' + L('Delete code', 'احذف الكود') + '">' + (cdelArm === c.id ? L('Sure?', 'متأكد؟') : '×') + '</button>') + '</li>').join('') + '</ul>' : '') + '</section>';
+}
 function codesHTML() {
-  const free = codes.filter(c => !c.usedBy).sort((a, b) => (b.n || 0) - (a.n || 0)), used = codes.filter(c => c.usedBy).sort((a, b) => (b.usedAt || 0) - (a.usedAt || 0));
+  const stu = codes.filter(c => !c.role || c.role === 'student');
+  const free = stu.filter(c => !c.usedBy).sort((a, b) => (b.n || 0) - (a.n || 0)), used = stu.filter(c => c.usedBy).sort((a, b) => (b.usedAt || 0) - (a.usedAt || 0));
   return '<section class="card" style="margin-bottom:14px"><div class="head" style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">' + L('Access codes', 'أكواد الدخول') + '</h2><span class="tag">' + L(free.length + ' unused · ' + used.length + ' used', free.length + ' متاح · ' + used.length + ' مستخدم') + '</span></div>' +
-    '<p class="note">' + L('Give one code to each person. A code works once.', 'أعط كل شخص كوداً. الكود يعمل مرة واحدة.') + '</p>' +
+    '<p class="note">' + L('Give one code to each student. A code works once. Each student code comes with two parent codes: parents can only watch their child\'s progress and notes. A parent code works after the student has signed up.', 'أعط كل طالب كوداً. الكود يعمل مرة واحدة. مع كل كود طالب في كودين للأهل: الأهل بيشوفوا إنجاز ابنهم وملاحظاته بس. كود الأهل بيشتغل بعد ما يسجّل الطالب.') + '</p>' +
     '<div class="inl" style="margin:10px 0"><button class="btn" data-mk="1">' + L('+ 1 code', '+ كود') + '</button><button class="btn ghost" data-mk="10">' + L('+ 10 codes', '+ 10 أكواد') + '</button></div>' +
-    (free.length ? '<ul class="hwl">' + free.map(c => '<li><div class="t"><span class="num code" dir="ltr">' + esc(c.id) + '</span></div><button class="tk" data-cpy="' + esc(c.id) + '">' + L('Copy', 'نسخ') + '</button><button class="' + (cdelArm === c.id ? 'tk on' : 'x') + '" data-cdel="' + esc(c.id) + '" aria-label="' + L('Delete code', 'احذف الكود') + '">' + (cdelArm === c.id ? L('Sure?', 'متأكد؟') : '×') + '</button></li>').join('') + '</ul>' : '') +
-    (used.length ? '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Used codes', 'الأكواد المستخدمة') + '</summary><ul class="hwl">' + used.map(c => '<li><div class="t"><span class="num" dir="ltr">' + esc(c.id) + '</span><span class="due">' + L('used ', 'استُخدم ') + esc(fmtDate(dkey(new Date(c.usedAt || 0)))) + '</span></div><button class="tk" data-revoke="' + esc(c.id) + '">' + (revokeArm === c.id ? L('Tap again', 'اضغط مرة ثانية') : L('Remove access', 'إلغاء الدخول')) + '</button></li>').join('') + '</ul></details>' : '') + '</section>';
+    (free.length ? '<ul class="hwl">' + free.map(c => '<li><div class="t"><span class="num code" dir="ltr">' + esc(c.id) + '</span>' + parentChips(c) + '</div><button class="tk" data-cpy="' + esc(c.id) + '">' + L('Copy', 'نسخ') + '</button><button class="' + (cdelArm === c.id ? 'tk on' : 'x') + '" data-cdel="' + esc(c.id) + '" aria-label="' + L('Delete code', 'احذف الكود') + '">' + (cdelArm === c.id ? L('Sure?', 'متأكد؟') : '×') + '</button></li>').join('') + '</ul>' : '') +
+    (used.length ? '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Used codes', 'الأكواد المستخدمة') + '</summary><ul class="hwl">' + used.map(c => '<li><div class="t"><span class="num" dir="ltr">' + esc(c.id) + '</span><span class="due">' + (c.usedName ? '<b dir="ltr">' + esc(c.usedName) + '</b> · ' : '') + L('used ', 'استُخدم ') + esc(fmtDate(dkey(new Date(c.usedAt || 0)))) + '</span>' + parentChips(c) + '</div><button class="tk" data-revoke="' + esc(c.id) + '">' + (revokeArm === c.id ? L('Tap again', 'اضغط مرة ثانية') : L('Remove access', 'إلغاء الدخول')) + '</button></li>').join('') + '</ul></details>' : '') + '</section>';
 }
 let revokeArm = null, cdelArm = null;
 function peopleHTML() {
-  const ppl = [{uid: meId, name: L('You', 'أنت') + (myUsername() ? ' (' + myUsername() + ')' : '')}, ...codes.filter(c => c.usedBy && c.usedBy !== meId).map(c => ({uid: c.usedBy, name: c.usedName || ('#' + c.usedBy.slice(0, 6))}))];
+  const ppl = [{uid: meId, name: L('You', 'أنت') + (myUsername() ? ' (' + myUsername() + ')' : '')}, ...codes.filter(c => c.usedBy && c.usedBy !== meId).map(c => ({uid: c.usedBy, name: (c.usedName || ('#' + c.usedBy.slice(0, 6))) + (c.role && c.role !== 'student' ? ' · ' + ROLE_NAME(c.role) : '')}))];
   return '<section class="card" style="margin-top:14px"><h2>' + L('People & special themes', 'الأشخاص والأشكال الخاصة') + '</h2><p class="note">' + L('Homework: lets that person post homework for all races. ★ theme: unlock it for them (gold = on). "Set" also switches them to it right away.', 'الواجبات: يسمح للشخص بنشر واجبات لكل السباقات. شكل ★: افتحه له (الذهبي = مفعّل). «طبّق» يغيّر شكله إليه فوراً.') + '</p>' +
     ppl.filter(p => p.uid).map(p => { const pk = perksAll[p.uid] || {}, have = Array.isArray(pk.themes) ? pk.themes : [];
       return '<div class="person"><div class="pn" dir="ltr">' + esc(p.name) + (pk.set ? ' <span class="tag">' + esc((ALLTHEMES.find(t => t[0] === pk.set) || [, pk.set])[1]) + '</span>' : '') + '</div><div class="chips">' +
@@ -907,10 +997,62 @@ function peopleHTML() {
 }
 function adminHTML() {
   const used = codes.filter(c => c.usedBy).length;
-  return '<p class="infobox">' + L('Only you see this page. Accounts with access: ', 'أنت فقط ترى هذه الصفحة. الحسابات التي لها دخول: ') + '<b class="num">' + used + '</b></p>' + codesHTML() +
-    peopleHTML() + soundboardHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Other admin tools', 'أدوات أخرى') + '</h2><ul class="alist"><li>' + L('Announce tests on the Tests page (+ Announce a test).', 'أعلن الاختبارات من صفحة الاختبارات (+ أعلن اختباراً).') + '</li><li>' + L('Post homework for everyone from the homework box on the race page: keep "Send to all races" ticked.', 'انشر واجباً للجميع من صندوق الواجبات في صفحة السباق مع إبقاء «أرسله لكل السباقات» معلّماً.') + '</li></ul>' +
+  return '<p class="infobox">' + L('Only you see this page. Accounts with access: ', 'أنت فقط ترى هذه الصفحة. الحسابات التي لها دخول: ') + '<b class="num">' + used + '</b></p>' + codesHTML() + staffCodesHTML() +
+    peopleHTML() + adminNotesHTML() + soundboardHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Other admin tools', 'أدوات أخرى') + '</h2><ul class="alist"><li>' + L('Announce tests on the Tests page (+ Announce a test).', 'أعلن الاختبارات من صفحة الاختبارات (+ أعلن اختباراً).') + '</li><li>' + L('Post homework for everyone from the homework box on the race page: keep "Send to all races" ticked.', 'انشر واجباً للجميع من صندوق الواجبات في صفحة السباق مع إبقاء «أرسله لكل السباقات» معلّماً.') + '</li></ul>' +
     '<p style="margin-top:12px"><button class="btn ghost" data-page="tests">' + L('Go to Tests', 'إلى الاختبارات') + '</button> <button class="btn ghost" data-page="race">' + L('Go to homework', 'إلى الواجبات') + '</button></p></section>';
 }
+// ---- school notes (teachers: good notes; supervisor and admin: good or bad) ----
+const NOTE_ROLE = n => n.role === 'teacher' ? L('Teacher', 'أستاذ') : n.role === 'supervisor' ? L('Supervisor', 'المشرفة') : n.role === 'admin' ? L('Admin', 'المدير') : '';
+let noteKind = 'good', ndelArm = null;
+function notesListHTML(list, showTo, canDel) {
+  const a = list.filter(n => n && typeof n.text === 'string').sort((x, y) => (y.at || 0) - (x.at || 0)).slice(0, 60);
+  if (!a.length) return '<p class="note">' + L('No notes yet.', 'لا يوجد ملاحظات بعد.') + '</p>';
+  return '<ul class="notes">' + a.map(n => '<li class="nt ' + (n.kind === 'bad' ? 'bad' : 'good') + '"><div class="nh"><span class="tag">' + (n.kind === 'bad' ? '👎 ' + L('Bad note', 'ملاحظة سيئة') : '⭐ ' + L('Good note', 'ملاحظة حلوة')) + '</span><span class="note">' + (showTo ? L('To ', 'إلى ') + '<b dir="auto">' + esc(n.toNick || '?') + '</b> · ' : '') + L('from ', 'من ') + '<b dir="auto">' + esc(n.fromNick || '?') + '</b>' + (NOTE_ROLE(n) ? ' (' + NOTE_ROLE(n) + ')' : '') + ' · ' + esc(fmtDate(dkey(new Date(n.at || 0)))) + '</span></div><p dir="auto">' + esc(n.text) + '</p>' +
+    (canDel && (n.from === meId || isAdmin()) ? '<button type="button" class="linkbtn" data-ndel="' + esc(n.id) + '">' + (ndelArm === n.id ? L('Tap again to delete', 'اضغط مرة ثانية للحذف') : L('Delete', 'حذف')) + '</button>' : '') + '</li>').join('') + '</ul>';
+}
+function noteFormHTML(canBad) {
+  const opts = students.slice().sort((a, b) => (a.nick || '').localeCompare(b.nick || '')).map(st => '<option value="' + esc(st.uid) + '">' + esc(st.nick || '?') + '</option>').join('');
+  if (!students.length) return '<p class="note">' + L('No students yet. They show up here after they open the site.', 'ما في طلاب بعد. بيظهروا هون بعد ما يفتحوا الموقع.') + '</p>';
+  return '<form id="noteForm" class="stackf"><label class="fl">' + L('Student', 'الطالب') + '<select id="noteTo">' + opts + '</select></label>' +
+    (canBad ? '<div class="chips"><button type="button" class="tk' + (noteKind === 'good' ? ' on' : '') + '" data-nkind="good">⭐ ' + L('Good note', 'ملاحظة حلوة') + '</button><button type="button" class="tk badk' + (noteKind === 'bad' ? ' on' : '') + '" data-nkind="bad">👎 ' + L('Bad note', 'ملاحظة سيئة') + '</button></div>' : '') +
+    '<label class="fl">' + L('Note', 'الملاحظة') + '<textarea id="noteText" maxlength="300" required rows="3" dir="auto" placeholder="' + (canBad && noteKind === 'bad' ? L('Like: talked during the lesson', 'مثلاً: حكى خلال الحصة') : L('Like: great work in today\'s lesson!', 'مثلاً: شغل ممتاز بحصة اليوم!')) + '"></textarea></label>' +
+    '<div class="inl"><button class="btn' + (canBad && noteKind === 'bad' ? ' warnbtn' : '') + '">' + L('Send note', 'أرسل الملاحظة') + '</button></div></form>';
+}
+function staffHwHTML() {
+  const today = todayKey(), tm = dkey(dayAgo(-1)), opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option' + (s.name === lastHwSubj ? ' selected' : '') + '>' + esc(s.name) + '</option>').join('');
+  const mine = ghw.filter(w => w.by === meId && typeof w.text === 'string').sort((a, b) => a.due < b.due ? -1 : 1);
+  return '<section class="card"><h2>' + L('Give homework', 'أعطِ واجباً') + '</h2><p class="note">' + L('Every student sees it in their homework list and ticks it when it\'s done.', 'بيشوفه كل الطلاب بقائمة الواجبات وبيعلّموا عليه لما يخلصوه.') + '</p>' +
+    '<form id="staffHw" class="stackf" style="margin-top:10px"><label class="fl">' + L('Subject', 'المادة') + '<select id="shSub">' + opts + '</select></label><label class="fl">' + L('Homework', 'الواجب') + '<textarea id="shText" maxlength="160" required rows="3" dir="auto" placeholder="' + L('Like: solve exercises 1 to 5, page 24', 'مثلاً: حل التمارين من 1 لـ 5 صفحة 24') + '"></textarea></label><label class="fl">' + L('Due', 'موعد التسليم') + '<input type="date" id="shDue" required value="' + tm + '" min="' + today + '" dir="ltr"></label><div class="inl"><button class="btn">' + L('Post homework', 'انشر الواجب') + '</button></div></form>' +
+    '<h2 style="margin-top:18px">' + L('Homework you gave', 'الواجبات اللي أعطيتها') + '</h2>' + (mine.length ? '<ul class="hwl">' + mine.map(w => '<li><div class="t"><span dir="auto">' + esc(w.text) + '</span><span class="due"><span class="tag">' + esc(w.subj || '') + '</span> ' + L('due ', 'التسليم ') + esc(fmtDate(w.due)) + (w.due < today ? ' · ' + L('finished', 'انتهى') : '') + '</span></div><button class="x" data-hwdel="' + esc(w.id) + '" data-g="1" aria-label="' + L('Delete homework', 'احذف الواجب') + '">×</button></li>').join('') + '</ul>' : '<p class="note">' + L('Nothing yet.', 'لا شيء بعد.') + '</p>') + '</section>';
+}
+let lastHwSubj = '';
+function staffHTML() {
+  const r = ROLE(), hi = '<p class="infobox">' + L('Hi ', 'أهلاً ') + '<b dir="auto">' + esc(me.nick) + '</b> · ' + ROLE_NAME(r) + '</p>';
+  if (r === 'teacher') return hi + staffHwHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Send a good note', 'أرسل ملاحظة حلوة') + '</h2><p class="note">' + L('The student and their parents see it.', 'بيشوفها الطالب وأهله.') + '</p>' + noteFormHTML(false) + '<h2 style="margin-top:18px">' + L('Notes you sent', 'الملاحظات اللي أرسلتها') + '</h2>' + notesListHTML(sentNotes, true, true) + '</section>';
+  if (r === 'supervisor') return hi + '<section class="card"><h2>' + L('Send a note', 'أرسل ملاحظة') + '</h2><p class="note">' + L('Good or bad. The student and their parents see it.', 'حلوة أو سيئة. بيشوفها الطالب وأهله.') + '</p>' + noteFormHTML(true) + '</section><section class="card" style="margin-top:14px"><h2>' + L('All notes', 'كل الملاحظات') + '</h2>' + notesListHTML(sentNotes, true, true) + '</section>';
+  if (r === 'parent') {
+    if (!kid) return hi + '<p class="note">' + L('Your child\'s progress shows here after they open the site once.', 'تقدّم ابنك/بنتك بيظهر هون بعد ما يفتح الموقع مرة.') + '</p>' + (kidNotes.length ? '<section class="card"><h2>' + L('Notes from school', 'ملاحظات من المدرسة') + '</h2>' + notesListHTML(kidNotes, false) + '</section>' : '');
+    const ms = monthStart(), tk = todayKey(), pts = racePts(kid, ms, tk).pts, allPts = racePts(kid, ALL_FROM, tk).pts, days0 = Object.keys(kid.log || {}).filter(k => Object.keys(kid.log[k] || {}).length).sort(), last = days0[days0.length - 1] || '', stk = streakOf(kid),
+      status = !last ? L('Hasn\'t started yet', 'لسا ما بلّش') : last === tk ? L('Studied today ✅', 'درس اليوم ✅') : last === addDays(tk, -1) ? L('Last studied yesterday', 'آخر مرة درس مبارح') : L('Last studied ', 'آخر مرة درس ') + fmtDate(last), h = kid.hours || {}, days = [...Array(7)].map((_, i) => dayAgo(6 - i)), wm = Math.max(1, ...days.map(d => +h[dkey(d)] || 0));
+    const good = kidNotes.filter(n => n.kind !== 'bad').length, bad = kidNotes.filter(n => n.kind === 'bad').length;
+    return hi + '<section class="card"><h2 dir="auto">' + L('Progress of ', 'إنجاز ') + esc(kid.nick || '') + '</h2><p class="note" style="margin:0 0 10px">' + status + (stk > 1 ? ' · ' + L(stk + '-day streak 🔥', stk + ' أيام ورا بعض 🔥') : '') + '</p><div class="wk"><div><b class="num">' + pts + '</b><span>' + L('points this month', 'نقطة هذا الشهر') + '</span></div><div><b class="num">' + allPts + '</b><span>' + L('points in total', 'نقطة بالمجموع') + '</span></div><div><b class="num">' + Object.keys(kid.done || {}).length + '</b><span>' + L('lessons studied', 'درس مدروس') + '</span></div><div><b class="num">⭐ ' + good + '</b><span>' + L('good notes', 'ملاحظة حلوة') + '</span></div><div><b class="num">👎 ' + bad + '</b><span>' + L('bad notes', 'ملاحظة سيئة') + '</span></div></div></section>' +
+      '<section class="card" style="margin-top:14px"><h2>' + L('Study hours, last 7 days', 'ساعات الدراسة، آخر 7 أيام') + '</h2><div class="week">' + days.map(d => { const v = +h[dkey(d)] || 0; return '<div><span>' + fmtH(v) + '</span><i style="height:' + (v / wm * 56) + 'px"></i><span>' + dayShort(d) + '</span></div>'; }).join('') + '</div></section>' +
+      '<section class="card" style="margin-top:14px"><h2>' + L('Notes from school', 'ملاحظات من المدرسة') + '</h2>' + notesListHTML(kidNotes, false) + '</section>' +
+      '<h2 class="pgt" style="margin-top:18px">' + L('This week', 'هذا الأسبوع') + '</h2>' + weekHTML([], 'best', kid);
+  }
+  return hi;
+}
+// Banner for students: new notes since they last looked.
+function notesBannerHTML() { let seen = 0; try { seen = +localStorage.getItem('bac-notes-seen') || 0; } catch (e) {}
+  const nw = myNotes.filter(n => (n.at || 0) > seen).sort((a, b) => (b.at || 0) - (a.at || 0)); if (!nw.length) return '';
+  return '<div class="marknote notebanner" role="status"><p><b>' + L('New note from school', 'ملاحظة جديدة من المدرسة') + '</b></p>' + notesListHTML(nw.slice(0, 3), false) + '<button type="button" class="btn ghost" data-act="notesseen">' + L('OK', 'تمام') + '</button></div>'; }
+function adminNotesHTML() { return '<section class="card" style="margin-top:14px"><h2>' + L('School notes', 'ملاحظات المدرسة') + '</h2><p class="note">' + L('Send a good or bad note to a student. Their parents see it too.', 'أرسل ملاحظة حلوة أو سيئة لطالب. أهله بيشوفوها كمان.') + '</p>' + noteFormHTML(true) + '<details style="margin-top:12px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('All notes', 'كل الملاحظات') + ' (' + sentNotes.length + ')</summary>' + notesListHTML(sentNotes, true, true) + '</details></section>'; }
+function pastHTML() { const LB = lobby(); if (!LB || !(me && (me.lobbies || []).includes(cur))) return '';
+  const rounds = pastRounds(LB, 6).map(r => ({...r, top: Object.keys(players).map(id => ({id, sc: racePts(players[id], r.from, r.to).pts})).filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc)})).filter(r => r.top.length);
+  if (!rounds.length) return '';
+  const md = ['🥇', '🥈', '🥉'];
+  return '<section class="card"><details><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700;font-size:16px;color:var(--ink)">' + L('Past rounds', 'الجولات السابقة') + ' (' + rounds.length + ')</summary>' +
+    rounds.map(r => '<div class="unit">' + (r.from === ALL_FROM ? L('Until ', 'لحد ') + esc(fmtDate(r.to)) : esc(fmtDate(r.from)) + ' – ' + esc(fmtDate(r.to))) + '</div><ul class="ls">' + r.top.slice(0, 3).map((x, i) => '<li><span class="t"><span>' + md[i] + ' ' + esc(nick(players[x.id])) + (x.id === meId ? L(' (you)', ' (إنت)') : '') + '</span></span><b class="num">' + x.sc + '</b></li>').join('') + '</ul>').join('') + '</details></section>'; }
 // ---- teams (set by the race creator; team score = average of its members' points this month) ----
 const TEAMCOL = ['#F3D37A', '#7FD3F7', '#B9F27C', '#FFA3C7', '#C9B6FF', '#FFB36B'];
 function surpHTML() {
@@ -921,12 +1063,12 @@ function surpHTML() {
 function teamsHTML(rows) {
   const LB = lobby(); if (!LB || !(me && (me.lobbies || []).includes(cur))) return '';
   const teams = Array.isArray(LB.teams) ? LB.teams.filter(t => t && t.id && typeof t.name === 'string') : [], of = LB.teamOf || {}, creator = isCreator();
-  if (!teams.length && !creator) return '';
-  let h = '<section class="card teams"><div class="head"><h2 style="margin:0">' + L('Team race', 'سباق الفرق') + '</h2>' + (creator ? '<button class="btn ghost" data-act="teams">' + (ui === 'teams' ? L('Done', 'تم') : L('Manage teams', 'إدارة الفرق')) + '</button>' : '') + '</div>';
+  if (!teams.length && !(creator && ui === 'teams')) return '';
+  let h = '<section class="card teams"><div class="head"><h2 style="margin:0">' + L('Team race', 'سباق الفرق') + '</h2>' + (creator && ui === 'teams' ? '<button class="btn ghost" data-act="teams">' + L('Done', 'تم') + '</button>' : '') + '</div>';
   const ts = teams.map((t, i) => { const mem = rows.filter(r => of[r.id] === t.id); const avg = mem.length ? Math.round(mem.reduce((a, r) => a + r.sc, 0) / mem.length) : 0; return {...t, i, mem, avg}; }).sort((a, b) => b.avg - a.avg);
   const mx = Math.max(1, ...ts.map(t => t.avg));
-  if (!teams.length) h += '<p class="note">' + L('Split your race into teams. Each team\'s score is the average of its members\' points this month, so team sizes don\'t matter.', 'قسّم سباقك إلى فرق. نقاط كل فريق هي متوسط نقاط أعضائه هذا الشهر، فلا يهم حجم الفريق.') + '</p>';
-  else h += '<p class="note">' + L('Team score = average points of its members this month.', 'نقاط الفريق = متوسط نقاط أعضائه هذا الشهر.') + '</p><div class="track tt">' + ts.map((t, k) => '<div class="lane"><div class="who"><span dir="auto">' + esc(t.name) + '</span><small>' + ord(k) + ' · ' + L(t.mem.length + ' member' + (t.mem.length === 1 ? '' : 's'), t.mem.length + ' أعضاء') + '</small></div><div class="run"><span class="runner" style="left:calc(17px + (100% - 44px) * ' + (t.avg / mx) + ');background:' + TEAMCOL[t.i % TEAMCOL.length] + '" aria-hidden="true">' + esc(t.name.trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + t.avg + '</b><small>' + L('avg', 'متوسط') + '</small></div></div>').join('') + '</div>' +
+  if (!teams.length) h += '<p class="note">' + L('Split your race into teams. Each team\'s score is the average of its members\' points in this round, so team sizes don\'t matter.', 'قسّم سباقك إلى فرق. نقاط كل فريق هي متوسط نقاط أعضائه بهالجولة، فلا يهم حجم الفريق.') + '</p>';
+  else h += '<p class="note">' + L('Team score = average points of its members ', 'نقاط الفريق = متوسط نقاط أعضائه ') + roundLabel(lobby()) + '.' + '</p><div class="track tt">' + ts.map((t, k) => '<div class="lane"><div class="who"><span dir="auto">' + esc(t.name) + '</span><small>' + ord(k) + ' · ' + L(t.mem.length + ' member' + (t.mem.length === 1 ? '' : 's'), t.mem.length + ' أعضاء') + '</small></div><div class="run"><span class="runner" style="left:calc(17px + (100% - 44px) * ' + (t.avg / mx) + ');background:' + TEAMCOL[t.i % TEAMCOL.length] + '" aria-hidden="true">' + esc(t.name.trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + t.avg + '</b><small>' + L('avg', 'متوسط') + '</small></div></div>').join('') + '</div>' +
     '<div class="tmem">' + ts.map(t => '<p class="note"><b style="color:' + TEAMCOL[t.i % TEAMCOL.length] + '" dir="auto">' + esc(t.name) + ':</b> ' + (t.mem.length ? t.mem.map(r => esc(nick(r.p))).join('، ') : L('nobody yet', 'لا أحد بعد')) + '</p>').join('') + '</div>';
   if (creator && ui === 'teams') {
     h += '<div class="panel"><form id="teamForm" class="inl" style="margin-bottom:12px"><input type="text" id="teamName" maxlength="20" required placeholder="' + L('New team name', 'اسم فريق جديد') + '" aria-label="' + L('New team name', 'اسم فريق جديد') + '"' + (teams.length >= 6 ? ' disabled' : '') + '><button class="btn"' + (teams.length >= 6 ? ' disabled' : '') + '>' + L('Add team', 'أضف فريقاً') + '</button></form>' +
@@ -937,20 +1079,39 @@ function teamsHTML(rows) {
 }
 let tmdelArm = null;
 async function saveTeams(upd) { try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), upd); } catch (e) { toast(L('Could not save teams', 'تعذّر حفظ الفرق') + ' (' + ((e && e.code) || 'error') + ')'); } }
+let dobLater = false, bdayBusy = false;
+function dobField(id, v) { const mx = todayKey(); return '<label class="fl" style="margin-top:12px">' + L('Date of birth', 'تاريخ الميلاد') + '<input type="date" id="' + id + '" required min="1990-01-01" max="' + mx + '" value="' + esc(v || '') + '" dir="ltr"></label>'; }
+// Is today their birthday? (29 Feb counts on 28 Feb in other years.)
+function bdayToday(dob) { if (!/^\d{4}-\d{2}-\d{2}$/.test(dob || '')) return false; const t = dayAgo(0), y = t.getFullYear(); let md = dob.slice(5); const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; if (md === '02-29' && !leap) md = '02-28'; return todayKey().slice(5) === md; }
+// One birthday bonus per Bakaloria year (July to June).
+const bacYear = () => { const d = dayAgo(0); return String(d.getMonth() >= 6 ? d.getFullYear() + 1 : d.getFullYear()); };
+// Days until their next birthday.
+function daysToBday(dob) { if (!/^\d{4}-\d{2}-\d{2}$/.test(dob || '')) return -1; const t = dayAgo(0); t.setHours(0, 0, 0, 0); const m = +dob.slice(5, 7) - 1, d = +dob.slice(8, 10);
+  let n = new Date(t.getFullYear(), m, d); if (n < t) n = new Date(t.getFullYear() + 1, m, d); return Math.round((n - t) / 864e5); }
+function checkBirthday() { if (!BDAY_ON || bdayBusy || !me || !me.nick || !me.dob || staffMode()) return; const tk = todayKey(), y = bacYear(), today = bdayToday(me.dob), early = !today && daysToBday(me.dob) > 213;
+  const claimed = !!(me.bday && me.bday[y]);
+  if (!today && (!early || claimed)) return;
+  if (!claimed) { bdayBusy = true; changeMe(p => { p.bday = p.bday || {}; p.bday[y] = tk; }); bdayBusy = false; }
+  else if (me.bday[y] !== tk) return;
+  let seen = ''; try { seen = localStorage.getItem('bac-bday-shown') || ''; } catch (e) {} if (seen === tk) return; try { localStorage.setItem('bac-bday-shown', tk); } catch (e) {}
+  setTimeout(() => runBirthday(me.nick, early), 700); }
 function render() {
   const j = $('join');
   if (!authReady) j.innerHTML = '';
   else if (!meId) { if (!$('authForm') || $('authForm').dataset.mode !== authMode) j.innerHTML = authHTML(); }
   else if (access === null || adminUids === null) j.innerHTML = '<p class="note" style="margin-top:16px">' + L('Checking your access…', 'جارٍ التحقق من صلاحيتك…') + '</p>';
-  else if (!hasAccess()) { const na = String(Array.isArray(adminUids) && !adminUids.length); if (!$('codeGate') || $('codeGate').dataset.na !== na) j.innerHTML = gateHTML(); }
+  else if (!hasAny()) { const na = String(Array.isArray(adminUids) && !adminUids.length); if (!$('codeGate') || $('codeGate').dataset.na !== na) j.innerHTML = gateHTML(); }
+  else if (staffMode() && (!me || !me.nick)) { if (!$('staffJoin')) j.innerHTML = '<form id="staffJoin" class="panel"><p><b>' + L('Welcome!', 'أهلاً!') + '</b> ' + L('You are signed in as: ', 'دخلت بصفة: ') + '<b>' + ROLE_NAME(ROLE()) + '</b></p><p class="note">' + (ROLE() === 'parent' ? L('Your name (only the site admin sees it).', 'اسمك (بيشوفه مدير الموقع بس).') : L('Your name as students will see it, like Mr. Mo.', 'اسمك متل ما رح يشوفه الطلاب، مثلاً: أستاذ محمد.')) + '</p><div class="inl"><input type="text" id="staffNick" maxlength="24" required aria-label="' + L('Name', 'الاسم') + '" dir="auto"><button class="btn">' + L('Start', 'ابدأ') + '</button></div></form>'; }
+  else if (staffMode()) j.innerHTML = '';
   else if (!me || !me.nick || !me.religion) { if (!$('joinForm')) j.innerHTML = '<form id="joinForm" class="panel"><p><b>Welcome!</b> Pick the name your friends will see.</p><div class="inl" style="margin-bottom:14px"><input type="text" id="nickIn" maxlength="24" required value="' + esc((me && me.nick) || meName) + '" aria-label="Your name"></div>' +
     '<p>Which religion subject do you take?</p><label class="opt"><input type="radio" name="rel" value="i"' + ((me && me.religion) !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="rel" value="c"' + ((me && me.religion) === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
-    '<button class="btn">Start</button></form>'; }
+    dobField('dobIn', me && me.dob) + '<button class="btn" style="margin-top:12px">Start</button></form>'; }
+  else if (!me.dob && !dobLater) { if (!$('dobForm')) j.innerHTML = '<form id="dobForm" class="panel"><p><b>' + L('When is your birthday?', 'متى عيد ميلادك؟') + '</b> 🎂</p><p class="note">' + (BDAY_ON ? L('On your birthday you get a little surprise and +20 points. Only the day shows to your race-mates, on the day itself.', 'بعيد ميلادك بتجيك مفاجأة صغيرة و+20 نقطة. أصدقاؤك ما بيشوفوا غير إنه اليوم عيد ميلادك، بنفس اليوم.') : L('Something fun is coming for birthdays. Nobody sees your date of birth.', 'في شي حلو جاي لأعياد الميلاد. ما حدا بيشوف تاريخ ميلادك.')) + '</p>' + dobField('dobIn2', '') + '<div class="inl" style="margin-top:12px"><button class="btn">' + L('Save', 'حفظ') + '</button><button type="button" class="btn ghost" data-act="doblater">' + L('Later', 'لاحقاً') + '</button></div></form>'; }
   else j.innerHTML = '';
   const ready = !!(hasAccess() && me && me.nick && me.religion);
   const my = (me && me.lobbies) || [];
-  if (!(ui === 'new' && $('newForm'))) $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
-  const mode = (lobby() && lobby().lang) || 'best', ms = monthStart(), tk = todayKey();
+  if (!(ui === 'new' && $('newForm')) && !($('lobby').contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))) $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
+  const mode = (lobby() && lobby().lang) || 'best', ms = lobby() ? roundNow(lobby()) : monthStart(), tk = todayKey();
   const rows = Object.keys(players).map(id => ({id, p: players[id], sc: racePts(players[id], ms, tk).pts}));
   const mx = Math.max(1, ...rows.map(r => r.sc));
   const by = rows.slice().sort((a, b) => b.sc - a.sc);
@@ -958,15 +1119,16 @@ function render() {
   if (!cur) tr.innerHTML = '<p class="empty">' + (ready ? 'Pick a race above, create one, or join with a code.' : 'Sign in below to start racing.') + '</p>';
   else if (!(me && (me.lobbies || []).includes(cur))) tr.innerHTML = '<p class="empty">Join this race to see who is in it and their scores.</p>';
   else if (!rows.length) tr.innerHTML = '<p class="empty">No runners in this race yet.</p>';
-  else tr.innerHTML = by.map((r, i) => '<div class="lane"><div class="who">' + esc(nick(r.p)) + (r.id === meId ? ' (you)' : '') + '<small>' + ord(i) + '</small></div><div class="run"><span class="runner' + (r.id === meId ? ' me' : '') + '" style="left:calc(17px + (100% - ' + (THEME === 'hamster' ? 80 : 44) + 'px) * ' + (r.sc / mx) + ');background:' + colorOf(r.id) + '" aria-hidden="true">' + esc(nick(r.p).trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + r.sc + '</b><small>pts</small></div></div>').join('');
+  else tr.innerHTML = by.map((r, i) => '<div class="lane"><div class="who">' + esc(nick(r.p)) + (isBday(r.p, tk) ? ' 🎂' : '') + (r.id === meId ? ' (you)' : '') + '<small>' + ord(i) + '</small></div><div class="run"><span class="runner' + (r.id === meId ? ' me' : '') + '" style="left:calc(17px + (100% - ' + (THEME === 'hamster' ? 80 : 44) + 'px) * ' + (r.sc / mx) + ');background:' + colorOf(r.id) + '" aria-hidden="true">' + esc(nick(r.p).trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + r.sc + '</b><small>pts</small></div></div>').join('');
   const lead = $('lead');
-  if (rows.length && cur) { const top = by[0], mi = by.findIndex(r => r.id === meId); lead.innerHTML = '<b>' + esc(nick(top.p)) + '</b> leads ' + esc(lname(cur)) + ' this month with ' + top.sc + ' points' + (mi > 0 ? ' · you are ' + ord(mi) : '') + '.'; }
-  else lead.textContent = 'Every lesson you study earns points. The race restarts on the 1st of every month.';
+  if (rows.length && cur) { const top = by[0], mi = by.findIndex(r => r.id === meId); lead.innerHTML = '<b>' + esc(nick(top.p)) + '</b>' + L(' leads ', ' بيتصدّر ') + esc(lname(cur)) + ' ' + roundLabel(lobby()) + L(' with ', ' بـ ') + top.sc + L(' points', ' نقطة') + (mi > 0 ? L(' · you are ', ' · إنت ') + ord(mi) : '') + '.'; }
+  else lead.textContent = L('Every lesson you study earns points.', 'كل درس بتدرسه بيعطيك نقاط.');
   $('bac').innerHTML = BAC_DATE ? (() => { const n = Math.round((new Date(BAC_DATE + 'T00:00') - dayAgo(0)) / 864e5); return '<span class="tag">First Bakaloria exam in ' + (n > 0 ? n + ' days' : n === 0 ? 'today' : '—') + '</span>'; })() : '';
   if (!(ui === 'hw' && $('hwForm'))) $('hwBox').innerHTML = hwHTML();
   if (!(ui === 'ch' && $('chForm'))) $('chBox').innerHTML = challengesHTML(rows, mode);
   if (!(ui === 'surp' && $('surpBox').contains(document.activeElement))) { const keepTo = $('rainTo') ? $('rainTo').value : '', keepMsg = ui === 'surp' && $('rainMsg') ? $('rainMsg').value : ''; $('surpBox').innerHTML = surpHTML(); if (keepTo && $('rainTo')) $('rainTo').value = keepTo; if (keepMsg && $('rainMsg')) $('rainMsg').value = keepMsg; }
   if (!(ui === 'teams' && $('teamForm') && $('teamForm').contains(document.activeElement))) $('teamBox').innerHTML = teamsHTML(rows);
+  if (!$('pastBox').contains(document.activeElement)) { const op = $('pastBox').querySelector('details[open]'); $('pastBox').innerHTML = pastHTML(); if (op && $('pastBox').querySelector('details')) $('pastBox').querySelector('details').open = true; }
   const bw = rows.slice().sort((a, b) => weekOf(b.p) - weekOf(a.p)), hm = Math.max(1, ...rows.map(r => weekOf(r.p)));
   $('hours').innerHTML = rows.length ? bw.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + (streakOf(r.p) > 1 ? '<small>' + streakOf(r.p) + '-day streak</small>' : '') + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (weekOf(r.p) / hm * 100) + '%"></i></div><span class="v num">' + fmtH(weekOf(r.p)) + 'h</span></div>').join('') + '<p class="note">Last 7 days · all-time leader: ' + esc(nick(rows.slice().sort((a, b) => totalH(b.p) - totalH(a.p))[0].p)) + '</p>' : '<p class="note">No hours in this race yet.</p>';
   if (ready) { const h = me.hours || {}, t = +h[dkey(dayAgo(0))] || 0, days = [...Array(7)].map((_, i) => dayAgo(6 - i)), wm = Math.max(1, ...days.map(d => +h[dkey(d)] || 0));
@@ -974,24 +1136,29 @@ function render() {
       '<p class="note" style="margin-top:14px">' + esc(me.nick) + ' · <span lang="ar">' + (me.religion === 'c' ? 'التربية المسيحية' : 'التربية الإسلامية') + '</span> · <button class="linkbtn" data-act="profile">' + L('Profile', 'ملفي') + '</button></p>'; }
   else $('mine').innerHTML = '<h2>Your hours today</h2><p class="note">Sign in to log hours.</p>';
   const sc = ready ? racePts(cur && players[meId] ? players[meId] : me, ms, tk).pts : 0;
-  $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">points this month</span>' : '';
+  $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">' + L('points ', 'نقطة ') + (lobby() ? roundLabel(lobby()) : L('this month', 'هذا الشهر')) + '</span>' : '';
   $('subjects').innerHTML = subjectsHTML();
   $('weekBox').innerHTML = weekHTML(rows, mode);
   if (!(ui === 'test' && $('testForm'))) $('testsBox').innerHTML = testsHTML(rows, mode);
   $('rulesBox').innerHTML = rulesHTML();
-  if (!$('markNote').contains(document.activeElement)) $('markNote').innerHTML = hasAccess() ? markNoteHTML() : '';
+  if (!$('markNote').contains(document.activeElement)) $('markNote').innerHTML = hasAccess() ? notesBannerHTML() + markNoteHTML() : '';
   if (page === 'admin' && !isAdmin()) page = 'race';
-  { const ta = document.querySelector('.tabs [data-page="admin"]'); if (ta) ta.hidden = !isAdmin(); document.querySelector('.tabs').classList.toggle('seven', isAdmin()); }
-  $('adminBox').innerHTML = isAdmin() ? adminHTML() : '';
-  { const ob = $('outBtn'); if (ob) { ob.hidden = !meId; ob.classList.toggle('arm', page === 'profile'); } }
+  { const ta = document.querySelector('.tabs [data-page="admin"]'); if (ta) ta.hidden = !isAdmin(); document.querySelector('.tabs').classList.toggle('seven', false); }
+  if (!($('adminBox').contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))) $('adminBox').innerHTML = isAdmin() ? adminHTML() : '';
+  if (ready) setTimeout(checkBirthday, 0);
+  { const ob = $('outBtn'); if (ob) { ob.hidden = !meId; ob.classList.toggle('arm', page === 'profile'); } const rb = $('rulesBtn'); if (rb) { rb.classList.toggle('arm', page === 'rules'); rb.setAttribute('aria-pressed', String(page === 'rules')); } }
   if (page === 'profile' && !meId) page = 'race';
   { const pb = $('profileBox'); const keep = pb.contains(document.activeElement) && document.activeElement.tagName === 'INPUT'; if (!keep) pb.innerHTML = profileHTML(); }
   translateDOM(document.body);
-  for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules', 'admin', 'profile']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('.tabs [data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
+  if (staffMode()) { if (page !== 'profile' && page !== 'rules') page = 'staff'; } else if (page === 'staff') page = 'race';
+  document.querySelector('.tabs').hidden = staffMode();
+  { const sb = $('staffBox'), typing = sb.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName); if (!typing) sb.innerHTML = staffMode() && me && me.nick ? staffHTML() : ''; }
+  for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules', 'admin', 'profile', 'staff']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('.tabs [data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
 }
 
 // ---- events ----
 document.addEventListener('click', async ev => {
+  if (ev.target.closest('#rulesBtn')) { page = page === 'rules' ? (staffMode() ? 'staff' : 'race') : 'rules'; render(); window.scrollTo(0, 0); return; }
   if (ev.target.closest('#outBtn')) { page = page === 'profile' ? 'race' : 'profile'; render(); window.scrollTo(0, 0); return; }
   if (false) { if (api) await api.signOut(api.auth); return; }
   if (ev.target.closest('#themeBtn')) { const box = $('themes'), b = $('themeBtn'); paintThemes(); box.hidden = !box.hidden; b.setAttribute('aria-expanded', String(!box.hidden)); return; }
@@ -1011,12 +1178,20 @@ document.addEventListener('click', async ev => {
       n = Math.max(0, (+p.done[id] || 0) + (up ? 1 : -1)); if (n) p.done[id] = n; else { delete p.done[id]; if (p.first[id] === today) delete p.first[id]; }
       if (up && n === 1 && !p.first[id]) p.first[id] = today;
       const L = p.log[today] = p.log[today] || {}; L[id] = Math.max(0, (+L[id] || 0) + (up ? 1 : -1)); if (!L[id]) delete L[id]; if (!Object.keys(L).length) delete p.log[today];
-      const cut = dkey(dayAgo(200)); for (const k in p.log) if (k < cut) delete p.log[k]; });
+      });
     if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); playSound(!up ? 'undo' : n === 1 ? 'lesson' : 'review'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
   const to = ev.target.closest('[data-topen]');
   if (to) { const k = to.closest('.trow').nextElementSibling; k.hidden = !k.hidden; to.classList.toggle('open', !k.hidden); return; }
   const mk = ev.target.closest('[data-mk]');
-  if (mk && isAdmin() && api) { const n = +mk.dataset.mk; try { const b = api.writeBatch(api.db); for (let i = 0; i < n; i++) { let c = ''; for (let j = 0; j < 8; j++) c += CH[Math.floor(Math.random() * CH.length)]; b.set(api.doc(api.db, 'codes', c.toUpperCase()), {n: Date.now()}); } await b.commit(); toast(L(n + ' new code' + (n > 1 ? 's' : ''), n + ' كود جديد')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  const mp = ev.target.closest('[data-mkpar]');
+  if (mp && isAdmin() && api) { const sc = mp.dataset.mkpar, have = codes.filter(x => x.role === 'parent' && x.parentOf === sc).length; try { const b = api.writeBatch(api.db); for (let i = have; i < 2; i++) b.set(api.doc(api.db, 'codes', newCode()), {n: Date.now(), role: 'parent', parentOf: sc}); await b.commit(); toast(L('Parent codes made', 'انعملت أكواد الأهل')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  if (mk && isAdmin() && api) { const n = +mk.dataset.mk; try { const b = api.writeBatch(api.db); for (let i = 0; i < n; i++) { const c = newCode(); b.set(api.doc(api.db, 'codes', c), {n: Date.now()}); for (let k = 0; k < 2; k++) b.set(api.doc(api.db, 'codes', newCode()), {n: Date.now(), role: 'parent', parentOf: c}); } await b.commit(); toast(L(n + ' new code' + (n > 1 ? 's' : ''), n + ' كود جديد')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  const rsb = ev.target.closest('[data-reset]'); if (rsb && isCreator() && api) { const m = rsb.dataset.reset; if (m === resetMode(lobby())) return; const upd = {reset: m};
+    if (m === 'manual' && !(Array.isArray(lobby().resets) && lobby().resets.length)) { const f = roundNow(lobby()); if (f !== ALL_FROM) upd.resets = [f]; }
+    try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), upd); toast(L('Saved', 'حُفظ')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
+  const rlb = ev.target.closest('[data-rlang]'); if (rlb && isCreator() && api) { const v = rlb.dataset.rlang === 'both' ? 'both' : 'best'; try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {lang: v}); toast(L('Saved', 'حُفظ')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ')); } return; }
+  const nk = ev.target.closest('[data-nkind]'); if (nk) { noteKind = nk.dataset.nkind; const keep = $('noteText') ? $('noteText').value : '', to = $('noteTo') ? $('noteTo').value : ''; ev.target.blur && document.activeElement && document.activeElement.blur(); render(); if ($('noteText')) $('noteText').value = keep; if (to && $('noteTo')) $('noteTo').value = to; return; }
+  const nd = ev.target.closest('[data-ndel]'); if (nd) { const id = nd.dataset.ndel; if (ndelArm !== id) { ndelArm = id; render(); setTimeout(() => { ndelArm = null; render(); }, 4000); return; } ndelArm = null; if (!api) return; try { await api.deleteDoc(api.doc(api.db, 'notes', id)); toast(L('Note deleted', 'انحذفت الملاحظة')); } catch (e) { toast(L('Could not delete', 'تعذّر الحذف')); } return; }
   const sbb = ev.target.closest('[data-sb]'); if (sbb) { playSB(sbb.dataset.sb); return; }
   const wo = ev.target.closest('[data-warnopen]');
   if (wo && isAdmin()) { warnFor = wo.dataset.warnopen && warnFor !== wo.dataset.warnopen ? wo.dataset.warnopen : null; rainFor = null; render(); return; }
@@ -1030,12 +1205,12 @@ document.addEventListener('click', async ev => {
   if (ro && isAdmin()) { warnFor = null; rainFor = ro.dataset.rainopen && rainFor !== ro.dataset.rainopen ? ro.dataset.rainopen : null; rainPick = new Set(); render(); return; }
   const rp = ev.target.closest('[data-rainpick]');
   if (rp && (isAdmin() || ui === 'surp')) { const k = rp.dataset.rainpick; rainPick.has(k) ? rainPick.delete(k) : rainPick.add(k); const keep = $('rainMsg') ? $('rainMsg').value : '', keepTo = $('rainTo') ? $('rainTo').value : ''; if (ui === 'surp') $('surpBox').innerHTML = ''; render(); if ($('rainMsg')) $('rainMsg').value = keep; if (keepTo && $('rainTo')) $('rainTo').value = keepTo; return; }
-  if (ev.target.closest('[data-rainprev]')) { if (rainPick.size) runRain([...rainPick], $('rainMsg') ? $('rainMsg').value.trim() : ''); else toast(L('Pick something first', 'اختر شيئاً أولاً')); return; }
+  if (ev.target.closest('[data-rainprev]')) { if (rainPick.size) runRain([...rainPick], $('rainMsg') ? $('rainMsg').value.trim() : '', me.nick || L('you', 'أنت')); else toast(L('Pick something first', 'اختر شيئاً أولاً')); return; }
   const rs = ev.target.closest('[data-rainsend]');
   if (rs && rs.dataset.race && api && rainPick.size && $('rainTo')) { const to = $('rainTo').value, msg = $('rainMsg') ? $('rainMsg').value.trim().slice(0, 80) : '';
     try { await api.addDoc(api.collection(api.db, 'lobbies', cur, 'surprises'), {to, from: meId, fromNick: (me.nick || '').slice(0, 24), items: [...rainPick], msg, at: Date.now()}); ui = ''; rainPick = new Set(); $('surpBox').innerHTML = ''; render(); toast(L('Sent! They\'ll see it when they open the site', 'أُرسلت! سيراها عندما يفتح الموقع')); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   if (rs && isAdmin() && api && rainPick.size) { const uid = rs.dataset.rainsend, msg = $('rainMsg') ? $('rainMsg').value.trim().slice(0, 80) : '';
-    try { await api.setDoc(api.doc(api.db, 'perks', uid), {rain: {items: [...rainPick], msg, at: Date.now()}}, {merge: true}); rainFor = null; rainPick = new Set(); render(); toast(L('Sent! They\'ll see it next time they open the site', 'أُرسلت! سيراها عندما يفتح الموقع')); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
+    try { await api.setDoc(api.doc(api.db, 'perks', uid), {rain: {items: [...rainPick], msg, fromNick: (me.nick || '').slice(0, 24), at: Date.now()}}, {merge: true}); rainFor = null; rainPick = new Set(); render(); toast(L('Sent! They\'ll see it next time they open the site', 'أُرسلت! سيراها عندما يفتح الموقع')); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   const phw = ev.target.closest('[data-perkhw]');
   if (phw && isAdmin() && api) { const uid = phw.dataset.perkhw, on = !(perksAll[uid] || {}).hw; try { await api.setDoc(api.doc(api.db, 'perks', uid), {hw: on}, {merge: true}); toast(on ? L('Can post homework for everyone now', 'يمكنه الآن نشر واجبات للجميع') : L('Homework permission removed', 'أُزيلت صلاحية الواجبات')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   const pkb = ev.target.closest('[data-perk],[data-perkset]');
@@ -1071,6 +1246,10 @@ document.addEventListener('click', async ev => {
     try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {helpers: [...hs]}); } catch (e) { toast('Could not update helpers'); } return; }
   const a = ev.target.closest('[data-act]'); if (!a) return; const act = a.dataset.act;
   if (act === 'pw') { const i = $(a.dataset.pw || 'auPass'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; a.setAttribute('aria-pressed', String(show)); a.querySelector('span').textContent = show ? L('Hide', 'إخفاء') : L('Show', 'إظهار'); return; }
+  if (act === 'resetnow' && isCreator() && api) { if (!resetArm) { resetArm = true; render(); setTimeout(() => { resetArm = false; render(); }, 4000); return; } resetArm = false; const tk = todayKey(), rs = [...new Set([...(Array.isArray(lobby().resets) ? lobby().resets : []), tk])].sort().slice(-60);
+    try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {resets: rs}); toast(L('New round started', 'بلشت جولة جديدة')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
+  if (act === 'notesseen') { const mx = Math.max(0, ...myNotes.map(n => n.at || 0)); try { localStorage.setItem('bac-notes-seen', String(mx)); } catch (e) {} render(); return; }
+  if (act === 'doblater') { dobLater = true; render(); return; }
   if (act === 'authmode') { const ku = $('auUser') ? $('auUser').value : '', kp = $('auPass') ? $('auPass').value : ''; authMode = authMode === 'login' ? 'signup' : 'login'; render(); if ($('auUser')) $('auUser').value = ku; if ($('auPass')) $('auPass').value = kp; const u = $('auUser'); if (u) u.focus(); return; }
   if (act === 'claim' && api) { try { await api.setDoc(api.doc(api.db, 'meta', 'admins'), {uids: [meId]}); toast(L('You are the admin now', 'أصبحت المدير')); } catch (e) { toast(L('Someone is already the admin', 'يوجد مدير بالفعل')); } return; }
   if (act === 'signout' && api) { await api.signOut(api.auth); return; }
@@ -1079,7 +1258,7 @@ document.addEventListener('click', async ev => {
   if (act === 'soundtest') { const was = SOUND; SOUND = true; playSound('lesson'); setTimeout(() => playSound('hw'), 500); SOUND = was; return; }
   if (act === 'reload') { location.reload(); return; }
   if (act === 'out2') { if (!outArm2) { outArm2 = true; render(); setTimeout(() => { outArm2 = false; render(); }, 4000); return; } outArm2 = false; page = 'race'; if (api) await api.signOut(api.auth); return; }
-  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch', 'quiz', 'surp'].includes(act)) { ui = ui === act ? '' : act; if (act === 'surp') { rainPick = new Set(); $('surpBox').innerHTML = ''; } if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
+  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch', 'quiz', 'surp', 'cpanel'].includes(act)) { ui = ui === act ? '' : act; if (act === 'surp') { rainPick = new Set(); $('surpBox').innerHTML = ''; } if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (act === 'teams' || act === 'helpers') setTimeout(() => { const el = $(act === 'teams' ? 'teamBox' : 'chBox'); if (el) el.scrollIntoView({block: 'start', behavior: 'smooth'}); }, 50); if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
   if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = LANG === 'ar' ? 'انضم لسباق البكالوريا "' + lname(cur) + '": ' + link + ' (الرمز ' + cur.toUpperCase() + ')' : 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
   if (act === 'enter' && cur) { enter(cur); toast('You joined ' + lname(cur)); return; }
@@ -1102,13 +1281,13 @@ document.addEventListener('submit', async ev => {
     const email = u + '@' + USER_DOMAIN, btn = f.querySelector('.btn'); btn.disabled = true;
     try {
       if (authMode === 'signup') { const code = ($('auCode').value || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); const cr = await api.createUserWithEmailAndPassword(api.auth, email, pw);
-        if (code) { try { await redeem(code, cr.user.uid); } catch (e) { toast(L('Account made, but that code is not valid or already used', 'أُنشئ الحساب، لكن الكود غير صالح أو مستخدم')); } } }
+        if (code) { try { await redeem(code, cr.user.uid); } catch (e) { toast(e && e.kid ? KIDMSG() : L('Account made, but that code is not valid or already used', 'أُنشئ الحساب، لكن الكود غير صالح أو مستخدم')); } } }
       else await api.signInWithEmailAndPassword(api.auth, email, pw);
     } catch (e) { const c = (e && e.code) || ''; toast(c.includes('email-already-in-use') ? L('That username is taken', 'اسم المستخدم مأخوذ') : c.includes('weak-password') ? L('Password needs at least 6 characters', 'كلمة السر 6 أحرف على الأقل') : (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) ? L('Wrong username or password', 'اسم المستخدم أو كلمة السر خطأ') : c.includes('operation-not-allowed') ? L('Sign-in is not switched on yet', 'تسجيل الدخول غير مفعّل بعد') : L('Could not sign in. Check your internet.', 'تعذّر الدخول. تحقّق من الإنترنت.')); btn.disabled = false; }
     return; }
   if (f.id === 'codeGate' && api) { const code = ($('gateCode').value || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!code) return;
-    try { await redeem(code, meId); toast(L('Welcome! Your access is unlocked', 'أهلاً! تم فتح الدخول')); } catch (e) { toast(L('That code is not valid or already used', 'الكود غير صالح أو مستخدم')); } return; }
-  if (f.id === 'pfName') { const n = $('pfNick').value.trim().slice(0, 24), r = (f.querySelector('input[name=pfRel]:checked') || {}).value || 'i'; if (!n) return; changeMe(p => { p.nick = n; p.religion = r; }); toast(L('Saved', 'حُفظ')); return; }
+    try { await redeem(code, meId); toast(L('Welcome! Your access is unlocked', 'أهلاً! تم فتح الدخول')); } catch (e) { toast(e && e.kid ? KIDMSG() : L('That code is not valid or already used', 'الكود غير صالح أو مستخدم')); } return; }
+  if (f.id === 'pfName') { const n = $('pfNick').value.trim().slice(0, 24), r = (f.querySelector('input[name=pfRel]:checked') || {}).value || 'i', dob = $('pfDob') ? $('pfDob').value : ''; if (!n) return; if (dob && (!/^\d{4}-\d{2}-\d{2}$/.test(dob) || dob > todayKey())) { toast(L('Pick your date of birth', 'اختر تاريخ ميلادك')); return; } changeMe(p => { p.nick = n; if (!staffMode()) p.religion = r; if (dob) p.dob = dob; }); toast(L('Saved', 'حُفظ')); return; }
   if (f.id === 'pfPw' && api) { const u = api.auth.currentUser; if (!u) return; const btn = f.querySelector('.btn'); btn.disabled = true;
     try { const cur = $('pfPass2').value;
       await api.reauthenticateWithCredential(u, api.EmailAuthProvider.credential(u.email, cur));
@@ -1118,10 +1297,22 @@ document.addEventListener('submit', async ev => {
       $('profileBox').innerHTML = profileHTML();
     } catch (e) { const c = (e && e.code) || ''; toast(c.includes('invalid-credential') || c.includes('wrong-password') ? L('Current password is wrong', 'كلمة السر الحالية خطأ') : c.includes('weak-password') ? L('New password needs at least 6 characters', 'كلمة السر الجديدة 6 أحرف على الأقل') : c.includes('email-already-in-use') ? L('That username is taken', 'اسم المستخدم مأخوذ') : c.includes('operation-not-allowed') ? L('Changing usernames is switched off in Firebase', 'تغيير اسم المستخدم مقفل في Firebase') : L('Could not save. Check your internet.', 'تعذّر الحفظ. تحقّق من الإنترنت.')); btn.disabled = false; }
     return; }
+  if (f.id === 'staffJoin') { const n = $('staffNick').value.trim().slice(0, 24); if (!n) return; changeMe(p => { p.nick = n; p.role = ROLE(); }); return; }
+  if (f.id === 'staffHw') { const text = $('shText').value.trim().slice(0, 160), due = $('shDue').value, subj = $('shSub').value; if (!text || !due || !api) return; lastHwSubj = subj; const btn = f.querySelector('.btn'); btn.disabled = true;
+    try { await api.addDoc(api.collection(api.db, 'allhw'), {text, due, subj, by: meId, byNick: (me.nick || '').slice(0, 24), n: Date.now()}); $('shText').value = ''; document.activeElement && document.activeElement.blur(); toast(L('Homework posted', 'انتشر الواجب')); render(); } catch (e) { toast(L('Could not post', 'تعذّر النشر') + ' (' + ((e && e.code) || 'error') + ')'); } btn.disabled = false; return; }
+  if (f.id === 'noteForm') { const to = $('noteTo').value, text = $('noteText').value.trim().slice(0, 300), st = students.find(x => x.uid === to); if (!to || !text || !api) return;
+    const kind = (isAdmin() || ROLE() === 'supervisor') ? noteKind : 'good', btn = f.querySelector('.btn'); btn.disabled = true;
+    try { await api.addDoc(api.collection(api.db, 'notes'), {to, toNick: ((st && st.nick) || '').slice(0, 24), from: meId, fromNick: (me.nick || '').slice(0, 24), role: isAdmin() ? 'admin' : ROLE(), kind, text, at: Date.now()}); $('noteText').value = ''; document.activeElement && document.activeElement.blur(); toast(L('Note sent', 'انبعتت الملاحظة')); render(); } catch (e) { toast(L('Could not send', 'تعذّر الإرسال') + ' (' + ((e && e.code) || 'error') + ')'); } btn.disabled = false; return; }
+  if (f.id === 'staffCode') { if (!isAdmin() || !api) return; const role = $('scRole').value === 'supervisor' ? 'supervisor' : 'teacher', label = $('scLabel').value.trim().slice(0, 30);
+    try { const c = newCode(); await api.setDoc(api.doc(api.db, 'codes', c), {n: Date.now(), role, label}); $('scLabel').value = ''; toast(L('Code made: ', 'انعمل الكود: ') + c); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  if (f.id === 'dobForm') { const d = $('dobIn2').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || d > todayKey()) { toast(L('Pick your date of birth', 'اختر تاريخ ميلادك')); return; } changeMe(p => { p.dob = d; }); toast(L('Saved', 'حُفظ')); return; }
   if (f.id === 'joinForm') { const n = $('nickIn').value.trim().slice(0, 24); const r = (f.querySelector('input[name=rel]:checked') || {}).value || 'i'; if (!n) return;
+    const dob = $('dobIn') ? $('dobIn').value : ''; if (!/^\d{4}-\d{2}-\d{2}$/.test(dob) || dob > todayKey()) { toast(L('Pick your date of birth', 'اختر تاريخ ميلادك')); return; }
     const first = !(me && me.nick);
-    changeMe(p => { p.nick = n; p.religion = r; p.joined = p.joined || new Date().toISOString(); p.done = p.done || {}; p.hours = p.hours || {}; p.lobbies = p.lobbies || []; });
+    changeMe(p => { p.nick = n; p.religion = r; p.dob = dob; p.joined = p.joined || new Date().toISOString(); p.done = p.done || {}; p.hours = p.hours || {}; p.lobbies = p.lobbies || []; });
     if (first && cur && lobby() && !(me.lobbies || []).includes(cur)) enter(cur); toast('Welcome, ' + n); return; }
+  if (f.id === 'renameForm') { const name = $('renameIn').value.trim().slice(0, 30); if (!name || !api || !isCreator()) return;
+    try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {name}); lobbyDocs[cur].name = name; document.activeElement && document.activeElement.blur(); render(); toast(L('Race renamed', 'تم تغيير اسم السباق')); } catch (e) { toast(L('Could not rename', 'تعذّر تغيير الاسم') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   if (f.id === 'newForm') { const name = $('newIn').value.trim().slice(0, 30); if (!name || !api) return; const lang = (f.querySelector('input[name=lang]:checked') || {}).value === 'both' ? 'both' : 'best';
     let code = ''; for (let i = 0; i < 6; i++) code += CH[Math.floor(Math.random() * CH.length)];
     try { await api.setDoc(api.doc(api.db, 'lobbies', code), {name, by: meId, n: Date.now(), lang, helpers: []}); lobbyDocs[code] = {name, by: meId, lang, helpers: []}; $('lobby').innerHTML = ''; enter(code); toast('Race created. Code ' + code.toUpperCase()); } catch (e) { toast('Could not create the race'); } return; }
@@ -1166,10 +1357,13 @@ let THEME = 'night'; try { THEME = localStorage.getItem('bac-theme') || 'night';
 function applyTheme(k) { THEME = k; try { localStorage.setItem('bac-theme', k); } catch (e) {} if (k === 'night') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', k); const th = ALLTHEMES.find(x => x[0] === k), mt = document.querySelector('meta[name=theme-color]'); if (th && mt) mt.setAttribute('content', th[3]); }
 // ---- surprise rain: the admin picks things to fall on someone's screen next time they open the site ----
 const RAIN = [['hearts', '❤️💕💗', 'Hearts', 'قلوب'], ['flowers', '🌸🌷🌼', 'Flowers', 'ورود'], ['stars', '⭐✨🌟', 'Stars', 'نجوم'], ['confetti', '🎉🎊', 'Confetti', 'احتفال'], ['butterflies', '🦋', 'Butterflies', 'فراشات'], ['balloons', '🎈', 'Balloons', 'بالونات'], ['hamsters', '🐹', 'Hamsters', 'هامستر'], ['cake', '🍰🥕', 'Carrot cake', 'كيكة جزر'], ['matcha', '🍵', 'Matcha', 'ماتشا'], ['trophies', '🏆🥇', 'Trophies', 'كؤوس']];
-function runRain(items, msg) {
-  const chars = [...items.flatMap(k => { const r = RAIN.find(x => x[0] === k); return r ? [...r[1].replace(/️/g, '')].filter(c => c.trim()) : []; })]; if (!chars.length) return;
+function runRain(items, msg, from) {
+  const chars = [...items.flatMap(k => { const r = k === '_bday' ? [k, '🎂🎈🎉🎁🎊'] : RAIN.find(x => x[0] === k); return r ? [...r[1].replace(/️/g, '')].filter(c => c.trim()) : []; })]; if (!chars.length) return;
   const box = document.createElement('div'); box.className = 'rain'; box.setAttribute('aria-hidden', 'true'); document.body.appendChild(box);
-  if (msg) { const m = document.createElement('div'); m.className = 'rainmsg'; m.textContent = msg; m.setAttribute('dir', 'auto'); document.body.appendChild(m); setTimeout(() => m.remove(), 7000); }
+  if (msg || from) { const m = document.createElement('div'); m.className = 'rainmsg';
+    if (from) { const f = document.createElement('div'); f.className = 'rainfrom'; f.textContent = '💌 ' + L('From ', 'من ') + from; f.setAttribute('dir', 'auto'); m.appendChild(f); }
+    if (msg) { const t = document.createElement('div'); t.textContent = msg; t.setAttribute('dir', 'auto'); m.appendChild(t); }
+    document.body.appendChild(m); setTimeout(() => m.remove(), 7000); }
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; const n = reduce ? 14 : 70;
   for (let i = 0; i < n; i++) { const e = document.createElement('span'); e.textContent = chars[i % chars.length] === '🎉' && Math.random() < .5 ? '🎊' : chars[Math.floor(Math.random() * chars.length)];
     e.style.left = (Math.random() * 100) + 'vw'; e.style.fontSize = (20 + Math.random() * 22) + 'px';
@@ -1178,7 +1372,7 @@ function runRain(items, msg) {
     box.appendChild(e); }
   setTimeout(() => box.remove(), 9000); playSound('hw');
 }
-function checkRain() { const r = perks && perks.rain; if (!r || !Array.isArray(r.items) || !r.at) return; let seen = 0; try { seen = +localStorage.getItem('bac-rain-at') || 0; } catch (e) {} if (r.at <= seen) return; try { localStorage.setItem('bac-rain-at', String(r.at)); } catch (e) {} setTimeout(() => runRain(r.items, typeof r.msg === 'string' ? r.msg.slice(0, 80) : ''), 600); }
+function checkRain() { const r = perks && perks.rain; if (!r || !Array.isArray(r.items) || !r.at) return; let seen = 0; try { seen = +localStorage.getItem('bac-rain-at') || 0; } catch (e) {} if (r.at <= seen) return; try { localStorage.setItem('bac-rain-at', String(r.at)); } catch (e) {} setTimeout(() => runRain(r.items, typeof r.msg === 'string' ? r.msg.slice(0, 80) : '', typeof r.fromNick === 'string' && r.fromNick ? r.fromNick.slice(0, 24) : L('the site admin', 'مدير الموقع')), 600); }
 let rainFor = null, rainPick = new Set();
 function rainPanelHTML(uid, name, race) {
   const others = race ? Object.keys(players).filter(id => id !== meId) : [];
@@ -1238,6 +1432,26 @@ function runWarn(w) {
   };
   ov.querySelector('.warnopen').focus();
 }
+// Happy Birthday melody (public domain), played with the built-in synth.
+function playBirthdaySong() { try { const c = ac(), b = 0.34; let t = c.currentTime + 0.05;
+  const G4 = 392, A4 = 440, B4 = 494, C5 = 523, D5 = 587, E5 = 659, F5 = 698, G5 = 784;
+  const notes = [[G4,.75],[G4,.25],[A4,1],[G4,1],[C5,1],[B4,2],[G4,.75],[G4,.25],[A4,1],[G4,1],[D5,1],[C5,2],[G4,.75],[G4,.25],[G5,1],[E5,1],[C5,1],[B4,1],[A4,2],[F5,.75],[F5,.25],[E5,1],[C5,1],[D5,1],[C5,2.5]];
+  for (const [f, d] of notes) { tone(f, t, d * b * 0.92, 'triangle', 0.17); tone(f * 2, t, d * b * 0.6, 'sine', 0.03); t += d * b; } } catch (e) {} }
+function runBirthday(name, early) {
+  const ov = document.createElement('div'); ov.className = 'bdayov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+  const flame = x => '<g class="flame"><path d="M' + x + ' 30c-5 7-6 11-6 14a6 6 0 0 0 12 0c0-3-1-7-6-14z" fill="#FFB020"/><path d="M' + x + ' 38c-2 3-3 5-3 6a3 3 0 0 0 6 0c0-1-1-3-3-6z" fill="#FFF3B0"/></g>';
+  const cake = '<svg viewBox="0 0 160 150" width="170" height="160" aria-hidden="true">' +
+    [56, 80, 104].map(x => '<rect x="' + (x - 3) + '" y="50" width="6" height="24" rx="2" fill="#7FB3FF"/><rect x="' + (x - 3) + '" y="56" width="6" height="4" fill="#fff"/><rect x="' + (x - 3) + '" y="66" width="6" height="4" fill="#fff"/>' + flame(x)).join('') +
+    '<rect x="26" y="74" width="108" height="34" rx="8" fill="#F7A8C4"/><path d="M26 84c9 0 9 8 18 8s9-8 18-8 9 8 18 8 9-8 18-8 9 8 18 8 9-8 18-8v-4c0-4-4-8-8-8H34c-4 0-8 4-8 8z" fill="#FFF6E8"/>' +
+    '<rect x="14" y="106" width="132" height="34" rx="9" fill="#C97B4A"/><path d="M14 116c11 0 11 8 22 8s11-8 22-8 11 8 22 8 11-8 22-8 11 8 22 8 11-8 22-8v-3c0-4-4-8-9-8H23c-5 0-9 4-9 8z" fill="#FFF6E8"/>' +
+    '<circle cx="40" cy="128" r="3" fill="#E8453C"/><circle cx="80" cy="130" r="3" fill="#3BB273"/><circle cx="120" cy="128" r="3" fill="#7FB3FF"/><circle cx="60" cy="96" r="2.5" fill="#E8453C"/><circle cx="100" cy="96" r="2.5" fill="#3BB273"/>' +
+    '<rect x="6" y="138" width="148" height="6" rx="3" fill="#0003"/></svg>';
+  ov.innerHTML = '<div class="bdaybox">' + cake + '<h2>' + L('Happy birthday', 'عيد ميلاد سعيد') + '</h2><p class="bname" dir="auto"></p>' + (early ? '<p class="bsorry">' + L('Sorry, your birthday already passed or isn\'t in this Bakaloria year, so here are your cake and your gift now!', 'آسفين، عيد ميلادك يا فات يا مو بسنة البكالوريا هي، فهي كيكتك وهديتك هلّق!') + '</p>' : '') + '<p class="bpts">+' + BDAY_PTS + ' ' + L('birthday points', 'نقطة عيد ميلاد') + '</p><button type="button" class="btn bblow">' + L('Blow out the candles', 'اطفي الشموع') + ' 🕯️</button></div>';
+  ov.querySelector('.bname').textContent = name || '';
+  document.body.appendChild(ov);
+  ov.querySelector('.bblow').onclick = () => { ov.classList.add('out'); playBirthdaySong(); runRain(['_bday']);
+    const b = ov.querySelector('.bblow'); b.textContent = L('Thank you!', 'شكراً!'); b.onclick = () => ov.remove(); };
+}
 function checkWarn() { const w = perks && perks.warn; if (!w || !w.at) return; let seen = 0; try { seen = +localStorage.getItem('bac-warn-at') || 0; } catch (e) {} if (w.at <= seen) return; try { localStorage.setItem('bac-warn-at', String(w.at)); } catch (e) {} setTimeout(() => runWarn(w), 500); }
 function playSound(kind) {
   if (!SOUND) return;
@@ -1250,7 +1464,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795722654";
+const BUILD = "1795724740";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
@@ -1262,29 +1476,41 @@ async function checkUpdate(manual) {
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
 setTimeout(() => checkUpdate(), 3000);
 // ---- start ----
-async function redeem(code, uid) { const b = api.writeBatch(api.db); b.update(api.doc(api.db, 'codes', code), {usedBy: uid, usedAt: Date.now(), usedName: myUsername()}); b.set(api.doc(api.db, 'access', uid), {code, n: Date.now()}); await b.commit(); }
+const KIDMSG = () => L('Your child has not made their account yet. Try this code again after they sign up.', 'ابنك/بنتك لسا ما عمل حساب. جرّب الكود مرة تانية بعد ما يسجّل.');
+async function redeem(code, uid) {
+  const cs = await api.getDoc(api.doc(api.db, 'codes', code)); if (!cs.exists()) throw new Error('bad'); const cd = cs.data(); if (cd.usedBy) throw new Error('used');
+  const acc = {code, n: Date.now()}; if (cd.role) acc.role = cd.role;
+  if (cd.role === 'parent') { const ks = await api.getDoc(api.doc(api.db, 'codes', cd.parentOf || '-')); const ku = ks.exists() ? ks.data().usedBy : ''; if (!ku) { const e = new Error('kid'); e.kid = true; throw e; } acc.child = ku; }
+  const b = api.writeBatch(api.db); b.update(api.doc(api.db, 'codes', code), {usedBy: uid, usedAt: Date.now(), usedName: myUsername()}); b.set(api.doc(api.db, 'access', uid), acc); await b.commit(); }
 async function start() {
-  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; challenges = DEMO.challenges || []; ghw = DEMO.ghw || []; tests = DEMO.tests || []; access = true; adminUids = DEMO.email ? [DEMO.meId] : []; codes = DEMO.codes || []; perksAll = DEMO.perks || {}; onPerks(DEMO.perks ? DEMO.perks[DEMO.meId] : {}); if (DEMO.state === 'out') { meId = null; me = null; } if (DEMO.state === 'gate') { access = false; adminUids = []; } cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
+  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; challenges = DEMO.challenges || []; ghw = DEMO.ghw || []; tests = DEMO.tests || []; access = true; accData = DEMO.acc || null; students = DEMO.students || []; kid = DEMO.kid || null; myNotes = DEMO.myNotes || []; sentNotes = DEMO.sentNotes || []; kidNotes = DEMO.kidNotes || []; adminUids = DEMO.email ? [DEMO.meId] : []; codes = DEMO.codes || []; perksAll = DEMO.perks || {}; onPerks(DEMO.perks ? DEMO.perks[DEMO.meId] : {}); if (DEMO.state === 'out') { meId = null; me = null; } if (DEMO.state === 'gate') { access = false; adminUids = []; } cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
   render();
   const [A, U, F] = await Promise.all([import(FB + 'firebase-app.js'), import(FB + 'firebase-auth.js'), import(FB + 'firebase-firestore.js')]);
   const app = A.initializeApp(FIREBASE_CONFIG), auth = U.getAuth(app), db = F.getFirestore(app);
   api = {auth, db, ...U, ...F};
-  let meUnsub = null, accUnsub = null, admUnsub = null, dataOn = false;
+  let meUnsub = null, accUnsub = null, admUnsub = null, dataOn = false, extraUnsubs = [];
   const startData = () => {
-    if (dataOn || !meId || !hasAccess()) return; dataOn = true; const uid = meId;
-    ghwUnsub = F.onSnapshot(F.collection(db, 'allhw'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); ghw = a; render(); }, () => {});
-    testsUnsub = F.onSnapshot(F.collection(db, 'tests'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); tests = a; render(); }, () => {});
+    if (dataOn || !meId || !hasAny() || adminUids === null) return; dataOn = true; const uid = meId, r = isAdmin() ? 'admin' : ROLE();
+    const col = (q, set) => F.onSnapshot(q, x => { const a = []; x.forEach(d => a.push({id: d.id, ...d.data()})); set(a); render(); }, () => {});
+    if (r !== 'parent') ghwUnsub = col(F.collection(db, 'allhw'), a => ghw = a);
+    if (r === 'student' || r === 'admin') { testsUnsub = col(F.collection(db, 'tests'), a => tests = a); extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('to', '==', uid)), a => myNotes = a)); }
+    if (r === 'admin' || r === 'supervisor') extraUnsubs.push(col(F.collection(db, 'notes'), a => sentNotes = a));
+    if (r === 'teacher') extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('from', '==', uid)), a => sentNotes = a));
+    if (r !== 'student' && r !== 'parent') extraUnsubs.push(col(F.collection(db, 'students'), a => students = a.map(x => ({uid: x.id, nick: x.nick}))));
+    if (r === 'parent' && accData && accData.child) { extraUnsubs.push(F.onSnapshot(F.doc(db, 'students', accData.child), x => { kid = x.exists() ? x.data() : null; render(); }, () => {})); extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('to', '==', accData.child)), a => kidNotes = a)); }
     perksUnsub = F.onSnapshot(F.doc(db, 'perks', uid), s => onPerks(s.exists() ? s.data() : {}), () => {});
-    meUnsub = F.onSnapshot(F.doc(db, 'users', uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast(L('Could not load your profile', 'تعذّر تحميل ملفك')));
+    meUnsub = F.onSnapshot(F.doc(db, 'users', uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null;
+      if (!stuPub && me && me.nick && hasAccess()) { stuPub = true; F.setDoc(F.doc(db, 'students', uid), stuDoc(me)).catch(() => { stuPub = false; }); }
+      sync(); }, () => toast(L('Could not load your profile', 'تعذّر تحميل ملفك')));
   };
   const startCodes = () => { if (codesUnsub || !isAdmin()) return; perksAllUnsub = F.onSnapshot(F.collection(db, 'perks'), q => { const o = {}; q.forEach(x => o[x.id] = x.data()); perksAll = o; render(); }, () => {}); codesUnsub = F.onSnapshot(F.collection(db, 'codes'), q => { const a = []; q.forEach(x => a.push({id: x.id, ...x.data()})); codes = a; render(); }, () => { codesUnsub = null; }); };
-  const stopAll = () => { stopSurprises(); for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub, perksUnsub, perksAllUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = perksUnsub = perksAllUnsub = null; perks = null; perksAll = {}; dataOn = false; };
+  const stopAll = () => { stopSurprises(); extraUnsubs.forEach(f => f()); extraUnsubs = []; students = []; kid = null; myNotes = []; sentNotes = []; kidNotes = []; stuPub = false; accData = null; for (const f of [meUnsub, accUnsub, admUnsub, ghwUnsub, testsUnsub, codesUnsub, playersUnsub, hwUnsub, perksUnsub, perksAllUnsub]) if (f) f(); meUnsub = accUnsub = admUnsub = ghwUnsub = testsUnsub = codesUnsub = playersUnsub = hwUnsub = perksUnsub = perksAllUnsub = null; perks = null; perksAll = {}; dataOn = false; };
   U.onAuthStateChanged(auth, u => {
     if (u && !(u.providerData || []).some(p => p.providerId === 'password')) { U.signOut(auth); return; } // old Google/guest sessions
     stopAll(); authReady = true; meId = u ? u.uid : null; me = null; access = null; adminUids = null; codes = []; tests = []; ghw = []; players = {}; homework = []; watching = null;
     if (u) {
       admUnsub = F.onSnapshot(F.doc(db, 'meta', 'admins'), s => { adminUids = s.exists() && Array.isArray(s.data().uids) ? s.data().uids : []; startData(); startCodes(); render(); }, () => { adminUids = []; render(); });
-      accUnsub = F.onSnapshot(F.doc(db, 'access', u.uid), s => { access = s.exists(); startData(); render(); }, () => { access = false; render(); });
+      accUnsub = F.onSnapshot(F.doc(db, 'access', u.uid), s => { access = s.exists(); accData = s.exists() ? s.data() : null; startData(); render(); }, () => { access = false; render(); });
     }
     sync();
   });
