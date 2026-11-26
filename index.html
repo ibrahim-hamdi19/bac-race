@@ -340,6 +340,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .teams select{flex:none;width:auto;min-width:9em}
 .tt .lane{height:auto;min-height:58px;padding-top:6px;padding-bottom:6px}.tt .lane .who{white-space:normal;overflow:visible}.tt .lane .who small{white-space:nowrap;overflow:visible}
 .chs{margin-top:18px}.chs>.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.marks{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.mkform{margin:8px 0}.mkform input[type=number]{min-height:44px;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:0 12px}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1",hamster:"#FFE6EF"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -456,7 +457,10 @@ function earned(p, from, to) {
 const SUBJ_BY_NAME = Object.fromEntries(SUBJECTS.map(s => [s.name, s.k]));
 function hwFor(p, c) { const o = {}, h = (p && p.hw) || {}; for (const key in h) { const v = h[key]; if (v && typeof v === 'object' && v.d) { if (key.startsWith(c + '_')) o[key.slice(c.length + 1)] = {d: v.d, k: v.k || ''}; else if (key.startsWith('g_')) o[key] = {d: v.d, k: v.k || ''}; } } return o; }
 function hwPts(p, from, to) { let pts = 0, n = 0; const h = (p && p.hw) || {}; for (const id in h) { const v = h[id]; if (v && typeof v === 'object' && v.d >= from && v.d <= to && VAL[v.k]) { pts += VAL[v.k]; n++; } } return {pts, n}; }
-function racePts(p, from, to) { const e = earned(p, from, to), h = hwPts(p, from, to); return {pts: Math.round(e.pts + h.pts), nw: e.nw, rv: e.rv, hw: h.n}; }
+// Real test marks: a full mark = 100 points, scaled; counted on the day the mark was entered.
+const MARK_PTS = 100;
+function markPts(p, from, to) { let pts = 0; const mk = (p && p.marks) || {}; for (const id in mk) { const v = mk[id], t = tests.find(x => x.id === id); if (!v || !t || !(+t.outOf > 0) || !(v.d >= from && v.d <= to)) continue; pts += Math.ceil(Math.min(+v.m, +t.outOf) / +t.outOf * MARK_PTS); } return pts; }
+function racePts(p, from, to) { const e = earned(p, from, to), h = hwPts(p, from, to); return {pts: Math.round(e.pts + h.pts + markPts(p, from, to)), nw: e.nw, rv: e.rv, hw: h.n}; }
 const monthStart = () => { const d = dayAgo(0); d.setDate(1); return dkey(d); };
 const todayKey = () => dkey(dayAgo(0));
 // ---- tests ----
@@ -559,7 +563,7 @@ function watchRace() {
   hwUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'homework'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); homework = a; render(); }, retry);
 }
 // What race-mates can see: never the list of races, never homework ticks.
-const pub = p => ({nick: p.nick || '', religion: p.religion || 'i', joined: p.joined || '', done: p.done || {}, first: p.first || {}, log: p.log || {}, hours: p.hours || {}});
+const pub = p => ({nick: p.nick || '', religion: p.religion || 'i', joined: p.joined || '', done: p.done || {}, first: p.first || {}, log: p.log || {}, hours: p.hours || {}, marks: p.marks || {}});
 let dropFrom = new Set();
 function changeMe(fn) { const before = new Set((me && me.lobbies) || []); const c = JSON.parse(JSON.stringify(me || {})); fn(c);
   const after = new Set(c.lobbies || []); for (const x of before) if (!after.has(x)) dropFrom.add(x); for (const x of after) dropFrom.delete(x);
@@ -688,19 +692,42 @@ function testFormHTML(o) {
     '<p>' + L('Pick what is included. Tap a name to open it.', 'اختر ما يشمله الاختبار. اضغط على الاسم لفتحه.') + '</p><div class="tree">' + tree + '</div>' +
     '<div class="inl" style="margin-top:12px"><button class="btn">' + o.btn + '</button><button type="button" class="btn ghost" data-act="' + o.act + '">' + L('Cancel', 'إلغاء') + '</button></div></form>';
 }
+function marksHTML(t, rows) {
+  const out = +t.outOf > 0 ? +t.outOf : 0; let h = '<div class="marks">';
+  if (isAdmin()) h += '<form class="inl mkform" data-outof="' + esc(t.id) + '"><label class="fl" style="flex:1 1 8em">' + L('The test is out of', 'الاختبار من') + '<input type="number" inputmode="decimal" min="1" max="1000" step="any" required value="' + (out || '') + '" dir="ltr"></label><button class="btn ghost" style="align-self:flex-end">' + (out ? L('Update', 'تحديث') : L('Open marks', 'افتح العلامات')) + '</button></form>';
+  if (!out) return h + (isAdmin() ? '<p class="note">' + L('After the test, type what it was out of. Then everyone can enter their mark and get points.', 'بعد الاختبار اكتب العلامة الكاملة. بعدها يدخل كل شخص علامته ويحصل على نقاط.') + '</p>' : '') + '</div>';
+  const mine = me && me.marks && me.marks[t.id];
+  h += '<h3 class="h3">' + L('Your mark', 'علامتك') + '</h3>';
+  if (me && me.nick) h += '<form class="inl mkform" data-mark="' + esc(t.id) + '"><input type="number" inputmode="decimal" min="0" max="' + out + '" step="any" required value="' + (mine ? esc(mine.m) : '') + '" aria-label="' + L('Your mark', 'علامتك') + '" dir="ltr" style="flex:0 1 8em"><span class="note" style="align-self:center">/ ' + out + '</span><button class="btn">' + (mine ? L('Update', 'تحديث') : L('Save', 'حفظ')) + '</button></form>' +
+    (mine ? '<p class="note">+' + Math.ceil(Math.min(+mine.m, out) / out * MARK_PTS) + ' ' + L('points', 'نقطة') + '</p>' : '<p class="note">' + L('A full mark gives ' + MARK_PTS + ' points.', 'العلامة الكاملة تعطي ' + MARK_PTS + ' نقطة.') + '</p>');
+  const got = rows.filter(r => r.p.marks && r.p.marks[t.id]).map(r => ({r, m: Math.min(+r.p.marks[t.id].m, out)})).sort((a, b) => b.m - a.m);
+  if (got.length) h += '<h3 class="h3">' + L('Marks in ', 'العلامات في ') + esc(lname(cur)) + '</h3><div class="rows">' + got.map((x, i) => '<div class="hr"><span class="n">' + (i + 1) + '. ' + esc(nick(x.r.p)) + '</span><div class="hbar"><i class="' + (x.r.id === meId ? 'me' : '') + '" style="width:' + (x.m / out * 100) + '%"></i></div><span class="v num">' + x.m + '</span></div>').join('') + '</div>';
+  return h + '</div>';
+}
 function testCard(t, done, rows, mode, kind) {
-    const mine = me && me.nick ? testCalc(me, t, mode) : null, days = Math.round((new Date(t.date + 'T00:00') - dayAgo(0)) / 864e5);
+    const quiz = t.type === 'quiz';
+    const mine = me && me.nick && !quiz ? testCalc(me, t, mode) : null, days = Math.round((new Date(t.date + 'T00:00') - dayAgo(0)) / 864e5);
     const subs = Object.keys(mine ? mine.by : {}).map(k => { const pp = mine.part[k]; return '<div class="hr"><span class="n" dir="auto">' + esc(SUBJ[k].name) + '</span><div class="hbar"><i class="me" style="width:' + (pp.n / pp.of * 100) + '%"></i></div><span class="v num">' + pp.n + '/' + pp.of + '</span></div>'; }).join('');
-    const rk = rows.map(r => ({...r, t: testCalc(r.p, t, mode)})).sort((a, b) => b.t.got - a.t.got);
-    return '<section class="card tcard' + (done ? ' past' : '') + '"><div class="head"><h2 style="margin:0" dir="auto">' + esc(t.name) + '</h2><span class="tag">' + (done ? L('Finished', 'انتهى') : days === 0 ? L('Today', 'اليوم') : L('In ' + days + ' days', 'بعد ' + days + ' يوم')) + '</span></div>' +
-      '<p class="note">' + (kind === 'ch' ? L('On ', 'في ') : L('Test on ', 'الاختبار ')) + esc(fmtDate(t.date)) + ' · ' + L('counts lessons studied from ', 'تُحسب الدروس المدروسة من ') + esc(fmtDate(t.start)) + '</p>' +
-      (mine ? '<div class="score" style="margin-top:12px"><b class="num">' + mine.got + '</b><span class="note">/ ' + mine.max + ' ' + L('your mark', 'علامتك') + '</span></div><div class="rows" style="margin-top:8px">' + subs + '</div>' : '') +
+    const rk = quiz ? [] : rows.map(r => ({...r, t: testCalc(r.p, t, mode)})).sort((a, b) => b.t.got - a.t.got);
+    return '<section class="card tcard' + (done ? ' past' : '') + '"><div class="head"><h2 style="margin:0" dir="auto">' + esc(t.name) + '</h2><span class="tag">' + (quiz ? L('Quiz', 'مذاكرة') + (t.subj ? ' · ' + esc(t.subj) : '') : done ? L('Finished', 'انتهى') : days === 0 ? L('Today', 'اليوم') : L('In ' + days + ' days', 'بعد ' + days + ' يوم')) + '</span></div>' +
+      (quiz ? '<p class="note">' + esc(fmtDate(t.date)) + '</p>' : '<p class="note">' + (kind === 'ch' ? L('On ', 'في ') : L('Test on ', 'الاختبار ')) + esc(fmtDate(t.date)) + ' · ' + L('counts lessons studied from ', 'تُحسب الدروس المدروسة من ') + esc(fmtDate(t.start)) + '</p>') +
+      (mine ? '<div class="score" style="margin-top:12px"><b class="num">' + mine.got + '</b><span class="note">/ ' + mine.max + ' ' + L('how ready you are (from lessons studied)', 'جاهزيتك (من الدروس المدروسة)') + '</span></div><div class="rows" style="margin-top:8px">' + subs + '</div>' : '') +
       (rk.length ? '<h3 class="h3">' + L('Ranking in ', 'الترتيب في ') + esc(lname(cur)) + '</h3><div class="rows">' + rk.map((r, i) => '<div class="hr"><span class="n">' + (i + 1) + '. ' + esc(nick(r.p)) + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (r.t.max ? r.t.got / r.t.max * 100 : 0) + '%"></i></div><span class="v num">' + r.t.got + '</span></div>').join('') + '</div>' : '') +
+      (kind === 'test' ? marksHTML(t, rows) : '') +
       ((kind === 'ch' ? canChallenge() : isAdmin()) ? '<p style="margin-top:12px"><button class="linkbtn" data-' + (kind === 'ch' ? 'chdel' : 'tdel') + '="' + esc(t.id) + '">' + (tdelArm === t.id ? L('Tap again to delete', 'اضغط مرة ثانية للحذف') : L('Delete test', 'احذف الاختبار')) + '</button></p>' : '') + '</section>';
+}
+function quizFormHTML() {
+  const opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option>' + esc(s.name) + '</option>').join('');
+  return '<form id="quizForm" class="panel"><p><b>' + L('Add a quiz', 'أضف مذاكرة') + '</b></p><div class="stackf">' +
+    '<label class="fl">' + L('Name', 'الاسم') + '<input type="text" id="qName" maxlength="40" required placeholder="' + L('Like Physics quiz', 'مثلاً: مذاكرة فيزياء') + '"></label>' +
+    '<label class="fl">' + L('Subject', 'المادة') + '<select id="qSub">' + opts + '</select></label>' +
+    '<label class="fl">' + L('Date', 'التاريخ') + '<input type="date" id="qDate" required value="' + todayKey() + '"></label>' +
+    '<label class="fl">' + L('Out of', 'من') + '<input type="number" id="qOut" inputmode="decimal" min="1" max="1000" step="any" required value="20" dir="ltr"></label></div>' +
+    '<div class="inl" style="margin-top:12px"><button class="btn">' + L('Add quiz', 'أضف') + '</button><button type="button" class="btn ghost" data-act="quiz">' + L('Cancel', 'إلغاء') + '</button></div></form>';
 }
 function testsHTML(rows, mode) {
   let h = '';
-  if (isAdmin()) h += ui === 'test' ? testFormHTML() : '<p><button class="btn" data-act="test">' + L('+ Announce a test', '+ أعلن اختباراً') + '</button></p>';
+  if (isAdmin()) h += ui === 'test' ? testFormHTML() : ui === 'quiz' ? quizFormHTML() : '<p class="inl"><button class="btn" data-act="test">' + L('+ Announce a test or exam', '+ أعلن اختباراً أو امتحاناً') + '</button><button class="btn ghost" data-act="quiz">' + L('+ Add a quiz', '+ أضف مذاكرة') + '</button></p><p class="note">' + L('Tests and exams are on a schedule: announce them early so everyone can prepare. Quizzes come without warning: add one after it happens, and everyone enters their mark.', 'الاختبارات والامتحانات لها موعد: أعلنها مبكراً ليستعد الجميع. المذاكرات تأتي فجأة: أضفها بعد حدوثها، ويدخل كل شخص علامته.') + '</p>';
   const tk = todayKey(), valid = tests.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
   const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1);
   if (!valid.length) return h + '<p class="note">' + L('No tests announced yet. When a test is announced, it shows here with its own leaderboard, out of the real exam marks.', 'لا اختبارات معلنة بعد. عندما يُعلن اختبار يظهر هنا مع ترتيبه الخاص، من العلامات الحقيقية.') + '</p>';
@@ -729,8 +756,8 @@ function challengesHTML(rows, mode) {
   const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1).slice(0, 3);
   if (!valid.length && !canChallenge()) return '';
   let h = '<section class="chs"><div class="head"><h2 style="margin:0">' + L('Challenges', 'التحديات') + '</h2>' + (canChallenge() ? '<button class="btn ghost" data-act="ch">' + (ui === 'ch' ? L('Close', 'إغلاق') : L('+ New challenge', '+ تحدٍّ جديد')) + '</button>' : '') + '</div>';
-  if (ui === 'ch' && canChallenge()) h += testFormHTML({id: 'chForm', p: 'c', act: 'ch', title: L('New challenge for this race', 'تحدٍّ جديد لهذا السباق'), btn: L('Start challenge', 'ابدأ التحدي'), ph: L('Name, like تقييم فيزياء', 'الاسم، مثلاً: تقييم فيزياء')});
-  if (!valid.length) h += '<p class="note">' + L('Make a challenge for a quiz or تقييم: pick its date and lessons, and everyone races to cover them.', 'أنشئ تحدياً لمذاكرة أو تقييم: اختر موعده ودروسه، والكل يتسابق لتغطيتها.') + '</p>';
+  if (ui === 'ch' && canChallenge()) h += testFormHTML({id: 'chForm', p: 'c', act: 'ch', title: L('New challenge for this race', 'تحدٍّ جديد لهذا السباق'), btn: L('Start challenge', 'ابدأ التحدي'), ph: L('Name, like Chemistry week', 'الاسم، مثلاً: أسبوع الكيمياء')});
+  if (!valid.length) h += '<p class="note">' + L('Set your race a goal: pick some lessons and a deadline, like "finish Chemistry unit 4 by Friday", and see who covers the most.', 'ضع هدفاً لسباقك: اختر دروساً وموعداً، مثل «أنهوا الوحدة الرابعة في الكيمياء قبل الجمعة»، وشوف مين بيغطي أكثر.') + '</p>';
   h += active.map(t => testCard(t, false, rows, mode, 'ch')).join('');
   h += helpersHTML();
   if (past.length) h += '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Finished challenges', 'تحديات منتهية') + '</summary>' + past.map(t => testCard(t, true, rows, mode, 'ch')).join('') + '</details>';
@@ -744,8 +771,8 @@ function rulesHTML() {
     shown.map(s => '<tr><td dir="auto">' + esc(nm(s)) + '</td><td class="num">' + s.pts + '</td><td class="num">' + VAL[s.k] + '</td><td class="num">' + Math.ceil(VAL[s.k] / 2) + ' → ' + Math.ceil(VAL[s.k] / 4) + '</td></tr>').join('') + '</tbody></table>';
   if (LANG === 'ar') return '<section class="card rules" dir="rtl">' +
     '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>أول مراجعة للدرس تعطي <b>نصف</b> قيمته، وكل مراجعة بعدها تعطي <b>ربع</b> قيمته. تُحسب مراجعة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
-    '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
-    '<h2>التحديات</h2><ul><li>منشئ السباق ومساعدو التحديات الذين يختارهم يمكنهم إنشاء تحدٍّ لمذاكرة أو تقييم (مثل تقييم فيزياء): اسم وموعد والدروس الداخلة فيه.</li><li>يُحسب التحدي مثل الاختبار: من العلامة الحقيقية للمادة، مقسومة على الدروس الداخلة فيه، والدروس المدروسة من يوم بدئه حتى موعده. التحدي خاص بهذا السباق فقط.</li></ul>' +
+    '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>المذاكرات تأتي فجأة، فيضيفها المدير بعد حدوثها (الاسم والمادة والعلامة الكاملة)، ويدخل كل شخص علامته.</li><li>بعد الاختبار يكتب المدير العلامة الكاملة، ثم يدخل كل شخص علامته الحقيقية. العلامة الكاملة تعطي 100 نقطة في السباق الشهري، والنقاط حسب نسبتها (مثلاً 15 من 20 = 75 نقطة).</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
+    '<h2>التحديات</h2><ul><li>منشئ السباق ومساعدو التحديات الذين يختارهم يمكنهم إنشاء تحدٍّ لسباقهم: هدف بدروس وموعد، مثل «أنهوا الوحدة الرابعة في الكيمياء قبل الجمعة». (المذاكرات والتقييمات تكون في صفحة الاختبارات.)</li><li>يُحسب التحدي مثل الاختبار: من العلامة الحقيقية للمادة، مقسومة على الدروس الداخلة فيه، والدروس المدروسة من يوم بدئه حتى موعده. التحدي خاص بهذا السباق فقط.</li></ul>' +
     '<h2>الفرق</h2><ul><li>منشئ السباق يمكنه تقسيم أعضاء سباقه إلى فرق (حتى 6 فرق) ووضع كل عضو في فريق.</li><li>نقاط الفريق هي <b>متوسط</b> نقاط أعضائه هذا الشهر، فالفريق الأكبر لا يربح لمجرد أنه أكبر.</li></ul>' +
     '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
     '<h2>الواجبات</h2><ul><li>ينشر الواجبات مدير الموقع والأشخاص الذين يختارهم فقط. يمكنهم نشرها لكل السباقات («للجميع») أو لسباق واحد. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
@@ -753,8 +780,8 @@ function rulesHTML() {
     '<h2>الأمانة</h2><p>السباق قائم على الثقة بين الأصدقاء. علّم الدرس فقط عندما تدرسه فعلاً. الهدف أن ننجح كلنا. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ.</p></section>';
   return '<section class="card rules">' +
     '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>The first review of a lesson earns <b>half</b> its value, and every review after that earns <b>a quarter</b>. One review per lesson per day counts.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
-    '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
-    '<h2>Challenges</h2><ul><li>A race\'s creator and the challenge helpers they pick can set a challenge for a quiz or تقييم (like تقييم فيزياء): a name, a date and the lessons it covers.</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
+    '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>Quizzes come without warning, so the admin adds them after they happen (name, subject, what it was out of) and everyone enters their mark.</li><li>After the test, the admin types what it was out of, and everyone enters their real mark. A full mark gives 100 points in the monthly race, scaled (for example 15 out of 20 = 75 points).</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
+    '<h2>Challenges</h2><ul><li>A race\'s creator and the challenge helpers they pick can set their race a challenge: a goal with lessons and a deadline, like "finish Chemistry unit 4 by Friday". (Quizzes and تقييم go on the Tests page.)</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
     '<h2>Teams</h2><ul><li>A race\'s creator can split its members into teams (up to 6) and put each member in one.</li><li>A team\'s score is the <b>average</b> of its members\' points this month, so a bigger team doesn\'t win just by being bigger.</li></ul>' +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
     '<h2>Homework</h2><ul><li>Only the website admin and the people they choose can post homework, either for every race (marked Everyone) or for one race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
@@ -957,7 +984,7 @@ document.addEventListener('click', async ev => {
   if (act === 'soundtest') { const was = SOUND; SOUND = true; playSound('lesson'); setTimeout(() => playSound('hw'), 500); SOUND = was; return; }
   if (act === 'reload') { location.reload(); return; }
   if (act === 'out2') { if (!outArm2) { outArm2 = true; render(); setTimeout(() => { outArm2 = false; render(); }, 4000); return; } outArm2 = false; page = 'race'; if (api) await api.signOut(api.auth); return; }
-  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch'].includes(act)) { ui = ui === act ? '' : act; if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
+  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch', 'quiz'].includes(act)) { ui = ui === act ? '' : act; if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
   if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = LANG === 'ar' ? 'انضم لسباق البكالوريا "' + lname(cur) + '": ' + link + ' (الرمز ' + cur.toUpperCase() + ')' : 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
   if (act === 'enter' && cur) { enter(cur); toast('You joined ' + lname(cur)); return; }
@@ -1007,6 +1034,11 @@ document.addEventListener('submit', async ev => {
     setTimeout(() => { if (lobbyDocs[c] && !lobbyDocs[c].missing && !((me && me.lobbies) || []).includes(c)) { enter(c); toast('You joined ' + lname(c)); } }, 900); return; }
   if (f.id === 'teamForm' && api && isCreator()) { const n = $('teamName').value.trim().slice(0, 20); if (!n) return; const L0 = lobby(), t = (L0.teams || []).slice(0, 6);
     if (t.length >= 6) return; t.push({id: Date.now().toString(36), name: n}); $('teamName').value = ''; await saveTeams({teams: t}); return; }
+  if (f.dataset && f.dataset.outof && api && isAdmin()) { const v = +f.querySelector('input').value; if (!(v > 0)) return; try { await api.updateDoc(api.doc(api.db, 'tests', f.dataset.outof), {outOf: v}); toast(L('Marks are open', 'فُتحت العلامات')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
+  if (f.dataset && f.dataset.mark && me && me.nick) { const id = f.dataset.mark, t = tests.find(x => x.id === id), v = +f.querySelector('input').value; if (!t || !(+t.outOf > 0) || !(v >= 0) || v > +t.outOf) { toast(L('Enter a mark between 0 and ', 'أدخل علامة بين 0 و ') + (t ? t.outOf : '')); return; }
+    changeMe(p => { p.marks = p.marks || {}; p.marks[id] = {m: v, d: (p.marks[id] && p.marks[id].d) || todayKey()}; }); playSound('hw'); toast(L('Mark saved: +', 'حُفظت العلامة: +') + Math.ceil(v / +t.outOf * MARK_PTS) + ' ' + L('points', 'نقطة')); return; }
+  if (f.id === 'quizForm' && api && isAdmin()) { const name = $('qName').value.trim().slice(0, 40), date = $('qDate').value, outOf = +$('qOut').value, subj = $('qSub').value; if (!name || !date || !(outOf > 0)) return;
+    try { await api.addDoc(api.collection(api.db, 'tests'), {name, type: 'quiz', subj, start: date, date, outOf, items: [], n: Date.now()}); ui = ''; $('testsBox').innerHTML = ''; render(); toast(L('Quiz added: everyone can enter their mark', 'أُضيفت المذاكرة: يمكن للجميع إدخال علاماتهم')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   if (f.id === 'chForm' && api && canChallenge()) { const name = $('cName').value.trim().slice(0, 40), start = $('cStart').value, date = $('cDate').value;
     const items = [...f.querySelectorAll('.tl:checked')].flatMap(x => x.value.split(','));
     if (!name || !start || !date) return; if (date < start) { toast(L('The date must be after the start date', 'الموعد يجب أن يكون بعد تاريخ البدء')); return; } if (!items.length) { toast(L('Pick at least one lesson', 'اختر درساً واحداً على الأقل')); return; }
@@ -1055,7 +1087,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795719432";
+const BUILD = "1795720165";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
