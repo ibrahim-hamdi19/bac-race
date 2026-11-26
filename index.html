@@ -597,7 +597,7 @@ function lobbyHTML(my) {
 }
 function hwHTML() {
   const LB = lobby(), member = !!(LB && me && (me.lobbies || []).includes(cur)); if (!member && !canPostAll()) return '';
-  const canPost = (member && canPostHw()) || canPostAll();
+  const canPost = canPostAll();
   const today = dkey(dayAgo(0)), tm = dkey(dayAgo(-1));
   const list = [...(member ? homework.map(w => ({...w, g: false})) : []), ...ghw.map(w => ({...w, g: true}))].filter(w => typeof w.text === 'string' && w.due >= today).sort((a, b) => a.due < b.due ? -1 : 1);
   const mine = (me && me.hw) || {};
@@ -611,14 +611,6 @@ function hwHTML() {
   else h += '<ul class="hwl">' + list.map(w => { const d = mine[w.g ? 'g_' + w.id : cur + '_' + w.id]; const soon = w.due <= tm;
     return '<li class="' + (d ? 'done' : '') + '"><input type="checkbox" data-hwdone="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '"' + (d ? ' checked' : '') + ' aria-label="Done"><div class="t"><span dir="auto">' + esc(w.text) + '</span><span class="due' + (soon ? ' soon' : '') + '"><span class="tag">' + esc(w.subj || '') + '</span>' + (w.g ? '<span class="tag gtag">' + L('Everyone', 'للجميع') + '</span>' : '') + ' due ' + (w.due === today ? 'today' : w.due === tm ? 'tomorrow' : esc(fmtDate(w.due))) + '</span></div>' +
       (((w.g && (isAdmin() || w.by === meId)) || (!w.g && (isCreator() || w.by === meId))) ? '<button class="x" data-hwdel="' + esc(w.id) + '" data-g="' + (w.g ? 1 : '') + '" aria-label="Delete homework">×</button>' : '') + '</li>'; }).join('') + '</ul>';
-  if (member && isCreator()) {
-    if (ui === 'helpers') {
-      const others = Object.keys(players).filter(id => id !== meId);
-      h += '<div class="panel"><p><b>Homework helpers</b> can post homework in this race (teachers, supervisors, the classmate who always knows).</p>' +
-        (others.length ? '<ul class="hwl">' + others.map(id => { const on = (LB.helpers || []).includes(id); return '<li><div class="t"><span>' + esc(nick(players[id])) + '</span></div><button class="tk' + (on ? ' on' : '') + '" data-helper="' + esc(id) + '">' + (on ? 'Helper ✓' : 'Make helper') + '</button></li>'; }).join('') + '</ul>' : '<p class="note">Nobody else has joined yet.</p>') +
-        '<button class="btn ghost" data-act="helpers">Done</button></div>';
-    } else h += '<p class="note" style="margin-top:10px"><button class="linkbtn" data-act="helpers">Manage homework helpers</button></p>';
-  }
   return h + '</section>';
 }
 function itemsHTML(items, d, can) {
@@ -716,6 +708,18 @@ function testsHTML(rows, mode) {
   if (past.length) h += '<h3 class="h3" style="margin-top:22px">' + L('Past tests', 'اختبارات سابقة') + '</h3>' + past.map(t => testCard(t, true, rows, mode, 'test')).join('');
   return h;
 }
+function helpersHTML() {
+  const LB = lobby(); let h = '';
+  if (LB && isCreator()) {
+    if (ui === 'helpers') {
+      const others = Object.keys(players).filter(id => id !== meId);
+      h += '<div class="panel"><p><b>' + L('Challenge helpers', 'مساعدو التحديات') + '</b> ' + L('can add challenges in this race.', 'يمكنهم إضافة تحديات في هذا السباق.') + '</p>' +
+        (others.length ? '<ul class="hwl">' + others.map(id => { const on = (LB.helpers || []).includes(id); return '<li><div class="t"><span>' + esc(nick(players[id])) + '</span></div><button class="tk' + (on ? ' on' : '') + '" data-helper="' + esc(id) + '">' + (on ? 'Helper ✓' : 'Make helper') + '</button></li>'; }).join('') + '</ul>' : '<p class="note">Nobody else has joined yet.</p>') +
+        '<button class="btn ghost" data-act="helpers">' + L('Done', 'تم') + '</button></div>';
+    } else h += '<p class="note" style="margin-top:10px"><button class="linkbtn" data-act="helpers">' + L('Manage challenge helpers', 'إدارة مساعدي التحديات') + '</button></p>';
+  }
+  return h;
+}
 // ---- race challenges: set by the race creator or its homework helpers, scored like tests ----
 let challenges = [], chUnsub = null;
 const canChallenge = () => !!(lobby() && (lobby().by === meId || (lobby().helpers || []).includes(meId)));
@@ -728,6 +732,7 @@ function challengesHTML(rows, mode) {
   if (ui === 'ch' && canChallenge()) h += testFormHTML({id: 'chForm', p: 'c', act: 'ch', title: L('New challenge for this race', 'تحدٍّ جديد لهذا السباق'), btn: L('Start challenge', 'ابدأ التحدي'), ph: L('Name, like تقييم فيزياء', 'الاسم، مثلاً: تقييم فيزياء')});
   if (!valid.length) h += '<p class="note">' + L('Make a challenge for a quiz or تقييم: pick its date and lessons, and everyone races to cover them.', 'أنشئ تحدياً لمذاكرة أو تقييم: اختر موعده ودروسه، والكل يتسابق لتغطيتها.') + '</p>';
   h += active.map(t => testCard(t, false, rows, mode, 'ch')).join('');
+  h += helpersHTML();
   if (past.length) h += '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Finished challenges', 'تحديات منتهية') + '</summary>' + past.map(t => testCard(t, true, rows, mode, 'ch')).join('') + '</details>';
   return h + '</section>';
 }
@@ -740,19 +745,19 @@ function rulesHTML() {
   if (LANG === 'ar') return '<section class="card rules" dir="rtl">' +
     '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>أول مراجعة للدرس تعطي <b>نصف</b> قيمته، وكل مراجعة بعدها تعطي <b>ربع</b> قيمته. تُحسب مراجعة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
     '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
-    '<h2>التحديات</h2><ul><li>منشئ السباق ومساعدو الواجبات فيه يمكنهم إنشاء تحدٍّ لمذاكرة أو تقييم (مثل تقييم فيزياء): اسم وموعد والدروس الداخلة فيه.</li><li>يُحسب التحدي مثل الاختبار: من العلامة الحقيقية للمادة، مقسومة على الدروس الداخلة فيه، والدروس المدروسة من يوم بدئه حتى موعده. التحدي خاص بهذا السباق فقط.</li></ul>' +
+    '<h2>التحديات</h2><ul><li>منشئ السباق ومساعدو التحديات الذين يختارهم يمكنهم إنشاء تحدٍّ لمذاكرة أو تقييم (مثل تقييم فيزياء): اسم وموعد والدروس الداخلة فيه.</li><li>يُحسب التحدي مثل الاختبار: من العلامة الحقيقية للمادة، مقسومة على الدروس الداخلة فيه، والدروس المدروسة من يوم بدئه حتى موعده. التحدي خاص بهذا السباق فقط.</li></ul>' +
     '<h2>الفرق</h2><ul><li>منشئ السباق يمكنه تقسيم أعضاء سباقه إلى فرق (حتى 6 فرق) ووضع كل عضو في فريق.</li><li>نقاط الفريق هي <b>متوسط</b> نقاط أعضائه هذا الشهر، فالفريق الأكبر لا يربح لمجرد أنه أكبر.</li></ul>' +
     '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
-    '<h2>الواجبات</h2><ul><li>ينشر الواجبات منشئ السباق ومن يختارهم كمساعدين فقط. الواجبات المعلّمة «للجميع» ينشرها مدير الموقع وتظهر في كل السباقات. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
+    '<h2>الواجبات</h2><ul><li>ينشر الواجبات مدير الموقع والأشخاص الذين يختارهم فقط. يمكنهم نشرها لكل السباقات («للجميع») أو لسباق واحد. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
     '<h2>طريقة الاستخدام</h2><ol><li>أنشئ حساباً باسم مستخدم وكلمة سر وكود الدخول الذي أخذته. احفظ كلمة السر: لا يمكن استرجاعها. ادخل بنفس الحساب من أي هاتف.</li><li>اختر اسمك ومادة الديانة التي تدرسها.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
     '<h2>الأمانة</h2><p>السباق قائم على الثقة بين الأصدقاء. علّم الدرس فقط عندما تدرسه فعلاً. الهدف أن ننجح كلنا. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ.</p></section>';
   return '<section class="card rules">' +
     '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>The first review of a lesson earns <b>half</b> its value, and every review after that earns <b>a quarter</b>. One review per lesson per day counts.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
     '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
-    '<h2>Challenges</h2><ul><li>A race\'s creator and its homework helpers can set a challenge for a quiz or تقييم (like تقييم فيزياء): a name, a date and the lessons it covers.</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
+    '<h2>Challenges</h2><ul><li>A race\'s creator and the challenge helpers they pick can set a challenge for a quiz or تقييم (like تقييم فيزياء): a name, a date and the lessons it covers.</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
     '<h2>Teams</h2><ul><li>A race\'s creator can split its members into teams (up to 6) and put each member in one.</li><li>A team\'s score is the <b>average</b> of its members\' points this month, so a bigger team doesn\'t win just by being bigger.</li></ul>' +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
-    '<h2>Homework</h2><ul><li>Only the race creator and the helpers they choose can post homework. Homework marked Everyone comes from the website admin and shows in every race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
+    '<h2>Homework</h2><ul><li>Only the website admin and the people they choose can post homework, either for every race (marked Everyone) or for one race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
     '<h2>How to use</h2><ol><li>Create an account with a username, a password and the access code you were given. Remember your password: it can\'t be reset. Log in with the same account on any phone.</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
     '<h2>Honesty</h2><p>The race runs on trust between friends. Only tick a lesson when you really studied it. The goal is for all of us to pass. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</p></section>';
 }
@@ -1050,7 +1055,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795718596";
+const BUILD = "1795719432";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
