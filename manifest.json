@@ -1,0 +1,16 @@
+{
+  "name": "سباق البكالوريا",
+  "short_name": "سباق البكالوريا",
+  "description": "وفي ذلك فليتنافس المتنافسون",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0A1128",
+  "theme_color": "#0A1128",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {"src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
