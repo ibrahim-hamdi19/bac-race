@@ -740,6 +740,7 @@ function profileHTML() {
     '<form id="pfPw" class="card" style="margin-top:14px"><h2>' + L('Password', 'كلمة السر') + '</h2>' +
     '<div class="stackf" style="margin-top:10px">' + pwField('pfPass2', L('Current password', 'كلمة السر الحالية'), 'current-password') + pwField('pfPass3', L('New password (6+ characters)', 'كلمة السر الجديدة (6 أحرف أو أكثر)'), 'new-password') + '</div>' +
     '<button class="btn" style="margin-top:12px">' + L('Change password', 'غيّر كلمة السر') + '</button></form>' +
+    '<section class="card" style="margin-top:14px"><h2>' + L('Sounds', 'الأصوات') + '</h2><p class="note">' + L('A little sound when you finish a lesson or homework. On iPhone, the silent switch also mutes it.', 'صوت صغير عندما تنهي درساً أو واجباً. على الآيفون يكتمه زر الصامت أيضاً.') + '</p><div class="inl" style="margin-top:10px"><button type="button" class="btn' + (SOUND ? '' : ' ghost') + '" data-act="sound">' + (SOUND ? L('Sounds: on', 'الأصوات: مفعّلة') : L('Sounds: off', 'الأصوات: مطفأة')) + '</button><button type="button" class="btn ghost" data-act="soundtest">' + L('Try it', 'جرّب') + '</button></div></section>' +
     '<section class="card" style="margin-top:14px"><h2>' + L('App version', 'إصدار التطبيق') + '</h2><p class="note">' + L('If something looks old, tap this to load the newest version.', 'إذا بدا شيء قديماً، اضغط هنا لتحميل أحدث إصدار.') + '</p><div class="inl" style="margin-top:10px"><button type="button" class="btn ghost" data-act="reload">' + L('Update the app', 'حدّث التطبيق') + '</button></div></section>' +
     '<section class="card" style="margin-top:14px"><h2>' + L('Sign out', 'تسجيل الخروج') + '</h2><p class="note">' + L('You can log back in on any phone with your username and password.', 'يمكنك الدخول من أي هاتف باسم المستخدم وكلمة السر.') + '</p><button class="btn ghost' + (outArm2 ? ' arm' : '') + '" data-act="out2" style="margin-top:10px">' + (outArm2 ? L('Tap again to sign out', 'اضغط مرة ثانية للخروج') : L('Sign out', 'تسجيل الخروج')) + '</button></section>';
 }
@@ -853,7 +854,7 @@ document.addEventListener('click', async ev => {
       if (up && n === 1 && !p.first[id]) p.first[id] = today;
       const L = p.log[today] = p.log[today] || {}; L[id] = Math.max(0, (+L[id] || 0) + (up ? 1 : -1)); if (!L[id]) delete L[id]; if (!Object.keys(L).length) delete p.log[today];
       const cut = dkey(dayAgo(200)); for (const k in p.log) if (k < cut) delete p.log[k]; });
-    if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
+    if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); playSound(!up ? 'undo' : n === 1 ? 'lesson' : 'review'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
   const to = ev.target.closest('[data-topen]');
   if (to) { const k = to.closest('.trow').nextElementSibling; k.hidden = !k.hidden; to.classList.toggle('open', !k.hidden); return; }
   const mk = ev.target.closest('[data-mk]');
@@ -887,6 +888,8 @@ document.addEventListener('click', async ev => {
   if (act === 'claim' && api) { try { await api.setDoc(api.doc(api.db, 'meta', 'admins'), {uids: [meId]}); toast(L('You are the admin now', 'أصبحت المدير')); } catch (e) { toast(L('Someone is already the admin', 'يوجد مدير بالفعل')); } return; }
   if (act === 'signout' && api) { await api.signOut(api.auth); return; }
   if (act === 'profile') { page = 'profile'; render(); window.scrollTo(0, 0); return; }
+  if (act === 'sound') { SOUND = !SOUND; try { localStorage.setItem('bac-sound', SOUND ? 'on' : 'off'); } catch (e) {} $('profileBox').innerHTML = profileHTML(); if (SOUND) playSound('lesson'); return; }
+  if (act === 'soundtest') { const was = SOUND; SOUND = true; playSound('lesson'); setTimeout(() => playSound('hw'), 500); SOUND = was; return; }
   if (act === 'reload') { location.reload(); return; }
   if (act === 'out2') { if (!outArm2) { outArm2 = true; render(); setTimeout(() => { outArm2 = false; render(); }, 4000); return; } outArm2 = false; page = 'race'; if (api) await api.signOut(api.auth); return; }
   if (['new', 'code', 'hw', 'helpers', 'test'].includes(act)) { ui = ui === act ? '' : act; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
@@ -902,6 +905,7 @@ document.addEventListener('change', ev => {
   if (c.dataset && c.dataset.tunit) { c.closest('.tunit').querySelectorAll('.tl').forEach(x => { x.checked = c.checked; }); return; } if (!c.dataset || !c.dataset.hwdone || !me) return;
   const g = !!c.dataset.g; const w = (g ? ghw : homework).find(x => x.id === c.dataset.hwdone); const k = (g ? 'g_' : cur + '_') + c.dataset.hwdone; const sk = w ? (SUBJ_BY_NAME[w.subj] || '') : '';
   changeMe(p => { p.hw = p.hw || {}; if (c.checked) p.hw[k] = {d: todayKey(), k: sk}; else delete p.hw[k]; });
+  playSound(c.checked ? 'hw' : 'undo');
   if (c.checked && VAL[sk]) toast(L('Homework done: +' + Math.round(VAL[sk]) + ' points', 'أنهيت الواجب: +' + Math.round(VAL[sk]) + ' نقطة'));
 });
 document.addEventListener('submit', async ev => {
@@ -964,8 +968,22 @@ function onPerks(p) { perks = p || {};
   paintThemes(); }
 function paintThemes() { const box = $('themes'); if (!box) return;
   box.innerHTML = myThemes().map(([k, en, ar, bg, ac]) => '<button type="button" class="sw" data-theme-pick="' + k + '" aria-pressed="' + (THEME === k) + '"><i style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (SPECIAL.some(t => t[0] === k) ? '★ ' : '') + (LANG === 'ar' ? ar : en) + '</button>').join(''); }
+// ---- sounds (made in the browser, no files) ----
+let SOUND = true; try { SOUND = localStorage.getItem('bac-sound') !== 'off'; } catch (e) {}
+let actx = null;
+function tone(f, t0, dur, type, vol) { const o = actx.createOscillator(), g = actx.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol || 0.18, t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); o.connect(g); g.connect(actx.destination); o.start(t0); o.stop(t0 + dur + 0.02); return o; }
+function playSound(kind) {
+  if (!SOUND) return;
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); const t = actx.currentTime + 0.01;
+    if (THEME === 'hamster' && kind !== 'undo') { const o = tone(1400, t, 0.12, 'sine', 0.16); o.frequency.exponentialRampToValueAtTime(2300, t + 0.1); const o2 = tone(1600, t + 0.14, 0.12, 'sine', 0.14); o2.frequency.exponentialRampToValueAtTime(2600, t + 0.24); return; }
+    if (kind === 'lesson') { [523.25, 659.25, 783.99].forEach((f, i) => tone(f, t + i * 0.09, 0.32, 'triangle', 0.16)); }
+    else if (kind === 'review') { tone(783.99, t, 0.18, 'sine', 0.14); tone(1046.5, t + 0.08, 0.26, 'sine', 0.12); }
+    else if (kind === 'hw') { [659.25, 783.99, 987.77, 1318.5].forEach((f, i) => tone(f, t + i * 0.08, 0.36, 'triangle', 0.15)); }
+    else if (kind === 'undo') { const o = tone(440, t, 0.18, 'sine', 0.1); o.frequency.exponentialRampToValueAtTime(300, t + 0.16); }
+  } catch (e) {}
+}
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795716430";
+const BUILD = "1795717659";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
