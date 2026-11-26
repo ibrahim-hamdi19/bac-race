@@ -334,6 +334,12 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 [data-theme=hamster] .chip.add{border-color:#F8D2AE}
 [data-theme=hamster] .card,[data-theme=hamster] .sbj,[data-theme=hamster] .panel{background:#FFFBF7}
 [data-theme=hamster] .grp{background:#FFF1E3}[data-theme=hamster] .grp span:last-child{color:#C9651F}
+.teams{margin-top:18px}.teams .head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.track.tt{margin:10px 0}
+.tmem p{margin:4px 0}
+.teams select{flex:none;width:auto;min-width:9em}
+.tt .lane{height:auto;min-height:58px;padding-top:6px;padding-bottom:6px}.tt .lane .who{white-space:normal;overflow:visible}.tt .lane .who small{white-space:nowrap;overflow:visible}
+.chs{margin-top:18px}.chs>.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1",hamster:"#FFE6EF"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -349,6 +355,8 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <div id="bac"></div>
   <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
   <p class="note">Each runner's spot is their points this month. Every lesson counts by its subject's exam marks.</p>
+  <div id="chBox"></div>
+  <div id="teamBox"></div>
   <div id="hwBox"></div>
   </div>
   <div id="pg-week" hidden><h2 class="pgt" data-en="Your week">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
@@ -432,14 +440,16 @@ function score(p, mode) {
   return Math.round(s);
 }
 const maxScore = mode => mode === 'both' ? 2700 : 2400;
-// ---- points: each lesson is worth (subject marks / its lessons); a review is worth half, once per lesson per day ----
+// ---- points: each lesson is worth (subject marks / its lessons); the first review is worth half, later reviews a quarter, once per lesson per day ----
 const TSUB = {}, VAL = {};
-for (const s of SUBJECTS) { for (const id of TASKS[s.k]) TSUB[id] = s.k; VAL[s.k] = TASKS[s.k].length ? s.pts / TASKS[s.k].length : 0; }
+for (const s of SUBJECTS) { for (const id of TASKS[s.k]) TSUB[id] = s.k; VAL[s.k] = TASKS[s.k].length ? Math.ceil(s.pts / TASKS[s.k].length) : 0; }
 function earned(p, from, to) {
   let pts = 0, nw = 0, rv = 0; const lg = (p && p.log) || {}, f = (p && p.first) || {};
-  for (const day in lg) { if (day < from || day > to) continue;
+  // Review number of a lesson = how many earlier days it was studied (after its first day).
+  const seen = {}; for (const day of Object.keys(lg).sort()) {
     for (const id in lg[day]) { const k = TSUB[id]; if (!k || !(lg[day][id] > 0)) continue;
-      if (f[id] === day) { pts += VAL[k]; nw++; } else { pts += VAL[k] / 2; rv++; } } }
+      let val; if (f[id] === day) { val = VAL[k]; if (day >= from && day <= to) nw++; } else { seen[id] = (seen[id] || 0) + 1; val = Math.ceil(VAL[k] * (seen[id] === 1 ? 0.5 : 0.25)); if (day >= from && day <= to) rv++; }
+      if (day >= from && day <= to) pts += val; } }
   return {pts: Math.round(pts), nw, rv};
 }
 // Homework done = one new lesson of that subject, on the day it was ticked. Kept per race.
@@ -540,11 +550,12 @@ let retryT = null;
 function watchRace() {
   if (!api) return; const member = !!(me && (me.lobbies || []).includes(cur));
   const want = member ? cur : null; if (watching === want) return; watching = want;
-  if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; }
-  players = {}; homework = [];
+  if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; } if (chUnsub) { chUnsub(); chUnsub = null; }
+  players = {}; homework = []; challenges = [];
   if (!want) { render(); return; }
   const retry = () => { clearTimeout(retryT); retryT = setTimeout(() => { watching = '__retry'; watchRace(); }, 1500); };
   playersUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'members'), s => { const nx = {}; s.forEach(x => nx[x.id] = x.data()); if ((pending || writing) && nx[meId] && me) nx[meId] = {...pub(me), hw: hwFor(me, cur)}; players = nx; render(); }, retry);
+  if (chUnsub) chUnsub(); challenges = []; chUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'challenges'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); challenges = a; render(); }, () => {});
   hwUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'homework'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); homework = a; render(); }, retry);
 }
 // What race-mates can see: never the list of races, never homework ticks.
@@ -668,7 +679,8 @@ function weekHTML(rows, mode) {
 // ---- tests page ----
 const L = (en, ar) => LANG === 'ar' ? ar : en;
 let tdelArm = null, outArm = false;
-function testFormHTML() {
+function testFormHTML(o) {
+  o = o || {id: 'testForm', p: 't', act: 'test', title: L('New test', 'اختبار جديد'), btn: L('Announce test', 'أعلن الاختبار'), ph: L('Test name, like Midterm 1', 'اسم الاختبار، مثلاً: مذاكرة أولى')};
   const tree = SUBJECTS.filter(s => TASKS[s.k].length).map(s => {
     let units = '';
     s.groups.forEach((g, gi) => g.units.forEach((u, ui) => {
@@ -678,11 +690,21 @@ function testFormHTML() {
     }));
     return '<div class="tsub"><div class="trow"><input type="checkbox" data-tsubj="' + s.k + '" aria-label="' + esc(s.name) + '"><button type="button" class="topen" data-topen><b dir="auto">' + esc(s.name) + '</b><svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg></button></div><div class="tkids" hidden>' + units + '</div></div>';
   }).join('');
-  return '<form id="testForm" class="panel"><p><b>' + L('New test', 'اختبار جديد') + '</b></p>' +
-    '<div class="inl" style="margin-bottom:10px"><input type="text" id="tName" maxlength="40" required placeholder="' + L('Test name, like Midterm 1', 'اسم الاختبار، مثلاً: مذاكرة أولى') + '" aria-label="' + L('Test name', 'اسم الاختبار') + '"></div>' +
-    '<div class="inl" style="margin-bottom:10px"><label class="fl">' + L('Counts from', 'يبدأ العدّ من') + '<input type="date" id="tStart" required value="' + todayKey() + '"></label><label class="fl">' + L('Test date', 'موعد الاختبار') + '<input type="date" id="tDate" required></label></div>' +
+  return '<form id="' + o.id + '" class="panel"><p><b>' + o.title + '</b></p>' +
+    '<div class="inl" style="margin-bottom:10px"><input type="text" id="' + o.p + 'Name" maxlength="40" required placeholder="' + o.ph + '" aria-label="' + L('Test name', 'اسم الاختبار') + '"></div>' +
+    '<div class="inl" style="margin-bottom:10px"><label class="fl">' + L('Counts from', 'يبدأ العدّ من') + '<input type="date" id="' + o.p + 'Start" required value="' + todayKey() + '"></label><label class="fl">' + L('Test date', 'موعد الاختبار') + '<input type="date" id="' + o.p + 'Date" required></label></div>' +
     '<p>' + L('Pick what is included. Tap a name to open it.', 'اختر ما يشمله الاختبار. اضغط على الاسم لفتحه.') + '</p><div class="tree">' + tree + '</div>' +
-    '<div class="inl" style="margin-top:12px"><button class="btn">' + L('Announce test', 'أعلن الاختبار') + '</button><button type="button" class="btn ghost" data-act="test">' + L('Cancel', 'إلغاء') + '</button></div></form>';
+    '<div class="inl" style="margin-top:12px"><button class="btn">' + o.btn + '</button><button type="button" class="btn ghost" data-act="' + o.act + '">' + L('Cancel', 'إلغاء') + '</button></div></form>';
+}
+function testCard(t, done, rows, mode, kind) {
+    const mine = me && me.nick ? testCalc(me, t, mode) : null, days = Math.round((new Date(t.date + 'T00:00') - dayAgo(0)) / 864e5);
+    const subs = Object.keys(mine ? mine.by : {}).map(k => { const pp = mine.part[k]; return '<div class="hr"><span class="n" dir="auto">' + esc(SUBJ[k].name) + '</span><div class="hbar"><i class="me" style="width:' + (pp.n / pp.of * 100) + '%"></i></div><span class="v num">' + pp.n + '/' + pp.of + '</span></div>'; }).join('');
+    const rk = rows.map(r => ({...r, t: testCalc(r.p, t, mode)})).sort((a, b) => b.t.got - a.t.got);
+    return '<section class="card tcard' + (done ? ' past' : '') + '"><div class="head"><h2 style="margin:0" dir="auto">' + esc(t.name) + '</h2><span class="tag">' + (done ? L('Finished', 'انتهى') : days === 0 ? L('Today', 'اليوم') : L('In ' + days + ' days', 'بعد ' + days + ' يوم')) + '</span></div>' +
+      '<p class="note">' + (kind === 'ch' ? L('On ', 'في ') : L('Test on ', 'الاختبار ')) + esc(fmtDate(t.date)) + ' · ' + L('counts lessons studied from ', 'تُحسب الدروس المدروسة من ') + esc(fmtDate(t.start)) + '</p>' +
+      (mine ? '<div class="score" style="margin-top:12px"><b class="num">' + mine.got + '</b><span class="note">/ ' + mine.max + ' ' + L('your mark', 'علامتك') + '</span></div><div class="rows" style="margin-top:8px">' + subs + '</div>' : '') +
+      (rk.length ? '<h3 class="h3">' + L('Ranking in ', 'الترتيب في ') + esc(lname(cur)) + '</h3><div class="rows">' + rk.map((r, i) => '<div class="hr"><span class="n">' + (i + 1) + '. ' + esc(nick(r.p)) + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (r.t.max ? r.t.got / r.t.max * 100 : 0) + '%"></i></div><span class="v num">' + r.t.got + '</span></div>').join('') + '</div>' : '') +
+      ((kind === 'ch' ? canChallenge() : isAdmin()) ? '<p style="margin-top:12px"><button class="linkbtn" data-' + (kind === 'ch' ? 'chdel' : 'tdel') + '="' + esc(t.id) + '">' + (tdelArm === t.id ? L('Tap again to delete', 'اضغط مرة ثانية للحذف') : L('Delete test', 'احذف الاختبار')) + '</button></p>' : '') + '</section>';
 }
 function testsHTML(rows, mode) {
   let h = '';
@@ -690,36 +712,45 @@ function testsHTML(rows, mode) {
   const tk = todayKey(), valid = tests.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
   const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1);
   if (!valid.length) return h + '<p class="note">' + L('No tests announced yet. When a test is announced, it shows here with its own leaderboard, out of the real exam marks.', 'لا اختبارات معلنة بعد. عندما يُعلن اختبار يظهر هنا مع ترتيبه الخاص، من العلامات الحقيقية.') + '</p>';
-  const card = (t, done) => {
-    const mine = me && me.nick ? testCalc(me, t, mode) : null, days = Math.round((new Date(t.date + 'T00:00') - dayAgo(0)) / 864e5);
-    const subs = Object.keys(mine ? mine.by : {}).map(k => { const pp = mine.part[k]; return '<div class="hr"><span class="n" dir="auto">' + esc(SUBJ[k].name) + '</span><div class="hbar"><i class="me" style="width:' + (pp.n / pp.of * 100) + '%"></i></div><span class="v num">' + pp.n + '/' + pp.of + '</span></div>'; }).join('');
-    const rk = rows.map(r => ({...r, t: testCalc(r.p, t, mode)})).sort((a, b) => b.t.got - a.t.got);
-    return '<section class="card tcard' + (done ? ' past' : '') + '"><div class="head"><h2 style="margin:0" dir="auto">' + esc(t.name) + '</h2><span class="tag">' + (done ? L('Finished', 'انتهى') : days === 0 ? L('Today', 'اليوم') : L('In ' + days + ' days', 'بعد ' + days + ' يوم')) + '</span></div>' +
-      '<p class="note">' + L('Test on ', 'الاختبار ') + esc(fmtDate(t.date)) + ' · ' + L('counts lessons studied from ', 'تُحسب الدروس المدروسة من ') + esc(fmtDate(t.start)) + '</p>' +
-      (mine ? '<div class="score" style="margin-top:12px"><b class="num">' + mine.got + '</b><span class="note">/ ' + mine.max + ' ' + L('your mark', 'علامتك') + '</span></div><div class="rows" style="margin-top:8px">' + subs + '</div>' : '') +
-      (rk.length ? '<h3 class="h3">' + L('Ranking in ', 'الترتيب في ') + esc(lname(cur)) + '</h3><div class="rows">' + rk.map((r, i) => '<div class="hr"><span class="n">' + (i + 1) + '. ' + esc(nick(r.p)) + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (r.t.max ? r.t.got / r.t.max * 100 : 0) + '%"></i></div><span class="v num">' + r.t.got + '</span></div>').join('') + '</div>' : '') +
-      (isAdmin() ? '<p style="margin-top:12px"><button class="linkbtn" data-tdel="' + esc(t.id) + '">' + (tdelArm === t.id ? L('Tap again to delete', 'اضغط مرة ثانية للحذف') : L('Delete test', 'احذف الاختبار')) + '</button></p>' : '') + '</section>';
-  };
-  h += active.map(t => card(t, false)).join('');
-  if (past.length) h += '<h3 class="h3" style="margin-top:22px">' + L('Past tests', 'اختبارات سابقة') + '</h3>' + past.map(t => card(t, true)).join('');
+  h += active.map(t => testCard(t, false, rows, mode, 'test')).join('');
+  if (past.length) h += '<h3 class="h3" style="margin-top:22px">' + L('Past tests', 'اختبارات سابقة') + '</h3>' + past.map(t => testCard(t, true, rows, mode, 'test')).join('');
   return h;
+}
+// ---- race challenges: set by the race creator or its homework helpers, scored like tests ----
+let challenges = [], chUnsub = null;
+const canChallenge = () => !!(lobby() && (lobby().by === meId || (lobby().helpers || []).includes(meId)));
+function challengesHTML(rows, mode) {
+  const LB = lobby(); if (!LB || !(me && (me.lobbies || []).includes(cur))) return '';
+  const tk = todayKey(), valid = challenges.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
+  const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1).slice(0, 3);
+  if (!valid.length && !canChallenge()) return '';
+  let h = '<section class="chs"><div class="head"><h2 style="margin:0">' + L('Challenges', 'التحديات') + '</h2>' + (canChallenge() ? '<button class="btn ghost" data-act="ch">' + (ui === 'ch' ? L('Close', 'إغلاق') : L('+ New challenge', '+ تحدٍّ جديد')) + '</button>' : '') + '</div>';
+  if (ui === 'ch' && canChallenge()) h += testFormHTML({id: 'chForm', p: 'c', act: 'ch', title: L('New challenge for this race', 'تحدٍّ جديد لهذا السباق'), btn: L('Start challenge', 'ابدأ التحدي'), ph: L('Name, like تقييم فيزياء', 'الاسم، مثلاً: تقييم فيزياء')});
+  if (!valid.length) h += '<p class="note">' + L('Make a challenge for a quiz or تقييم: pick its date and lessons, and everyone races to cover them.', 'أنشئ تحدياً لمذاكرة أو تقييم: اختر موعده ودروسه، والكل يتسابق لتغطيتها.') + '</p>';
+  h += active.map(t => testCard(t, false, rows, mode, 'ch')).join('');
+  if (past.length) h += '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Finished challenges', 'تحديات منتهية') + '</summary>' + past.map(t => testCard(t, true, rows, mode, 'ch')).join('') + '</details>';
+  return h + '</section>';
 }
 // ---- rules page ----
 function rulesHTML() {
   const shown = SUBJECTS.filter(s => s.k !== 'rel_c');
   const nm = s => s.k === 'rel_i' ? L('Religion', 'الديانة') : s.name;
-  const table = '<table class="rt"><thead><tr><th>' + L('Subject', 'المادة') + '</th><th>' + L('Exam marks', 'العلامة') + '</th><th>' + L('New lesson', 'درس جديد') + '</th><th>' + L('Review', 'مراجعة') + '</th></tr></thead><tbody>' +
-    shown.map(s => '<tr><td dir="auto">' + esc(nm(s)) + '</td><td class="num">' + s.pts + '</td><td class="num">' + (Math.round(VAL[s.k] * 10) / 10) + '</td><td class="num">' + (Math.round(VAL[s.k] * 5) / 10) + '</td></tr>').join('') + '</tbody></table>';
+  const table = '<table class="rt"><thead><tr><th>' + L('Subject', 'المادة') + '</th><th>' + L('Exam marks', 'العلامة') + '</th><th>' + L('New lesson', 'درس جديد') + '</th><th>' + L('Review (1st → later)', 'مراجعة (أولى ← بعدها)') + '</th></tr></thead><tbody>' +
+    shown.map(s => '<tr><td dir="auto">' + esc(nm(s)) + '</td><td class="num">' + s.pts + '</td><td class="num">' + VAL[s.k] + '</td><td class="num">' + Math.ceil(VAL[s.k] / 2) + ' → ' + Math.ceil(VAL[s.k] / 4) + '</td></tr>').join('') + '</tbody></table>';
   if (LANG === 'ar') return '<section class="card rules" dir="rtl">' +
-    '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>المراجعة تعطي <b>نصف</b> قيمة الدرس، ومرة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
+    '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>أول مراجعة للدرس تعطي <b>نصف</b> قيمته، وكل مراجعة بعدها تعطي <b>ربع</b> قيمته. تُحسب مراجعة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
     '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
+    '<h2>التحديات</h2><ul><li>منشئ السباق ومساعدو الواجبات فيه يمكنهم إنشاء تحدٍّ لمذاكرة أو تقييم (مثل تقييم فيزياء): اسم وموعد والدروس الداخلة فيه.</li><li>يُحسب التحدي مثل الاختبار: من العلامة الحقيقية للمادة، مقسومة على الدروس الداخلة فيه، والدروس المدروسة من يوم بدئه حتى موعده. التحدي خاص بهذا السباق فقط.</li></ul>' +
+    '<h2>الفرق</h2><ul><li>منشئ السباق يمكنه تقسيم أعضاء سباقه إلى فرق (حتى 6 فرق) ووضع كل عضو في فريق.</li><li>نقاط الفريق هي <b>متوسط</b> نقاط أعضائه هذا الشهر، فالفريق الأكبر لا يربح لمجرد أنه أكبر.</li></ul>' +
     '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
     '<h2>الواجبات</h2><ul><li>ينشر الواجبات منشئ السباق ومن يختارهم كمساعدين فقط. الواجبات المعلّمة «للجميع» ينشرها مدير الموقع وتظهر في كل السباقات. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
     '<h2>طريقة الاستخدام</h2><ol><li>أنشئ حساباً باسم مستخدم وكلمة سر وكود الدخول الذي أخذته. احفظ كلمة السر: لا يمكن استرجاعها. ادخل بنفس الحساب من أي هاتف.</li><li>اختر اسمك ومادة الديانة التي تدرسها.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
     '<h2>الأمانة</h2><p>السباق قائم على الثقة بين الأصدقاء. علّم الدرس فقط عندما تدرسه فعلاً. الهدف أن ننجح كلنا. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ.</p></section>';
   return '<section class="card rules">' +
-    '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>A review earns <b>half</b> a lesson\'s value, once per lesson per day.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
+    '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>The first review of a lesson earns <b>half</b> its value, and every review after that earns <b>a quarter</b>. One review per lesson per day counts.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
     '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
+    '<h2>Challenges</h2><ul><li>A race\'s creator and its homework helpers can set a challenge for a quiz or تقييم (like تقييم فيزياء): a name, a date and the lessons it covers.</li><li>It\'s scored like a test: out of the subject\'s real marks, divided over the included lessons, counting what you study from its start until its date. A challenge belongs to that race only.</li></ul>' +
+    '<h2>Teams</h2><ul><li>A race\'s creator can split its members into teams (up to 6) and put each member in one.</li><li>A team\'s score is the <b>average</b> of its members\' points this month, so a bigger team doesn\'t win just by being bigger.</li></ul>' +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
     '<h2>Homework</h2><ul><li>Only the race creator and the helpers they choose can post homework. Homework marked Everyone comes from the website admin and shows in every race. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
     '<h2>How to use</h2><ol><li>Create an account with a username, a password and the access code you were given. Remember your password: it can\'t be reset. Log in with the same account on any phone.</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
@@ -783,6 +814,27 @@ function adminHTML() {
     peopleHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Other admin tools', 'أدوات أخرى') + '</h2><ul class="alist"><li>' + L('Announce tests on the Tests page (+ Announce a test).', 'أعلن الاختبارات من صفحة الاختبارات (+ أعلن اختباراً).') + '</li><li>' + L('Post homework for everyone from the homework box on the race page: keep "Send to all races" ticked.', 'انشر واجباً للجميع من صندوق الواجبات في صفحة السباق مع إبقاء «أرسله لكل السباقات» معلّماً.') + '</li></ul>' +
     '<p style="margin-top:12px"><button class="btn ghost" data-page="tests">' + L('Go to Tests', 'إلى الاختبارات') + '</button> <button class="btn ghost" data-page="race">' + L('Go to homework', 'إلى الواجبات') + '</button></p></section>';
 }
+// ---- teams (set by the race creator; team score = average of its members' points this month) ----
+const TEAMCOL = ['#F3D37A', '#7FD3F7', '#B9F27C', '#FFA3C7', '#C9B6FF', '#FFB36B'];
+function teamsHTML(rows) {
+  const LB = lobby(); if (!LB || !(me && (me.lobbies || []).includes(cur))) return '';
+  const teams = Array.isArray(LB.teams) ? LB.teams.filter(t => t && t.id && typeof t.name === 'string') : [], of = LB.teamOf || {}, creator = isCreator();
+  if (!teams.length && !creator) return '';
+  let h = '<section class="card teams"><div class="head"><h2 style="margin:0">' + L('Team race', 'سباق الفرق') + '</h2>' + (creator ? '<button class="btn ghost" data-act="teams">' + (ui === 'teams' ? L('Done', 'تم') : L('Manage teams', 'إدارة الفرق')) + '</button>' : '') + '</div>';
+  const ts = teams.map((t, i) => { const mem = rows.filter(r => of[r.id] === t.id); const avg = mem.length ? Math.round(mem.reduce((a, r) => a + r.sc, 0) / mem.length) : 0; return {...t, i, mem, avg}; }).sort((a, b) => b.avg - a.avg);
+  const mx = Math.max(1, ...ts.map(t => t.avg));
+  if (!teams.length) h += '<p class="note">' + L('Split your race into teams. Each team\'s score is the average of its members\' points this month, so team sizes don\'t matter.', 'قسّم سباقك إلى فرق. نقاط كل فريق هي متوسط نقاط أعضائه هذا الشهر، فلا يهم حجم الفريق.') + '</p>';
+  else h += '<p class="note">' + L('Team score = average points of its members this month.', 'نقاط الفريق = متوسط نقاط أعضائه هذا الشهر.') + '</p><div class="track tt">' + ts.map((t, k) => '<div class="lane"><div class="who"><span dir="auto">' + esc(t.name) + '</span><small>' + ord(k) + ' · ' + L(t.mem.length + ' member' + (t.mem.length === 1 ? '' : 's'), t.mem.length + ' أعضاء') + '</small></div><div class="run"><span class="runner" style="left:calc(17px + (100% - 44px) * ' + (t.avg / mx) + ');background:' + TEAMCOL[t.i % TEAMCOL.length] + '" aria-hidden="true">' + esc(t.name.trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + t.avg + '</b><small>' + L('avg', 'متوسط') + '</small></div></div>').join('') + '</div>' +
+    '<div class="tmem">' + ts.map(t => '<p class="note"><b style="color:' + TEAMCOL[t.i % TEAMCOL.length] + '" dir="auto">' + esc(t.name) + ':</b> ' + (t.mem.length ? t.mem.map(r => esc(nick(r.p))).join('، ') : L('nobody yet', 'لا أحد بعد')) + '</p>').join('') + '</div>';
+  if (creator && ui === 'teams') {
+    h += '<div class="panel"><form id="teamForm" class="inl" style="margin-bottom:12px"><input type="text" id="teamName" maxlength="20" required placeholder="' + L('New team name', 'اسم فريق جديد') + '" aria-label="' + L('New team name', 'اسم فريق جديد') + '"' + (teams.length >= 6 ? ' disabled' : '') + '><button class="btn"' + (teams.length >= 6 ? ' disabled' : '') + '>' + L('Add team', 'أضف فريقاً') + '</button></form>' +
+      (teams.length ? '<div class="chips" style="margin-bottom:12px">' + teams.map(t => '<span class="tag" dir="auto">' + esc(t.name) + ' <button type="button" class="linkbtn" data-tmdel="' + esc(t.id) + '">' + (tmdelArm === t.id ? L('sure?', 'متأكد؟') : '×') + '</button></span>').join('') + '</div>' : '') +
+      (teams.length ? '<p class="note">' + L('Put each member in a team:', 'ضع كل عضو في فريق:') + '</p><ul class="hwl">' + rows.map(r => '<li><div class="t"><span>' + esc(nick(r.p)) + '</span></div><select data-teamof="' + esc(r.id) + '" aria-label="' + L('Team', 'الفريق') + '"><option value="">' + L('No team', 'بدون فريق') + '</option>' + teams.map(t => '<option value="' + esc(t.id) + '"' + (of[r.id] === t.id ? ' selected' : '') + '>' + esc(t.name) + '</option>').join('') + '</select></li>').join('') + '</ul>' : '') + '</div>';
+  }
+  return h + '</section>';
+}
+let tmdelArm = null;
+async function saveTeams(upd) { try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), upd); } catch (e) { toast(L('Could not save teams', 'تعذّر حفظ الفرق') + ' (' + ((e && e.code) || 'error') + ')'); } }
 function render() {
   const j = $('join');
   if (!authReady) j.innerHTML = '';
@@ -810,6 +862,8 @@ function render() {
   else lead.textContent = 'Every lesson you study earns points. The race restarts on the 1st of every month.';
   $('bac').innerHTML = BAC_DATE ? (() => { const n = Math.round((new Date(BAC_DATE + 'T00:00') - dayAgo(0)) / 864e5); return '<span class="tag">First Bakaloria exam in ' + (n > 0 ? n + ' days' : n === 0 ? 'today' : '—') + '</span>'; })() : '';
   if (!(ui === 'hw' && $('hwForm'))) $('hwBox').innerHTML = hwHTML();
+  if (!(ui === 'ch' && $('chForm'))) $('chBox').innerHTML = challengesHTML(rows, mode);
+  if (!(ui === 'teams' && $('teamForm') && $('teamForm').contains(document.activeElement))) $('teamBox').innerHTML = teamsHTML(rows);
   const bw = rows.slice().sort((a, b) => weekOf(b.p) - weekOf(a.p)), hm = Math.max(1, ...rows.map(r => weekOf(r.p)));
   $('hours').innerHTML = rows.length ? bw.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + (streakOf(r.p) > 1 ? '<small>' + streakOf(r.p) + '-day streak</small>' : '') + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (weekOf(r.p) / hm * 100) + '%"></i></div><span class="v num">' + fmtH(weekOf(r.p)) + 'h</span></div>').join('') + '<p class="note">Last 7 days · all-time leader: ' + esc(nick(rows.slice().sort((a, b) => totalH(b.p) - totalH(a.p))[0].p)) + '</p>' : '<p class="note">No hours in this race yet.</p>';
   if (ready) { const h = me.hours || {}, t = +h[dkey(dayAgo(0))] || 0, days = [...Array(7)].map((_, i) => dayAgo(6 - i)), wm = Math.max(1, ...days.map(d => +h[dkey(d)] || 0));
@@ -874,11 +928,17 @@ document.addEventListener('click', async ev => {
   const rv2 = ev.target.closest('[data-revoke]');
   if (rv2 && isAdmin() && api) { const id = rv2.dataset.revoke; if (revokeArm !== id) { revokeArm = id; render(); setTimeout(() => { revokeArm = null; render(); }, 4000); return; }
     revokeArm = null; const c = codes.find(x => x.id === id); try { const b = api.writeBatch(api.db); if (c && c.usedBy) b.delete(api.doc(api.db, 'access', c.usedBy)); b.delete(api.doc(api.db, 'codes', id)); await b.commit(); toast(L('Access removed', 'أُلغي الدخول')); } catch (e) { toast(L('Could not remove access', 'تعذّر إلغاء الدخول')); } return; }
+  const cdl = ev.target.closest('[data-chdel]');
+  if (cdl && canChallenge() && api) { const id = cdl.dataset.chdel; if (tdelArm !== id) { tdelArm = id; render(); setTimeout(() => { tdelArm = null; render(); }, 4000); return; }
+    tdelArm = null; try { await api.deleteDoc(api.doc(api.db, 'lobbies', cur, 'challenges', id)); toast(L('Challenge deleted', 'حُذف التحدي')); } catch (e) { toast(L('Could not delete', 'تعذّر الحذف')); } return; }
   const td = ev.target.closest('[data-tdel]');
   if (td && isAdmin() && api) { const id = td.dataset.tdel; if (tdelArm !== id) { tdelArm = id; render(); setTimeout(() => { tdelArm = null; render(); }, 4000); return; }
     tdelArm = null; try { await api.deleteDoc(api.doc(api.db, 'tests', id)); toast(L('Test deleted', 'حُذف الاختبار')); } catch (e) { toast(L('Could not delete the test', 'تعذّر حذف الاختبار')); } return; }
   const hd = ev.target.closest('[data-hwdel]');
   if (hd && api) { try { await api.deleteDoc(hd.dataset.g ? api.doc(api.db, 'allhw', hd.dataset.hwdel) : api.doc(api.db, 'lobbies', cur, 'homework', hd.dataset.hwdel)); toast('Homework removed'); } catch (e) { toast('Could not remove'); } return; }
+  const tdx = ev.target.closest('[data-tmdel]');
+  if (tdx && isCreator() && api) { const id = tdx.dataset.tmdel; if (tmdelArm !== id) { tmdelArm = id; render(); setTimeout(() => { tmdelArm = null; render(); }, 4000); return; } tmdelArm = null;
+    const L0 = lobby(), of = {...(L0.teamOf || {})}; for (const k in of) if (of[k] === id) delete of[k]; await saveTeams({teams: (L0.teams || []).filter(t => t.id !== id), teamOf: of}); return; }
   const hp = ev.target.closest('[data-helper]');
   if (hp && isCreator() && api) { const id = hp.dataset.helper, hs = new Set(lobby().helpers || []); hs.has(id) ? hs.delete(id) : hs.add(id);
     try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {helpers: [...hs]}); } catch (e) { toast('Could not update helpers'); } return; }
@@ -892,7 +952,7 @@ document.addEventListener('click', async ev => {
   if (act === 'soundtest') { const was = SOUND; SOUND = true; playSound('lesson'); setTimeout(() => playSound('hw'), 500); SOUND = was; return; }
   if (act === 'reload') { location.reload(); return; }
   if (act === 'out2') { if (!outArm2) { outArm2 = true; render(); setTimeout(() => { outArm2 = false; render(); }, 4000); return; } outArm2 = false; page = 'race'; if (api) await api.signOut(api.auth); return; }
-  if (['new', 'code', 'hw', 'helpers', 'test'].includes(act)) { ui = ui === act ? '' : act; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
+  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch'].includes(act)) { ui = ui === act ? '' : act; if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
   if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = LANG === 'ar' ? 'انضم لسباق البكالوريا "' + lname(cur) + '": ' + link + ' (الرمز ' + cur.toUpperCase() + ')' : 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
   if (act === 'enter' && cur) { enter(cur); toast('You joined ' + lname(cur)); return; }
@@ -901,12 +961,13 @@ document.addEventListener('click', async ev => {
 });
 document.addEventListener('change', ev => {
   const c = ev.target;
+  if (c.dataset && c.dataset.teamof !== undefined && isCreator() && api) { const of = {...(lobby().teamOf || {})}; if (c.value) of[c.dataset.teamof] = c.value; else delete of[c.dataset.teamof]; saveTeams({teamOf: of}); return; }
   if (c.dataset && c.dataset.tsubj) { c.closest('.tsub').querySelectorAll('input[type=checkbox]').forEach(x => { if (x !== c) x.checked = c.checked; }); return; }
   if (c.dataset && c.dataset.tunit) { c.closest('.tunit').querySelectorAll('.tl').forEach(x => { x.checked = c.checked; }); return; } if (!c.dataset || !c.dataset.hwdone || !me) return;
   const g = !!c.dataset.g; const w = (g ? ghw : homework).find(x => x.id === c.dataset.hwdone); const k = (g ? 'g_' : cur + '_') + c.dataset.hwdone; const sk = w ? (SUBJ_BY_NAME[w.subj] || '') : '';
   changeMe(p => { p.hw = p.hw || {}; if (c.checked) p.hw[k] = {d: todayKey(), k: sk}; else delete p.hw[k]; });
   playSound(c.checked ? 'hw' : 'undo');
-  if (c.checked && VAL[sk]) toast(L('Homework done: +' + Math.round(VAL[sk]) + ' points', 'أنهيت الواجب: +' + Math.round(VAL[sk]) + ' نقطة'));
+  if (c.checked && VAL[sk]) toast(L('Homework done: +' + VAL[sk] + ' points', 'أنهيت الواجب: +' + VAL[sk] + ' نقطة'));
 });
 document.addEventListener('submit', async ev => {
   ev.preventDefault(); const f = ev.target;
@@ -939,6 +1000,12 @@ document.addEventListener('submit', async ev => {
     try { await api.setDoc(api.doc(api.db, 'lobbies', code), {name, by: meId, n: Date.now(), lang, helpers: []}); lobbyDocs[code] = {name, by: meId, lang, helpers: []}; $('lobby').innerHTML = ''; enter(code); toast('Race created. Code ' + code.toUpperCase()); } catch (e) { toast('Could not create the race'); } return; }
   if (f.id === 'codeForm') { const c = $('codeIn').value.toLowerCase().replace(/[^a-z0-9]/g, ''); if (!c) return; cur = c; ui = ''; watchLobby(c); location.hash = 'r-' + c; sync();
     setTimeout(() => { if (lobbyDocs[c] && !lobbyDocs[c].missing && !((me && me.lobbies) || []).includes(c)) { enter(c); toast('You joined ' + lname(c)); } }, 900); return; }
+  if (f.id === 'teamForm' && api && isCreator()) { const n = $('teamName').value.trim().slice(0, 20); if (!n) return; const L0 = lobby(), t = (L0.teams || []).slice(0, 6);
+    if (t.length >= 6) return; t.push({id: Date.now().toString(36), name: n}); $('teamName').value = ''; await saveTeams({teams: t}); return; }
+  if (f.id === 'chForm' && api && canChallenge()) { const name = $('cName').value.trim().slice(0, 40), start = $('cStart').value, date = $('cDate').value;
+    const items = [...f.querySelectorAll('.tl:checked')].flatMap(x => x.value.split(','));
+    if (!name || !start || !date) return; if (date < start) { toast(L('The date must be after the start date', 'الموعد يجب أن يكون بعد تاريخ البدء')); return; } if (!items.length) { toast(L('Pick at least one lesson', 'اختر درساً واحداً على الأقل')); return; }
+    try { await api.addDoc(api.collection(api.db, 'lobbies', cur, 'challenges'), {name, start, date, items, by: meId, n: Date.now()}); ui = ''; $('chBox').innerHTML = ''; render(); toast(L('Challenge started', 'بدأ التحدي')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   if (f.id === 'testForm' && api && isAdmin()) { const name = $('tName').value.trim().slice(0, 40), start = $('tStart').value, date = $('tDate').value;
     const items = [...f.querySelectorAll('.tl:checked')].flatMap(x => x.value.split(','));
     if (!name || !start || !date) return; if (date < start) { toast(L('The test date must be after the start date', 'موعد الاختبار يجب أن يكون بعد تاريخ البدء')); return; } if (!items.length) { toast(L('Pick at least one lesson', 'اختر درساً واحداً على الأقل')); return; }
@@ -983,7 +1050,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795717659";
+const BUILD = "1795718596";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
@@ -997,7 +1064,7 @@ setTimeout(() => checkUpdate(), 3000);
 // ---- start ----
 async function redeem(code, uid) { const b = api.writeBatch(api.db); b.update(api.doc(api.db, 'codes', code), {usedBy: uid, usedAt: Date.now(), usedName: myUsername()}); b.set(api.doc(api.db, 'access', uid), {code, n: Date.now()}); await b.commit(); }
 async function start() {
-  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; ghw = DEMO.ghw || []; tests = DEMO.tests || []; access = true; adminUids = DEMO.email ? [DEMO.meId] : []; codes = DEMO.codes || []; perksAll = DEMO.perks || {}; onPerks(DEMO.perks ? DEMO.perks[DEMO.meId] : {}); if (DEMO.state === 'out') { meId = null; me = null; } if (DEMO.state === 'gate') { access = false; adminUids = []; } cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
+  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; challenges = DEMO.challenges || []; ghw = DEMO.ghw || []; tests = DEMO.tests || []; access = true; adminUids = DEMO.email ? [DEMO.meId] : []; codes = DEMO.codes || []; perksAll = DEMO.perks || {}; onPerks(DEMO.perks ? DEMO.perks[DEMO.meId] : {}); if (DEMO.state === 'out') { meId = null; me = null; } if (DEMO.state === 'gate') { access = false; adminUids = []; } cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
   render();
   const [A, U, F] = await Promise.all([import(FB + 'firebase-app.js'), import(FB + 'firebase-auth.js'), import(FB + 'firebase-firestore.js')]);
   const app = A.initializeApp(FIREBASE_CONFIG), auth = U.getAuth(app), db = F.getFirestore(app);
