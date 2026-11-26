@@ -166,18 +166,58 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .infobox{margin:0 0 14px;padding:12px 14px;border-radius:14px;background:var(--panel2);border:1px solid var(--gold);color:var(--ink);font-size:15px}
 .hr{grid-template-columns:minmax(0,7em) minmax(0,1fr) 4.8em}
 
-/* colour themes */
-[data-theme=emerald]{--bg:#06201A;--panel:#0C2D25;--panel2:#123A30;--line:#1E4C40;--ink:#ECF5F1;--mute:#A3C2B8;--gold:#E2B84F;--gold2:#F3D37A;--goldD:#B8902F;--onGold:#06201A;--sky:#11463A;--t1:#0F3A30;--t2:#082920;--lane:#E2B84F55;--tab:#06201AEE;--bar2:#4F8F7C}
-[data-theme=royal]{--bg:#160B2E;--panel:#211340;--panel2:#2B1A52;--line:#3B2868;--ink:#F2EEFA;--mute:#B9ADD6;--gold:#E7B85A;--gold2:#F5D58C;--goldD:#B98C3A;--onGold:#160B2E;--sky:#3A1F6E;--t1:#2A1752;--t2:#1A0E36;--lane:#E7B85A55;--tab:#160B2EEE;--bar2:#7B62B8}
-[data-theme=rose]{--bg:#2A0F1E;--panel:#3A1629;--panel2:#4A1D35;--line:#5E2A45;--ink:#FBEFF4;--mute:#D9AFC2;--gold:#F29BB6;--gold2:#F8C2D3;--goldD:#C76E8C;--onGold:#2A0F1E;--sky:#5C1F40;--t1:#45182F;--t2:#300F21;--lane:#F29BB655;--tab:#2A0F1EEE;--bar2:#A65E7E}
-[data-theme=ocean]{--bg:#04202B;--panel:#0A2E3C;--panel2:#0F3A4B;--line:#1A4C60;--ink:#EAF6FA;--mute:#9EC6D4;--gold:#4FD1C5;--gold2:#8EE6DD;--goldD:#2A9E94;--onGold:#04202B;--sky:#0B4A60;--t1:#0B3747;--t2:#062633;--lane:#4FD1C555;--tab:#04202BEE;--bar2:#3E7F96}
-[data-theme=paper]{color-scheme:light;--bg:#F6F1E6;--panel:#FFFFFF;--panel2:#F1EADB;--line:#E0D6C2;--ink:#1D2433;--mute:#5F6676;--gold:#B8862B;--gold2:#9A6E1C;--goldD:#C99A3E;--onGold:#FFFFFF;--sky:#EFE5D0;--t1:#1F2B4F;--t2:#17213F;--lane:#E2B84F66;--tab:#F6F1E6EE;--bar2:#9AA6C4}
-[data-theme=paper] .track{color:#EEF1F8}
-[data-theme=paper] .track .lane .who small,[data-theme=paper] .track .pct small,[data-theme=paper] .track .empty{color:#B8C1DA}
-[data-theme=paper] .track .pct b{color:#F3D37A}
-[data-theme=paper] .run::after{background:repeating-linear-gradient(0deg,#E2B84F 0 5px,#17213F 5px 10px)}
-[data-theme=paper] body{background-image:none}
-[data-theme=paper] .ayah{text-shadow:none}
+/* looks */
+[data-theme=damascus]{color-scheme:light;--bg:#F4EEDF;--panel:#FFFDF7;--panel2:#EFE6D0;--line:#DCCFB0;--ink:#1F2A2E;--mute:#5E665F;--gold:#0F6E6E;--gold2:#0B5C5C;--goldD:#0F6E6E;--onGold:#FFFDF7;--sky:#F4EEDF;--t1:#0F5E5E;--t2:#0B4A4A;--lane:#F4EEDF66;--tab:#FFFDF7F2;--bar2:#C9744B}
+[data-theme=damascus] body{background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23C9744B' stroke-opacity='.18' stroke-width='1.2'%3E%3Cpath d='M40 4l10 26 26 10-26 10-10 26-10-26L4 40l26-10z'/%3E%3Cpath d='M40 18l6 16 16 6-16 6-6 16-6-16-16-6 16-6z'/%3E%3C/g%3E%3C/svg%3E")}
+[data-theme=damascus] .ayah{color:#0F5E5E;text-shadow:none}
+[data-theme=damascus] .sub{color:#C9744B}
+[data-theme=damascus] .card,[data-theme=damascus] .sbj,[data-theme=damascus] .panel{border-radius:22px 22px 14px 14px;box-shadow:0 2px 0 #DCCFB0}
+[data-theme=damascus] .track{border:0;box-shadow:0 8px 24px #0F5E5E33;color:#FFFDF7}
+[data-theme=damascus] .track .lane .who small,[data-theme=damascus] .track .pct small{color:#BFE3DC}
+[data-theme=damascus] .track .pct b{color:#F4D9A0}
+[data-theme=damascus] .run::after{background:repeating-linear-gradient(0deg,#F4D9A0 0 5px,#0B4A4A 5px 10px)}
+[data-theme=damascus] .chip.on{background:#C9744B;border-color:#C9744B;color:#fff}
+[data-theme=damascus] .btn{background:#0F6E6E}
+[data-theme=damascus] .tabs button[aria-current=page]{color:#C9744B;background:#EFE6D0}
+[data-theme=clean]{color-scheme:light;--bg:#F6F7F9;--panel:#FFFFFF;--panel2:#F0F2F5;--line:#E4E7EC;--ink:#0E1116;--mute:#5B6472;--gold:#2F6BFF;--gold2:#2F6BFF;--goldD:#2F6BFF;--onGold:#FFFFFF;--sky:#F6F7F9;--t1:#FFFFFF;--t2:#FFFFFF;--lane:#E4E7EC;--tab:#FFFFFFF2;--bar2:#C3CCDA}
+[data-theme=clean] body{background-image:none;font-family:Inter,system-ui,sans-serif}
+[data-theme=clean] .ayah{color:#0E1116;text-shadow:none;font-size:clamp(30px,6vw,46px)}
+[data-theme=clean] .card,[data-theme=clean] .sbj,[data-theme=clean] .panel,[data-theme=clean] .track{border:0;box-shadow:0 1px 2px #0000000d,0 8px 24px #0000000a;border-radius:24px}
+[data-theme=clean] .track{background:#fff}
+[data-theme=clean] .lane{border-top:1px solid #EEF0F3!important}
+[data-theme=clean] .lane:last-child{border-bottom:0!important}
+[data-theme=clean] .run{background:linear-gradient(90deg,#F0F2F5,#F0F2F5) center/100% 8px no-repeat;border-radius:8px}
+[data-theme=clean] .run::after{width:4px;background:#0E1116;border-radius:2px}
+[data-theme=clean] .runner{border:3px solid #fff;box-shadow:0 2px 8px #0003}
+[data-theme=clean] .runner.me{box-shadow:0 0 0 3px #2F6BFF}
+[data-theme=clean] .lane .pct b{color:#0E1116}
+[data-theme=clean] .chip{background:#fff}
+[data-theme=clean] .chip.on{background:#0E1116;border-color:#0E1116;color:#fff}
+[data-theme=clean] .tag{background:#EEF3FF;color:#2F6BFF;border-color:#EEF3FF}
+[data-theme=clean] .big,[data-theme=clean] .score b,[data-theme=clean] .ct{color:#2F6BFF!important}
+[data-theme=stadium]{color-scheme:dark;--bg:#0B1F14;--panel:#10291B;--panel2:#153523;--line:#1F4A31;--ink:#F2F7F3;--mute:#9DBBA8;--gold:#FFD23F;--gold2:#FFD23F;--goldD:#E0B21E;--onGold:#0B1F14;--sky:#123A24;--t1:#1E7A3F;--t2:#17652F;--lane:#FFFFFFCC;--tab:#0B1F14F2;--bar2:#3FA66A}
+[data-theme=stadium] body{background-image:radial-gradient(ellipse at 50% -20%,#2C6B44 0%,transparent 60%)}
+[data-theme=stadium] .ayah{color:#fff;text-shadow:0 0 18px #FFD23F55}
+[data-theme=stadium] .track{background:repeating-linear-gradient(90deg,#1E7A3F 0 40px,#1B7039 40px 80px);border:3px solid #fff;border-radius:16px}
+[data-theme=stadium] .lane{border-top:2px dashed #FFFFFFAA!important}
+[data-theme=stadium] .lane .who,[data-theme=stadium] .lane .who small{color:#fff}
+[data-theme=stadium] .lane .pct b{font-size:28px;color:#FFD23F;text-shadow:0 0 10px #FFD23F88}
+[data-theme=stadium] .run::after{background:repeating-linear-gradient(0deg,#fff 0 6px,#111 6px 12px);width:12px}
+[data-theme=stadium] .num{font-family:'Courier New',monospace;letter-spacing:.02em}
+[data-theme=stadium] .chip.on{background:#FFD23F;color:#0B1F14}
+[data-theme=notebook]{color-scheme:light;--bg:#FBF8F1;--panel:#FFFEFA;--panel2:#FFF3B8;--line:#D9E3F0;--ink:#22303F;--mute:#5D6B7A;--gold:#E2574C;--gold2:#E2574C;--goldD:#E2574C;--onGold:#fff;--sky:#FBF8F1;--t1:#FFFEFA;--t2:#FFFEFA;--lane:#9DB7D8;--tab:#FFFEFAF2;--bar2:#9DB7D8}
+[data-theme=notebook] body{background-image:linear-gradient(90deg,transparent 46px,#F2B8B2 46px,#F2B8B2 48px,transparent 48px),repeating-linear-gradient(0deg,transparent 0 31px,#D9E3F0 31px 32px)}
+[data-theme=notebook] .ayah{color:#22303F;text-shadow:none;transform:rotate(-1.5deg)}
+[data-theme=notebook] .card,[data-theme=notebook] .panel{background:#FFF7C2;border:0;border-radius:4px;box-shadow:2px 4px 0 #0000001a;transform:rotate(-.4deg)}
+[data-theme=notebook] .sbj{border-radius:6px}
+[data-theme=notebook] .track{background:#FFFEFA;border:2px solid #22303F;border-radius:6px;box-shadow:4px 4px 0 #22303F}
+[data-theme=notebook] .lane{border-top:1.5px dashed #9DB7D8!important}
+[data-theme=notebook] .lane .who small,[data-theme=notebook] .track .pct small{color:#5D6B7A}
+[data-theme=notebook] .lane .pct b{color:#E2574C}
+[data-theme=notebook] .run::after{background:repeating-linear-gradient(0deg,#22303F 0 5px,#fff 5px 10px)}
+[data-theme=notebook] .runner{border:2px solid #22303F;box-shadow:2px 2px 0 #22303F}
+[data-theme=notebook] .btn,[data-theme=notebook] .chip.on{background:#E2574C;color:#fff;border-color:#E2574C;box-shadow:2px 2px 0 #22303F}
+[data-theme=notebook] .tag{background:#FFF3B8;color:#22303F;border-color:#22303F}
 .topbtns{position:absolute;top:12px;inset-inline-end:max(4vw,14px);display:flex;gap:8px;z-index:3}
 .topbtns .langbtn{position:static}
 .themes{position:absolute;top:60px;inset-inline-end:max(4vw,14px);z-index:4;background:var(--panel);border:1px solid var(--gold);border-radius:16px;padding:12px;display:grid;grid-template-columns:repeat(3,auto);gap:10px;box-shadow:0 10px 30px #0008}
@@ -236,11 +276,11 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
 .fl input,.fl select{flex:none;width:100%}
 .stackf .fl{flex:none}
 </style>
-<script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",emerald:"#06201A",royal:"#160B2E",rose:"#2A0F1E",ocean:"#04202B",paper:"#F6F1E6"};document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
+<script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",clean:"#F6F7F9",stadium:"#0B1F14",notebook:"#FBF8F1"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
 <body>
 <main class="wrap">
-  <div class="topbtns"><button id="themeBtn" class="langbtn" type="button" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7" r="1.2"/></svg><span>Colours</span></button><button id="langBtn" class="langbtn" type="button">عربي</button><button id="outBtn" class="langbtn" type="button" hidden aria-label="Sign out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span id="outTxt"></span></button></div>
+  <div class="topbtns"><button id="themeBtn" class="langbtn" type="button" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.5-1.2.2-2.4 1.5-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7" r="1.2"/></svg><span>Style</span></button><button id="langBtn" class="langbtn" type="button">عربي</button><button id="outBtn" class="langbtn" type="button" hidden aria-label="Sign out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg><span id="outTxt"></span></button></div>
   <div class="themes" id="themes" hidden></div>
   <header class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span class="en-only">Bakaloria race · Scientific</span><span lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></header>
   <div id="join"></div>
@@ -249,7 +289,7 @@ input:focus,select:focus,input[type=password]:focus{outline:2px solid var(--gold
   <p class="lead" id="lead">Loading…</p>
   <div id="bac"></div>
   <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
-  <p class="note">Each runner's spot is their predicted score: every subject counts for its real exam points.</p>
+  <p class="note">Each runner's spot is their points this month. Every lesson counts by its subject's exam marks.</p>
   <div id="hwBox"></div>
   </div>
   <div id="pg-week" hidden><h2 class="pgt">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
@@ -381,13 +421,13 @@ const AR = {
  'Invite':'دعوة','Join this race':'انضم لهذا السباق','Leave':'مغادرة','Tap again to leave':'اضغط مرة ثانية للمغادرة','Create a race and send the invite to your friends, or join one with a code.':'أنشئ سباقاً وأرسل الدعوة لأصدقائك، أو انضم لسباق برمز.',
  'Homework':'الواجبات','+ Add homework':'+ أضف واجباً','Close':'إغلاق','Post':'نشر','No homework yet. Add what the teachers gave.':'لا واجبات بعد. أضف ما أعطاه الأساتذة.','No homework posted for now.':'لا واجبات حالياً.','due today':'التسليم اليوم','due tomorrow':'التسليم غداً',
  'Manage homework helpers':'إدارة مساعدي الواجبات','Homework helpers':'مساعدو الواجبات','can post homework in this race (teachers, supervisors, the classmate who always knows).':'يمكنهم نشر الواجبات في هذا السباق (أساتذة، مشرفون، أو الزميل اللي دايماً بيعرف).','Make helper':'اجعله مساعداً','Helper ✓':'مساعد ✓','Nobody else has joined yet.':'لم ينضم أحد بعد.','Done':'تم',
- "Each runner's spot is their predicted score: every subject counts for its real exam points.":'مكان كل متسابق هو علامته المتوقعة: كل مادة تُحسب بعلامتها الحقيقية في الامتحان.',
+ "Each runner's spot is their points this month. Every lesson counts by its subject's exam marks.":'مكان كل متسابق هو نقاطه هذا الشهر. كل درس يُحسب حسب علامة مادته في الامتحان.',
  'Pick a race above, create one, or join with a code.':'اختر سباقاً من الأعلى، أو أنشئ واحداً، أو انضم برمز.','Sign in below to start racing.':'سجّل الدخول في الأسفل لتبدأ السباق.','No runners in this race yet.':'لا متسابقين في هذا السباق بعد.','Every lesson you study moves you toward the full mark.':'كل درس تدرسه يقرّبك من العلامة التامة.',
  'Sign in to race.':'سجّل الدخول لتتسابق.','Google keeps your progress on any phone. Guest works on this device only.':'حساب Google يحفظ تقدمك على أي هاتف. الضيف يعمل على هذا الجهاز فقط.','Continue with Google':'المتابعة مع Google','Play as guest':'العب كضيف',
  'Welcome!':'أهلاً!','Pick the name your friends will see.':'اختر الاسم الذي سيراه أصدقاؤك.','Which religion subject do you take?':'أي مادة ديانة تدرس؟','Start':'ابدأ',
  'Study hours this week':'ساعات الدراسة هذا الأسبوع','No hours in this race yet.':'لا ساعات في هذا السباق بعد.','Your hours today':'ساعاتك اليوم','hours':'ساعات','Sign in to log hours.':'سجّل الدخول لتسجّل ساعاتك.','Edit':'تعديل','Sign out':'تسجيل الخروج',
  'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.',
- "Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.":'الساعات ما إلها نقاط بالسباق. هي إلك أنت بس، لتشوف قديش عم تدرس. النقاط بتجي من الدروس اللي بتخلّصها.', '+1h':'+1 ساعة', 'Colours':'الألوان', 'Join this race to see who is in it and their scores.':'انضم لهذا السباق لترى المشاركين فيه وعلاماتهم.', 'pts':'نقطة', 'points this month':'نقطة هذا الشهر', 'Every lesson you study earns points. The race restarts on the 1st of every month.':'كل درس تدرسه يعطيك نقاطاً. يبدأ السباق من جديد في أول كل شهر.', 'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.', 'Lessons':'الدروس','Studied':'درست','Lessons for this subject are coming soon.':'دروس هذه المادة قريباً.',
+ "Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.":'الساعات ما إلها نقاط بالسباق. هي إلك أنت بس، لتشوف قديش عم تدرس. النقاط بتجي من الدروس اللي بتخلّصها.', '+1h':'+1 ساعة', 'Style':'الشكل', 'Join this race to see who is in it and their scores.':'انضم لهذا السباق لترى المشاركين فيه وعلاماتهم.', 'pts':'نقطة', 'points this month':'نقطة هذا الشهر', 'Every lesson you study earns points. The race restarts on the 1st of every month.':'كل درس تدرسه يعطيك نقاطاً. يبدأ السباق من جديد في أول كل شهر.', 'Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.':'اضغط على المادة ثم على الوحدة لترى دروسها. اضغط الزر عندما تنهي الدرس، ومرة ثانية كلما راجعته.', 'Lessons':'الدروس','Studied':'درست','Lessons for this subject are coming soon.':'دروس هذه المادة قريباً.',
  'points':'نقطة','new lessons':'دروس جديدة','reviews':'مراجعات','Finished this week':'أنهيت هذا الأسبوع','Nothing finished yet this week. Your first lesson starts the count.':'لم تنهِ شيئاً هذا الأسبوع بعد. أول درس يبدأ العدّ.','Sign in to see your week.':'سجّل الدخول لترى أسبوعك.',
  'Could not connect. Check your internet and reload.':'تعذّر الاتصال. تحقّق من الإنترنت وأعد التحميل.','Could not load this race':'تعذّر تحميل السباق','Could not save. Check your connection.':'تعذّر الحفظ. تحقّق من الاتصال.','Homework removed':'حُذف الواجب','Could not remove':'تعذّر الحذف','Could not update helpers':'تعذّر تحديث المساعدين',
  'Google sign-in failed. Try guest.':'فشل الدخول بـ Google. جرّب كضيف.','Could not sign in':'تعذّر تسجيل الدخول','Invite copied':'نُسخت الدعوة','Could not create the race':'تعذّر إنشاء السباق','Homework posted':'نُشر الواجب','Could not post homework':'تعذّر نشر الواجب','Could not load your profile':'تعذّر تحميل ملفك',
@@ -789,8 +829,8 @@ if (LANG === 'ar') { document.documentElement.lang = 'ar'; document.documentElem
 { const lb = document.getElementById('langBtn'); if (lb) lb.textContent = LANG === 'ar' ? 'English' : 'عربي'; }
 
 // ---- colour themes ----
-const THEMES = [['night','Night & gold','ليل وذهب','#0A1128','#E2B84F'],['emerald','Emerald','زمرّدي','#06201A','#E2B84F'],['royal','Royal purple','بنفسجي','#160B2E','#E7B85A'],['rose','Rose','وردي','#2A0F1E','#F29BB6'],['ocean','Ocean','بحري','#04202B','#4FD1C5'],['paper','Paper (light)','فاتح','#F6F1E6','#B8862B']];
-let THEME = 'night'; try { THEME = localStorage.getItem('bac-theme') || 'night'; } catch (e) {}
+const THEMES = [['night','Night & gold','ليل وذهب','#0A1128','#E2B84F'],['damascus','Damascus tiles','بلاط دمشقي','#F4EEDF','#0F6E6E'],['clean','Clean & modern','بسيط وحديث','#F6F7F9','#2F6BFF'],['stadium','Stadium','ملعب','#0B1F14','#FFD23F'],['notebook','Notebook','دفتر مدرسي','#FBF8F1','#E2574C']];
+let THEME = 'night'; try { THEME = localStorage.getItem('bac-theme') || 'night'; } catch (e) {} if (!THEMES.some(t => t[0] === THEME)) THEME = 'night';
 function paintThemes() { const box = $('themes'); if (!box) return;
   box.innerHTML = THEMES.map(([k, en, ar, bg, ac]) => '<button type="button" class="sw" data-theme-pick="' + k + '" aria-pressed="' + (THEME === k) + '"><i style="background:linear-gradient(135deg,' + bg + ' 50%,' + ac + ' 50%)"></i>' + (LANG === 'ar' ? ar : en) + '</button>').join(''); }
 // ---- start ----
