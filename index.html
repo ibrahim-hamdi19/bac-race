@@ -3,132 +3,148 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0A1128">
 <title>Bakaloria Race · سباق البكالوريا</title>
-<meta name="description" content="وفي ذلك فليتنافس المتنافسون: race your friends through the Bakaloria.">
+<meta name="description" content="وفي ذلك فليتنافس المتنافسون">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@500;600;700&display=swap">
-<style>
-/* VOICE: sporty, friendly rivalry, still tidy enough to study by
-   IDEA: an athletics track: each friend runs in a lane toward the finish (100% of lessons)
-   PICTURE: terracotta running track with white lane lines and runner markers
-   COLOUR and TYPE: white ground, ink, track terracotta, deep green accent; Barlow Condensed numbers, Inter, IBM Plex Sans Arabic
-   LAYOUT: title, track, hours board, then your own study: hours logger and subjects */
-:root{color-scheme:light dark;--bg:light-dark(#FFFFFF,#121417);--panel:light-dark(#F5F4F0,#1B1E23);--ink:light-dark(#16181D,#EEEFF2);--mute:light-dark(#555B66,#A4AAB4);--line:light-dark(#E3E1DA,#2D3138);--track:light-dark(#C4553C,#9E4430);--trackD:light-dark(#A9452F,#7F3424);--acc:light-dark(#0B6B45,#4FCB8E);--accT:light-dark(#FFFFFF,#0B1A12);--soft:light-dark(#E6F2EC,#1C2A23)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@500;600;700&display=swap">
+<style>/* VOICE: a serious race between friends, calm and proud, like a night of study before the exam
+   IDEA: a running track under a night sky; gold is the finish line and the medal
+   PICTURE: navy track with gold lane lines and runners, the ayah above it in gold
+   COLOUR and TYPE: night blue #0A1128, panels #111C3A, gold #E2B84F; Amiri ayah, Inter + IBM Plex Sans Arabic, Barlow Condensed numbers
+   LAYOUT: ayah, race tabs, track, homework, hours, then subjects grouped by teacher */
+:root{color-scheme:dark;--bg:#0A1128;--panel:#111C3A;--panel2:#17244A;--line:#26365F;--ink:#EEF1F8;--mute:#A9B3CF;--gold:#E2B84F;--gold2:#F3D37A;--goldD:#B8902F;--onGold:#0A1128;--good:#7FD6A4}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
-.wrap{max-width:880px;margin:0 auto;padding:clamp(24px,4vw,48px) max(4vw,16px) 64px}
-.ar{font-family:'IBM Plex Sans Arabic',sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,'IBM Plex Sans Arabic',system-ui,sans-serif;overflow-x:clip;
+  background-image:radial-gradient(1px 1px at 12% 8%,#fff8 50%,transparent 51%),radial-gradient(1px 1px at 78% 4%,#fff6 50%,transparent 51%),radial-gradient(1.5px 1.5px at 55% 14%,#F3D37A88 50%,transparent 51%),radial-gradient(1px 1px at 30% 22%,#fff5 50%,transparent 51%),radial-gradient(1px 1px at 90% 18%,#fff7 50%,transparent 51%),radial-gradient(ellipse at 50% -10%,#1B2B5E 0%,transparent 60%);background-repeat:no-repeat}
+.wrap{max-width:900px;margin:0 auto;padding:clamp(20px,4vw,44px) max(4vw,14px) 72px}
+.ar,[lang=ar]{font-family:'IBM Plex Sans Arabic',Inter,sans-serif}
 .num{font-family:'Barlow Condensed',Inter,sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
-h1{margin:0;font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:-.01em;text-wrap:balance}
-h2{margin:0 0 12px;font-size:22px;line-height:1.2}
-.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap}
-.top{flex-direction:column;align-items:stretch}.ayah{font-family:Amiri,'IBM Plex Sans Arabic',serif;font-size:clamp(36px,7vw,60px);line-height:1.5;text-align:center;color:var(--track);letter-spacing:0}
-.sub{margin:0;display:flex;justify-content:center;gap:6px 16px;flex-wrap:wrap;font-weight:600;font-size:16px;color:var(--mute)}
-.cnt{all:unset;box-sizing:border-box;min-width:44px;height:44px;padding:0 12px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:15px;cursor:pointer;border:1.5px solid var(--line);color:var(--ink);flex:none}
-.cnt.on{background:var(--acc);border-color:var(--acc);color:var(--accT)}
-.cnt:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.cnt:disabled{opacity:.5;cursor:default}
-.ls .t{flex:1;min-height:46px;display:flex;align-items:center;padding-right:8px}
-.lead{margin:8px 0 0;color:var(--mute);font-size:17px}
+h2{margin:0 0 12px;font-size:21px;line-height:1.2}
+.top{text-align:center;padding:6px 0 4px}
+.ayah{margin:0;font-family:Amiri,'IBM Plex Sans Arabic',serif;font-weight:700;font-size:clamp(34px,7vw,58px);line-height:1.55;color:var(--gold);text-shadow:0 0 24px #E2B84F33}
+.sub{margin:0;display:flex;justify-content:center;gap:4px 14px;flex-wrap:wrap;font-weight:600;font-size:15px;color:var(--mute)}
+.lead{margin:18px 0 0;color:var(--mute);font-size:16px}
 .lead b{color:var(--ink)}
-.track{margin:22px 0 10px;background:var(--track);border-radius:22px;padding:14px 0;position:relative;overflow:hidden;box-shadow:inset 0 -6px 0 var(--trackD)}
-.lane{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) 4.2em;align-items:center;gap:12px;padding:0 18px;height:54px;border-top:2px solid rgba(255,255,255,.75)}
-.lane:last-child{border-bottom:2px solid rgba(255,255,255,.75)}
-.lane .who{color:#fff;font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lane .who small{display:block;font-weight:500;opacity:.85;font-size:13px}
+.lobby{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:inherit;font-weight:600;font-size:15px;display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;cursor:pointer}
+.chip.on{background:var(--gold);color:var(--onGold);border-color:var(--gold)}
+.chip.add{border-style:dashed;color:var(--mute);background:transparent}
+.info{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--mute)}
+.info b{color:var(--ink)}
+.code{font-size:22px;letter-spacing:.06em;color:var(--gold2)}
+.tag{font-size:13px;padding:2px 10px;border-radius:12px;background:var(--panel2);color:var(--gold2);border:1px solid var(--line);white-space:nowrap}
+.track{margin:16px 0 8px;background:linear-gradient(180deg,#13214A,#0E1834);border:1px solid var(--line);border-radius:22px;padding:12px 0;overflow:hidden;box-shadow:0 10px 40px #0006}
+.lane{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 5.6em;align-items:center;gap:12px;padding:0 18px;height:58px;border-top:1.5px solid #E2B84F55}
+.lane:last-child{border-bottom:1.5px solid #E2B84F55}
+.lane .who{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lane .who small{display:block;font-weight:500;color:var(--mute);font-size:13px}
 .run{position:relative;height:100%}
-.run::after{content:"";position:absolute;right:0;top:0;bottom:0;width:10px;background:repeating-linear-gradient(0deg,#fff 0 5px,#16181D 5px 10px);opacity:.9}
-.runner{position:absolute;top:50%;width:34px;height:34px;margin-left:-17px;transform:translateY(-50%);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;color:#16181D;border:3px solid #fff;box-shadow:0 3px 0 rgba(0,0,0,.25);transition:left .7s cubic-bezier(.2,.8,.2,1);z-index:1}
-.runner.me{outline:3px solid #16181D;outline-offset:1px}
-.lane .pct{color:#fff;font-size:26px;text-align:right;white-space:nowrap}
-.track .empty{color:#fff;padding:22px 20px;margin:0}
+.run::after{content:"";position:absolute;right:0;top:0;bottom:0;width:10px;background:repeating-linear-gradient(0deg,var(--gold) 0 5px,var(--bg) 5px 10px)}
+.runner{position:absolute;top:50%;width:34px;height:34px;margin-left:-17px;transform:translateY(-50%);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;color:#0A1128;border:2.5px solid var(--bg);box-shadow:0 0 0 2px #fff3,0 4px 10px #0008;transition:left .7s cubic-bezier(.2,.8,.2,1);z-index:1}
+.runner.me{box-shadow:0 0 0 2.5px var(--gold),0 0 16px #E2B84F99}
+.lane .pct{text-align:right;white-space:nowrap;line-height:1.05}
+.lane .pct b{font-size:24px;color:var(--gold2)}
+.lane .pct small{display:block;font-size:12px;color:var(--mute);font-family:Inter,sans-serif;font-weight:500}
+.track .empty{padding:20px;margin:0;color:var(--mute)}
 .note{font-size:14px;color:var(--mute);margin:0}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:28px}
-.card{background:var(--panel);border-radius:18px;padding:20px 22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}
+.hw{margin-top:22px}
+.hw .head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.hwl{list-style:none;margin:0;padding:0}
+.hwl li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.hwl li:last-child{border-bottom:0}
+.hwl .t{flex:1;display:flex;flex-direction:column;gap:2px}
+.hwl .t span:first-child{font-weight:500}
+.hwl .done .t span:first-child{text-decoration:line-through;color:var(--mute)}
+.hwl input{width:22px;height:22px;accent-color:var(--gold);margin:11px 0 0;flex:none}
+.due{font-size:13px;color:var(--mute)}
+.due.soon{color:var(--gold2);font-weight:600}
 .rows{display:flex;flex-direction:column;gap:10px}
 .hr{display:grid;grid-template-columns:minmax(0,7em) minmax(0,1fr) 3.6em;gap:10px;align-items:center;font-size:15px}
 .hr .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hbar{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
-.hbar i{display:block;height:100%;border-radius:6px;transition:width .5s}
+.hr .n small{display:block;font-size:12px;color:var(--mute)}
+.hbar{height:12px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.hbar i{display:block;height:100%;border-radius:6px;background:#5B6FA8;transition:width .5s}
+.hbar i.me{background:var(--gold)}
 .hr .v{text-align:right;font-size:20px;white-space:nowrap}
 .logger{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.big{font-size:56px;line-height:1}
+.big{font-size:54px;line-height:1;color:var(--gold2)}
 .big small{font-family:Inter,sans-serif;font-size:15px;font-weight:500;color:var(--mute);margin-left:4px}
 .step{display:flex;gap:8px;margin-left:auto}
-.btn{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:12px;padding:0 18px;min-height:44px;background:var(--acc);color:var(--accT);cursor:pointer}
+.btn{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:12px;padding:0 18px;min-height:44px;background:var(--gold);color:var(--onGold);cursor:pointer}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .btn.sq{width:48px;padding:0;font-size:22px}
-.btn:focus-visible,.sbj>button:focus-visible,.x:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,.chip:focus-visible,.tk:focus-visible,.x:focus-visible,.sbj>button:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
 .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:16px;align-items:end;height:84px}
 .week div{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;font-size:12px;color:var(--mute)}
-.week i{display:block;width:100%;max-width:28px;background:var(--acc);border-radius:5px 5px 2px 2px;min-height:3px}
-.subjects{display:flex;flex-direction:column;gap:8px;margin-top:28px}
-.sbj{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg)}
+.week i{display:block;width:100%;max-width:26px;background:var(--gold);border-radius:5px 5px 2px 2px;min-height:3px}
+.score{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:28px}
+.score b{font-size:40px;color:var(--gold2)}
+.subjects{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.sbj{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
 .sbj>button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;padding:14px 18px;cursor:pointer}
-.sbj .nm{font-weight:600;font-size:18px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
-.sbj .nm .ar{font-weight:600;color:var(--mute);font-size:17px}
-.sbj .ct{font-size:22px;text-align:right;white-space:nowrap}
-.sbj .bar{grid-column:1/-1;height:6px;background:var(--soft);border-radius:6px;overflow:hidden}
-.sbj .bar i{display:block;height:100%;background:var(--acc);transition:width .4s}
-.sbj .body{display:none;border-top:1px solid var(--line);padding:6px 18px 16px}
+.sbj .nm{font-weight:700;font-size:19px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.sbj .nm small{font-weight:500;font-size:13px;color:var(--mute)}
+.sbj .ct{text-align:right;white-space:nowrap;font-size:22px;color:var(--gold2)}
+.sbj .ct small{font-size:13px;color:var(--mute);font-family:Inter,sans-serif;font-weight:500}
+.bar{grid-column:1/-1;height:6px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--goldD),var(--gold2));transition:width .4s}
+.body{display:none;border-top:1px solid var(--line);padding:4px 18px 16px}
 .sbj.open .body{display:block}
-.ls{list-style:none;margin:0 0 12px;padding:0}
-.ls li{display:flex;align-items:center;border-bottom:1px solid var(--line)}
-.ls label{flex:1;display:flex;align-items:center;gap:12px;min-height:46px;cursor:pointer}
-.ls input{width:20px;height:20px;accent-color:var(--acc);margin:0;flex:none}
-.ls .dn span{text-decoration:line-through;color:var(--mute)}
-.ls .who{font-size:12px;color:var(--mute);white-space:nowrap;margin-right:6px}
-.x{all:unset;width:44px;height:44px;display:grid;place-items:center;color:var(--mute);cursor:pointer;border-radius:10px;flex:none}
-.x:hover{background:var(--panel);color:var(--ink)}
-.add{display:flex;gap:8px}
-input[type=text],input[type=date]{flex:1;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px}
-input[type=text]:focus,input[type=date]:focus{outline:2px solid var(--acc);border-color:transparent}
-.join{background:var(--soft);border-radius:18px;padding:20px 22px;margin-top:20px}
-.join form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.join p{margin:0}
-.bac{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;font-size:15px;color:var(--mute)}
-.bac b{color:var(--ink)}
-.bac form{display:flex;gap:8px}
-.lobby{margin-top:22px;display:flex;flex-direction:column;gap:12px}
-.chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{font:inherit;font-weight:600;font-size:15px;display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-decoration:none;cursor:pointer}
-.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.chip.add{border-style:dashed;color:var(--mute)}
-.chip:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.grp{margin-top:14px;padding:6px 12px;border-radius:10px;background:var(--panel2);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-weight:700}
+.grp span:last-child{color:var(--gold2);font-weight:600;font-size:14px}
+.unit{margin:14px 0 2px;font-size:14px;font-weight:600;color:var(--mute)}
+.ls{list-style:none;margin:0;padding:0}
+.ls li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line)}
+.ls .t{flex:1 1 14em;display:flex;flex-direction:column}
+.ls .t small{color:var(--mute);font-size:13px}
+.tks{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tk{all:unset;box-sizing:border-box;min-height:40px;min-width:44px;padding:0 12px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:14px;cursor:pointer;border:1.5px solid var(--line);color:var(--ink)}
+.tk.on{background:var(--gold);border-color:var(--gold);color:var(--onGold)}
+.tk:disabled{opacity:.5;cursor:default}
+.x{all:unset;width:36px;height:40px;display:grid;place-items:center;color:var(--mute);cursor:pointer;border-radius:10px;flex:none;font-size:20px}
+.x:hover{background:var(--panel2);color:var(--ink)}
+input[type=text],input[type=date],select{flex:1;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px;color-scheme:dark}
+input:focus,select:focus{outline:2px solid var(--gold);border-color:transparent}
 .inl{display:flex;gap:8px;flex-wrap:wrap}
-.info{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--mute)}
-.info b{color:var(--ink)}
-.code{font-size:22px;letter-spacing:.06em}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
+.panel{background:var(--panel);border:1px solid var(--gold);border-radius:18px;padding:18px 20px;margin-top:18px}
+.panel p{margin:0 0 10px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer;margin-bottom:8px}
+.opt input{accent-color:var(--gold);width:20px;height:20px;margin:2px 0 0;flex:none}
+.opt small{display:block;color:var(--mute)}
+.linkbtn{all:unset;color:var(--gold2);font-weight:600;cursor:pointer;text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--gold);color:var(--onGold);font-weight:600;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
 .toast.on{opacity:1}
-@media(max-width:640px){.grid2{grid-template-columns:minmax(0,1fr)}.lane{grid-template-columns:minmax(0,5.5em) minmax(0,1fr) 3.4em;gap:8px;padding:0 12px}.lane .pct{font-size:22px}.big{font-size:46px}.step{margin-left:0}}
+@media(max-width:640px){.grid2{grid-template-columns:minmax(0,1fr)}.lane{grid-template-columns:minmax(0,5.5em) minmax(0,1fr) 4.4em;gap:8px;padding:0 12px}.lane .pct b{font-size:20px}.big{font-size:44px}.step{margin-left:0}.body{padding:4px 12px 14px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-.linkbtn{all:unset;color:var(--acc);font-weight:600;cursor:pointer;text-decoration:underline}
-.linkbtn:focus-visible{outline:2px solid var(--acc)}
 </style>
 </head>
 <body>
 <main class="wrap">
-  <div class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span>Bakaloria race · Scientific</span><span class="ar" lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></div>
+  <header class="top"><h1 class="ayah" lang="ar" dir="rtl">وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</h1><p class="sub"><span>Bakaloria race · Scientific</span><span lang="ar" dir="rtl">سباق البكالوريا · علمي</span></p></header>
   <div id="lobby" class="lobby"></div>
   <p class="lead" id="lead">Loading…</p>
-  <div id="bac" class="bac"></div>
-  <div class="track" id="track" aria-label="Race track: lesson progress per friend"><p class="empty">Loading…</p></div>
-  <p class="note">Everyone races on the same lesson list. Reach 100% of lessons to cross the finish line.</p>
+  <div id="bac"></div>
+  <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
+  <p class="note">Each runner's spot is their predicted score: every subject counts for its real exam points.</p>
   <div id="join"></div>
+  <div id="hwBox"></div>
   <div class="grid2">
     <section class="card"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
-    <section class="card" id="mine"><h2>Your hours today</h2></section>
+    <section class="card" id="mine"></section>
   </div>
-  <section style="margin-top:36px"><h2>Your subjects</h2><p class="note">Tap Studied when you finish a lesson, and again each time you review it.</p>
+  <section><div class="score" id="myScore"></div><h2 style="margin-top:8px">Your subjects</h2><p class="note">Tap a button when you finish it, and again every time you review it.</p>
   <div class="subjects" id="subjects"></div></section>
 </main>
 <div class="toast" id="toast" role="status"></div>
+<script>
+const SUBJECTS=[{"k": "math", "name": "رياضيات", "pts": 600, "groups": [{"t": "أشعة", "who": "أ. طنجور", "units": [{"t": "الأشعة في الفراغ", "items": [{"id": "ma1-1", "t": "عموميات"}, {"id": "ma1-2", "t": "الارتباط الخطي لثلاثة أشعة"}, {"id": "ma1-3", "t": "المعلم في الفراغ"}, {"id": "ma1-4", "t": "المسافة في الفراغ"}, {"id": "ma1-5", "t": "مركز الأبعاد المتناسبة في الفراغ"}]}, {"t": "الجداء السلمي في الفراغ", "items": [{"id": "ma2-1", "t": "الجداء السلمي في المستوي (تذكرة)"}, {"id": "ma2-2", "t": "الجداء السلمي في الفراغ"}, {"id": "ma2-3", "t": "التعامد في الفراغ"}, {"id": "ma2-4", "t": "المعادلة الديكارتية لمستوٍ"}]}, {"t": "المستقيمات والمستويات في الفراغ", "items": [{"id": "ma3-1", "t": "المستقيم والمستوي بصفتهما مراكز أبعاد متناسبة"}, {"id": "ma3-2", "t": "التمثيلات الوسيطية"}, {"id": "ma3-3", "t": "تقاطع مستقيمات ومستويات"}, {"id": "ma3-4", "t": "تقاطع ثلاثة مستويات"}]}]}, {"t": "عقدية واحتمالات", "who": "أ. أنس", "units": [{"t": "الأعداد العقدية", "items": [{"id": "mb1-1", "t": "مجموعة الأعداد العقدية"}, {"id": "mb1-2", "t": "مرافق عدد عقدي"}, {"id": "mb1-3", "t": "الشكل المثلثي لعدد عقدي"}, {"id": "mb1-4", "t": "طويلة عدد عقدي وزاويته"}, {"id": "mb1-5", "t": "الشكل الأسي لعدد عقدي"}, {"id": "mb1-6", "t": "المعادلات من الدرجة الثانية ذات الأمثال الحقيقية"}]}, {"t": "تطبيقات الأعداد العقدية في الهندسة", "items": [{"id": "mb2-1", "t": "تمثيل الأشعة بأعداد عقدية"}, {"id": "mb2-2", "t": "استعمال العدد العقدي الممثل لشعاع"}, {"id": "mb2-3", "t": "الكتابة العقدية للتحويلات الهندسية"}]}, {"t": "التحليل التوافقي", "items": [{"id": "mb3-1", "t": "إنشاء قوائم من عناصر مجموعة"}, {"id": "mb3-2", "t": "التوافيق"}, {"id": "mb3-3", "t": "خواص عدد التوافيق ومنشور ذي الحدين"}]}, {"t": "الاحتمالات", "items": [{"id": "mb4-1", "t": "الاحتمالات المشروطة"}, {"id": "mb4-2", "t": "المتحولات العشوائية"}, {"id": "mb4-3", "t": "الاستقلال الاحتمالي لمتحولين عشوائيين"}, {"id": "mb4-4", "t": "المتحولات العشوائية الحدانية"}]}]}, {"t": "متتاليات وتكامل", "who": "أ. أنس", "units": [{"t": "تذكرة بالمتتاليات، والإثبات بالتدريج", "items": [{"id": "mc1-1", "t": "عموميات عن المتتاليات"}, {"id": "mc1-2", "t": "البرهان بالتدريج أو بالاستقراء الرياضي"}]}, {"t": "نهاية متتالية", "items": [{"id": "mc2-1", "t": "نهاية متتالية: تذكرة"}, {"id": "mc2-2", "t": "مبرهنات تخص النهايات"}, {"id": "mc2-3", "t": "تقارب المتتاليات المطردة"}, {"id": "mc2-4", "t": "متتاليات متجاورة"}]}, {"t": "التكامل والتوابع الأصلية", "items": [{"id": "mc3-1", "t": "التوابع الأصلية"}, {"id": "mc3-2", "t": "بعض قواعد حساب التوابع الأصلية"}, {"id": "mc3-3", "t": "التكامل المحدد وخواصه"}, {"id": "mc3-4", "t": "التكامل المحدد وحساب المساحة"}]}]}, {"t": "تحليل", "who": "أ. ماهر", "units": [{"t": "التوابع: النهايات والاستمرار", "items": [{"id": "md1-1", "t": "نهاية تابع عند اللانهاية"}, {"id": "md1-2", "t": "نهاية تابع عند عدد حقيقي"}, {"id": "md1-3", "t": "العمليات على النهايات"}, {"id": "md1-4", "t": "مبرهنات المقارنة"}, {"id": "md1-5", "t": "نهاية تابع مركب"}, {"id": "md1-6", "t": "المقارب المائل"}, {"id": "md1-7", "t": "الاستمرار"}, {"id": "md1-8", "t": "التوابع المستمرة وحل المعادلات"}]}, {"t": "التوابع: الاشتقاق", "items": [{"id": "md2-1", "t": "تعاريف (تذكرة)"}, {"id": "md2-2", "t": "مشتقات بعض التوابع المألوفة (تذكرة)"}, {"id": "md2-3", "t": "تطبيقات الاشتقاق"}, {"id": "md2-4", "t": "اشتقاق تابع مركب"}, {"id": "md2-5", "t": "المشتقات من مراتب عليا"}]}, {"t": "التابع اللوغاريتمي النيبري", "items": [{"id": "md3-1", "t": "التابع اللوغاريتمي النيبري"}, {"id": "md3-2", "t": "لوغاريتم جداء ضرب"}, {"id": "md3-3", "t": "دراسة التابع اللوغاريتمي ln"}, {"id": "md3-4", "t": "مشتق التابع المركب ln∘u"}, {"id": "md3-5", "t": "نهايات مهمة تتعلق بالتابع اللوغاريتمي"}]}, {"t": "التابع الأسي", "items": [{"id": "md4-1", "t": "التابع الأسي النيبري"}, {"id": "md4-2", "t": "خواص التابع الأسي"}, {"id": "md4-3", "t": "دراسة التابع الأسي"}, {"id": "md4-4", "t": "نهايات مهمة تتعلق بالتابع الأسي"}, {"id": "md4-5", "t": "دراسة توابع من النمط x↦aˣ (a>0)"}, {"id": "md4-6", "t": "معادلات تفاضلية بسيطة"}]}]}]}, {"k": "phy", "name": "فيزياء", "pts": 400, "groups": [{"t": "فيزياء", "who": "أ. بالو", "units": [{"t": "", "items": [{"id": "ph1", "t": "الحركة التوافقية البسيطة"}, {"id": "ph2", "t": "الاهتزازات الجيبية الدورانية: نواس الفتل غير المتخامد"}, {"id": "ph3", "t": "الاهتزازات غير التوافقية: النواس الثقلي غير المتخامد"}, {"id": "ph7", "t": "فعل الحقل المغناطيسي في التيار الكهربائي", "nick": "الكهرطيسية"}]}]}, {"t": "فيزياء", "who": "أ. حاطوري", "units": [{"t": "", "items": [{"id": "ph4", "t": "ميكانيك الموائع", "nick": "ميكانيك السوائل"}, {"id": "ph5", "t": "النسبية الخاصة"}, {"id": "ph6", "t": "المغناطيسية"}]}]}, {"t": "ما بنعرف مين بده يعطينا لسه", "who": "", "units": [{"t": "", "items": [{"id": "ph8", "t": "التحريض الكهرطيسي"}, {"id": "ph9", "t": "الدارات المهتزة والتيارات عالية التواتر"}, {"id": "ph10", "t": "التيار المتناوب الجيبي"}, {"id": "ph11", "t": "المحولات الكهربائية"}, {"id": "ph12", "t": "الأمواج المستقرة العرضية"}, {"id": "ph13", "t": "الأمواج المستقرة الطولية"}, {"id": "ph14", "t": "النماذج الذرية والطيوف"}, {"id": "ph15", "t": "انتزاع الإلكترونات وتسريعها"}, {"id": "ph16", "t": "الأشعة المهبطية"}, {"id": "ph17", "t": "الفعل الكهرحراري"}, {"id": "ph18", "t": "نظرية الكم والفعل الكهرضوئي"}, {"id": "ph19", "t": "الأشعة السينية X-Ray"}, {"id": "ph20", "t": "أشعة الليزر"}, {"id": "ph21", "t": "الفيزياء الفلكية"}]}]}]}, {"k": "chem", "name": "كيمياء", "pts": 200, "groups": [{"t": "كيمياء", "who": "أ. سعد الدين", "units": [{"t": "الكيمياء النووية", "items": [{"id": "ch1-1", "t": "الكيمياء النووية"}]}, {"t": "الغازات", "items": [{"id": "ch2-1", "t": "الغازات"}]}, {"t": "حركية التفاعلات الكيميائية", "items": [{"id": "ch3-1", "t": "سرعة التفاعل الكيميائي"}, {"id": "ch3-2", "t": "التوازن الكيميائي"}]}, {"t": "الكيمياء التحليلية", "items": [{"id": "ch4-1", "t": "الحموض والأسس"}, {"id": "ch4-2", "t": "المحاليل المائية للأملاح"}, {"id": "ch4-3", "t": "المعايرة الحجمية"}]}, {"t": "الكيمياء العضوية", "items": [{"id": "ch5-1", "t": "الأغوال"}, {"id": "ch5-2", "t": "الألدهيدات والكيتونات"}, {"id": "ch5-3", "t": "الحموض العضوية (الكربوكسيلية)"}, {"id": "ch5-4", "t": "مشتقات الحموض الكربوكسيلية"}, {"id": "ch5-5", "t": "الأمينات"}]}]}]}, {"k": "bio", "name": "علوم", "pts": 300, "groups": [{"t": "علم الأحياء", "who": "أ. خالد ميداني", "units": [{"t": "الوحدة الأولى · أولاً: التنسيق العصبي", "items": [{"id": "bi1-1", "t": "الجهاز العصبي"}, {"id": "bi1-2", "t": "النسيج العصبي"}, {"id": "bi1-3", "t": "الجهاز العصبي المحيطي (الطرفي)"}, {"id": "bi1-4", "t": "خواص الأعصاب"}, {"id": "bi1-5", "t": "الظواهر الكهربائية في الخلايا الحية"}, {"id": "bi1-6", "t": "النقل في الأعصاب"}, {"id": "bi1-7", "t": "وظائف الجهاز العصبي المركزي (1)"}, {"id": "bi1-8", "t": "وظائف الجهاز العصبي المركزي (2)"}, {"id": "bi1-9", "t": "وظائف الجهاز العصبي المركزي (3)"}, {"id": "bi1-10", "t": "الفعل المنعكس"}, {"id": "bi1-11", "t": "بعض أمراض الجهاز العصبي"}]}, {"t": "الوحدة الأولى · ثانياً: المستقبلات الحسية", "items": [{"id": "bi2-1", "t": "مفهوم المستقبلات الحسية"}, {"id": "bi2-2", "t": "المستقبلات الحسية في الجلد"}, {"id": "bi2-3", "t": "المستقبلات الكيميائية"}, {"id": "bi2-4", "t": "المستقبلات الصوتية ومستقبلات التوازن"}, {"id": "bi2-5", "t": "المستقبلات الضوئية (1)"}, {"id": "bi2-6", "t": "المستقبلات الضوئية (2)"}]}, {"t": "الوحدة الأولى · ثالثاً: التنسيق الهرموني", "items": [{"id": "bi3-1", "t": "التنسيق الهرموني (الحاثي) عند الإنسان"}, {"id": "bi3-2", "t": "دراسة بعض الغدد الصم وآلية تأثير الهرمونات"}, {"id": "bi3-3", "t": "آليات السيطرة على إفراز الغدد الصم"}, {"id": "bi3-4", "t": "التنسيق الكيميائي لدى النبات"}]}, {"t": "الوحدة الثانية: تكاثر الكائنات الحية", "items": [{"id": "bi4-1", "t": "تكاثر الفيروسات"}, {"id": "bi4-2", "t": "التكاثر عند الأحياء"}, {"id": "bi4-3", "t": "التقانات الحيوية في التكاثر – الخلايا الجذعية"}, {"id": "bi4-4", "t": "التكاثر لدى الجراثيم والفطريات"}, {"id": "bi4-5", "t": "التكاثر الجنسي عند النباتات البذرية: عاريات البذور"}, {"id": "bi4-6", "t": "التكاثر الجنسي عند النباتات البذرية: مغلفات البذور"}, {"id": "bi4-7", "t": "التكاثر الجنسي لدى الإنسان: منشأ جهاز التكاثر"}, {"id": "bi4-8", "t": "التكاثر الجنسي لدى الإنسان: جهاز التكاثر الذكري"}, {"id": "bi4-9", "t": "تشكل النطاف وأهميتها"}, {"id": "bi4-10", "t": "جهاز التكاثر الأنثوي"}, {"id": "bi4-11", "t": "الدورة الجنسية والآليات الهرمونية المنظمة لها"}, {"id": "bi4-12", "t": "التنامي الجنيني: الإلقاح"}, {"id": "bi4-13", "t": "التنامي الجنيني: التعشيش والحمل"}, {"id": "bi4-14", "t": "الولادة والإرضاع"}, {"id": "bi4-15", "t": "الصحة الإنجابية وبعض الأمراض الجنسية"}]}, {"t": "الوحدة الثالثة: الوراثة", "items": [{"id": "bi5-1", "t": "تجارب مندل في الوراثة"}, {"id": "bi5-2", "t": "تأثر المورثات وتعديلات النسب المندلية (اللامندلية)"}, {"id": "bi5-3", "t": "تحديد الجنس لدى الأحياء"}, {"id": "bi5-4", "t": "الوراثة عند الإنسان"}, {"id": "bi5-5", "t": "الطفرات"}, {"id": "bi5-6", "t": "الهندسة الوراثية"}]}]}]}, {"k": "arb", "name": "عربي", "pts": 400, "groups": [{"t": "عربي", "who": "أ. حوراني", "units": [{"t": "", "items": [{"id": "ar0-r", "t": "مراجعة أول النوطة"}]}, {"t": "الوحدة الأولى: قضايا وطنية وقومية", "items": [{"id": "ar1-q", "t": "قراءة تمهيدية: أدب القضايا الوطنية والقومية"}, {"id": "ar1-p1", "t": "عرس المجد", "sub": "عمر أبو ريشة", "tasks": [{"id": "ar1-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar1-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar1-p2", "t": "الجسر", "sub": "محمود درويش", "tasks": [{"id": "ar1-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar1-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar1-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الثانية: الغربة والاغتراب في الأدب المهجري", "items": [{"id": "ar2-q", "t": "قراءة تمهيدية: الأدب المهجري"}, {"id": "ar2-p1", "t": "وطني", "sub": "جورج صيدح", "tasks": [{"id": "ar2-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar2-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar2-p2", "t": "المهاجر", "sub": "نسيب عريضة", "tasks": [{"id": "ar2-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar2-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar2-p3", "t": "الغاب", "sub": "جبران خليل جبران", "tasks": [{"id": "ar2-p3a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar2-p3b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar2-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الثالثة: فن الرواية", "items": [{"id": "ar3-q", "t": "قراءة تمهيدية: فن الرواية"}, {"id": "ar3-n1", "t": "المصابيح الزرق", "sub": "حنا مينة · شرح النص وأسئلته"}, {"id": "ar3-n2", "t": "دمشق يا بسمة الحزن", "sub": "ألفة الإدلبي · شرح النص وأسئلته"}, {"id": "ar3-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الرابعة: ظواهر وجدانية", "items": [{"id": "ar4-q", "t": "قراءة تمهيدية: الشعر الوجداني"}, {"id": "ar4-p1", "t": "الوطن", "sub": "عدنان مردم بك", "tasks": [{"id": "ar4-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar4-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar4-p2", "t": "لوعة الفراق", "sub": "بدر الدين الحامد", "tasks": [{"id": "ar4-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar4-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar4-p3", "t": "الأمير الدمشقي", "sub": "نزار قباني", "tasks": [{"id": "ar4-p3a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar4-p3b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar4-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "الوحدة الخامسة: أدب القضايا الاجتماعية", "items": [{"id": "ar5-q", "t": "قراءة تمهيدية: الأدب الاجتماعي"}, {"id": "ar5-p1", "t": "قوة العلم", "sub": "محمود سامي البارودي", "tasks": [{"id": "ar5-p1a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar5-p1b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar5-p2", "t": "مروءة وسخاء", "sub": "خير الدين الزركلي", "tasks": [{"id": "ar5-p2a", "t": "حفظ الشواهد والأفكار"}, {"id": "ar5-p2b", "t": "شرح القصيدة ومفرداتها وأسئلتها"}]}, {"id": "ar5-e", "t": "مقدمة موضوع التعبير"}]}, {"t": "قواعد", "box": true, "items": [{"id": "aq1", "t": "النداء"}, {"id": "aq2", "t": "أسلوب التعجب"}, {"id": "aq3", "t": "الجمل وإعرابها"}, {"id": "aq4", "t": "الاستثناء"}, {"id": "aq5", "t": "المدح والذم"}, {"id": "aq6", "t": "الحال"}, {"id": "aq7", "t": "المفعول فيه"}, {"id": "aq8", "t": "عمل اسم الفاعل"}, {"id": "aq9", "t": "الممنوع من الصرف"}, {"id": "aq10", "t": "علامات الإعراب الأصلية والفرعية"}, {"id": "aq11", "t": "المبتدأ والخبر"}, {"id": "aq12", "t": "الصفة"}, {"id": "aq13", "t": "إعراب أدوات الاستفهام"}, {"id": "aq14", "t": "النفي"}, {"id": "aq15", "t": "الأمر"}, {"id": "aq16", "t": "توكيد الجمل"}, {"id": "aq17", "t": "الأحرف الزائدة"}, {"id": "aq18", "t": "كم الخبرية والاستفهامية"}, {"id": "aq19", "t": "المصدر المؤول"}, {"id": "aq20", "t": "التوكيد"}, {"id": "aq21", "t": "الأسماء الخمسة"}, {"id": "aq22", "t": "أسماء الأفعال"}, {"id": "aq23", "t": "البدل"}, {"id": "aq24", "t": "أسلوب الشرط"}, {"id": "aq25", "t": "جزم الفعل المضارع"}, {"id": "aq26", "t": "المفعول المطلق"}, {"id": "aq27", "t": "التمييز"}, {"id": "aq28", "t": "المضارع المنصوب"}, {"id": "aq29", "t": "العطف"}, {"id": "aq30", "t": "الإعلال (صرف)"}, {"id": "aq31", "t": "الإبدال (صرف)"}]}]}]}, {"k": "rel_i", "name": "التربية الإسلامية", "pts": 200, "rel": "i", "groups": [{"t": "التربية الإسلامية", "who": "أ. عبد المنعم", "units": [{"t": "القرآن الكريم (التلاوة)", "items": [{"id": "ri1-1", "t": "نعم الله تعالى مدعاة للتوحيد والشكر"}, {"id": "ri1-2", "t": "الله وحده هو الخالق المتصرف"}, {"id": "ri1-3", "t": "الله وحده القادر المعبود"}, {"id": "ri1-4", "t": "من مظاهر قدرة الله تعالى وعظيم فضله"}, {"id": "ri1-5", "t": "دلائل عظمة الخالق عز وجل"}, {"id": "ri1-6", "t": "مبادئ وقيم خالدة"}, {"id": "ri1-7", "t": "أسس الدعوة إلى الله تعالى"}]}, {"t": "القرآن الكريم (التفسير والاستحفاظ)", "items": [{"id": "ri2-1", "t": "صيانة الحقوق وتوثيق العقود", "tasks": [{"id": "ri2-1s", "t": "دراسة"}, {"id": "ri2-1h", "t": "حفظ"}]}, {"id": "ri2-2", "t": "إيمان ودعاء", "tasks": [{"id": "ri2-2s", "t": "دراسة"}, {"id": "ri2-2h", "t": "حفظ"}]}, {"id": "ri2-3", "t": "القرآن الكريم وعظيم قدرة الله تعالى", "tasks": [{"id": "ri2-3s", "t": "دراسة"}, {"id": "ri2-3h", "t": "حفظ"}]}, {"id": "ri2-4", "t": "سعة علم الله تعالى وكمال قدرته", "tasks": [{"id": "ri2-4s", "t": "دراسة"}, {"id": "ri2-4h", "t": "حفظ"}]}]}, {"t": "الحديث النبوي الشريف", "items": [{"id": "ri3-1", "t": "بيعة صادقة", "tasks": [{"id": "ri3-1s", "t": "دراسة"}, {"id": "ri3-1h", "t": "حفظ"}]}, {"id": "ri3-2", "t": "الإيمان قوة وعمل", "tasks": [{"id": "ri3-2s", "t": "دراسة"}, {"id": "ri3-2h", "t": "حفظ"}]}, {"id": "ri3-3", "t": "حكم القاضي لا يحل الحرام", "tasks": [{"id": "ri3-3s", "t": "دراسة"}, {"id": "ri3-3h", "t": "حفظ"}]}, {"id": "ri3-4", "t": "مكانة الشهيد وعظيم أجره", "tasks": [{"id": "ri3-4s", "t": "دراسة"}, {"id": "ri3-4h", "t": "حفظ"}]}, {"id": "ri3-5", "t": "عموم المسؤولية", "tasks": [{"id": "ri3-5s", "t": "دراسة"}, {"id": "ri3-5h", "t": "حفظ"}]}, {"id": "ri3-6", "t": "توجيه نبوي حكيم", "tasks": [{"id": "ri3-6s", "t": "دراسة"}, {"id": "ri3-6h", "t": "حفظ"}]}]}, {"t": "التربية الإنسانية", "items": [{"id": "ri4-1", "t": "بناء الحضارة في الإسلام"}, {"id": "ri4-2", "t": "مقومات الحضارة الإنسانية في الإسلام"}, {"id": "ri4-3", "t": "مظاهر الحضارة الإسلامية"}]}, {"t": "التربية الأسرية والاجتماعية", "items": [{"id": "ri5-1", "t": "نظام الأسرة في الإسلام"}, {"id": "ri5-2", "t": "المحرمات من النساء في الزواج"}, {"id": "ri5-3", "t": "الخطبة والأسس الإسلامية للزواج"}, {"id": "ri5-4", "t": "عقد الزواج"}, {"id": "ri5-5", "t": "حقوق الزوجين"}, {"id": "ri5-6", "t": "الطلاق"}]}, {"t": "التربية الاقتصادية والمالية", "items": [{"id": "ri6-1", "t": "نظام المال في الإسلام"}, {"id": "ri6-2", "t": "قيود الملكية (الفردية – الجماعية)"}]}, {"t": "العلاقات الدولية", "items": [{"id": "ri7-1", "t": "أسس العلاقات الدولية في الإسلام"}, {"id": "ri7-2", "t": "الجهاد في الإسلام"}, {"id": "ri7-3", "t": "من آداب الجهاد وأحكامه"}]}, {"t": "السيرة النبوية والأعلام", "items": [{"id": "ri8-1", "t": "هدي النبي ﷺ في القيادة"}, {"id": "ri8-2", "t": "أم سليم بنت ملحان"}, {"id": "ri8-3", "t": "الإمام جعفر الصادق"}]}]}]}, {"k": "rel_c", "name": "التربية المسيحية", "pts": 200, "rel": "c", "groups": [{"t": "التربية المسيحية", "who": "", "units": []}]}, {"k": "eng", "name": "English", "pts": 300, "lang": true, "groups": [{"t": "English", "who": "Mr. Mo", "units": [{"t": "Module 1 · Learning for Life", "items": [{"id": "en1", "t": "Unit 1 · Life Choices"}, {"id": "en2", "t": "Unit 2 · Success"}]}, {"t": "Module 2 · Sciences", "items": [{"id": "en3", "t": "Unit 3 · Medicine"}, {"id": "en4", "t": "Unit 4 · Engineering"}]}, {"t": "Module 3 · Politics", "items": [{"id": "en5", "t": "Unit 5 · Civil Rights"}, {"id": "en6", "t": "Unit 6 · United Nations"}]}, {"t": "Module 4 · Biology", "items": [{"id": "en7", "t": "Unit 7 · Microorganism"}, {"id": "en8", "t": "Unit 8 · Facts about Human Body"}]}, {"t": "Module 5 · Culture", "items": [{"id": "en9", "t": "Unit 9 · Citizenship"}, {"id": "en10", "t": "Unit 10 · Culture Shock"}]}, {"t": "Module 6 · Technology", "items": [{"id": "en11", "t": "Unit 11 · Artificial Intelligence"}, {"id": "en12", "t": "Unit 12 · Digital Literacy"}]}]}]}, {"k": "fr", "name": "Français", "pts": 300, "lang": true, "groups": [{"t": "Français", "who": "M. Rami", "units": [{"t": "", "items": [{"id": "fr1", "t": "Unité 1 · On fête ensemble…", "tasks": [{"id": "fr1a", "t": "نصوص ومفردات"}, {"id": "fr1b", "t": "قواعد"}, {"id": "fr1c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr2", "t": "Unité 2 · Chacun pour tous", "tasks": [{"id": "fr2a", "t": "نصوص ومفردات"}, {"id": "fr2b", "t": "قواعد"}, {"id": "fr2c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr3", "t": "Unité 3 · Le salon, un espace culturel", "tasks": [{"id": "fr3a", "t": "نصوص ومفردات"}, {"id": "fr3b", "t": "قواعد"}, {"id": "fr3c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr4", "t": "Unité 4 · La femme dans la littérature", "tasks": [{"id": "fr4a", "t": "نصوص ومفردات"}, {"id": "fr4b", "t": "قواعد"}, {"id": "fr4c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr5", "t": "Unité 5 · L'intelligence artificielle", "tasks": [{"id": "fr5a", "t": "نصوص ومفردات"}, {"id": "fr5b", "t": "قواعد"}, {"id": "fr5c", "t": "موضوع حفظ وترتيب حوار"}]}, {"id": "fr6", "t": "Unité 6 · La conquête de l'espace", "tasks": [{"id": "fr6a", "t": "نصوص ومفردات"}, {"id": "fr6b", "t": "قواعد"}, {"id": "fr6c", "t": "موضوع حفظ وترتيب حوار"}]}]}]}]}];
+</script>
 <script type="module">
 // ===== SETTINGS: only you (the site owner) change these =====
-// 1) Paste your Firebase web app config here (Firebase console > Project settings > Your apps).
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyD0alaXh9Qse0357_Z85M8hx_Rug5CgACY",
   authDomain: "bakaloria-race-636c8.firebaseapp.com",
@@ -137,163 +153,254 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "408908905540",
   appId: "1:408908905540:web:5466fbed95023b15e19011"
 };
-// 2) First Bakaloria exam date, "YYYY-MM-DD". Leave "" until it is announced.
+// First Bakaloria exam date "YYYY-MM-DD", or "" until announced.
 const BAC_DATE = "";
-// 3) Lessons per subject: [id, name]. Ids must never change once people start ticking.
-const LESSONS = {
-  math: [], phy: [], chem: [], bio: [], arb: [], eng: [], fr: [], rel: []
-};
 // ============================================================
+const FB = "https://www.gstatic.com/firebasejs/11.0.2/";
+const COLORS = ['#F3D37A','#7FD3F7','#B9F27C','#FFA3C7','#C9B6FF','#FFB36B','#8CF0D4','#F7F3E8'];
+const CH = 'abcdefghjkmnpqrstuvwxyz23456789';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const dkey = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const dayAgo = n => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - n); return d; };
+const fmtH = h => (Math.round(h * 10) / 10).toString();
+const ord = i => (i + 1) + (i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th');
+const hashCode = () => { const m = /^#r-([a-z0-9]{4,12})$/.exec(location.hash.toLowerCase()); return m ? m[1] : null; };
+const fmtDate = s => { const d = new Date(s + 'T00:00'); return d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'}); };
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInAnonymously, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-import { getFirestore, collection, doc, onSnapshot, setDoc, query, where } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+// ---- lesson model ----
+const TASKS = {};            // subjectKey -> [taskId]
+const TITLE = {};            // taskId -> label (for toasts)
+for (const s of SUBJECTS) {
+  TASKS[s.k] = [];
+  for (const g of s.groups) for (const u of g.units) for (const it of u.items) {
+    if (it.tasks) for (const t of it.tasks) { TASKS[s.k].push(t.id); TITLE[t.id] = it.t + ' · ' + t.t; }
+    else { TASKS[s.k].push(it.id); TITLE[it.id] = it.t; }
+  }
+}
+const SUBJ = Object.fromEntries(SUBJECTS.map(s => [s.k, s]));
+const CORE = ['math','phy','arb','bio','chem'];
+function frac(p, k) { const ids = TASKS[k], d = (p && p.done) || {}; if (!ids.length) return 0; let n = 0; for (const i of ids) if (d[i] > 0) n++; return n / ids.length; }
+const relKey = p => (p && p.religion === 'c') ? 'rel_c' : 'rel_i';
+function score(p, mode) {
+  let s = 0; for (const k of CORE) s += SUBJ[k].pts * frac(p, k);
+  s += 200 * frac(p, relKey(p));
+  const e = 300 * frac(p, 'eng'), f = 300 * frac(p, 'fr');
+  s += mode === 'both' ? e + f : Math.max(e, f);
+  return Math.round(s);
+}
+const maxScore = mode => mode === 'both' ? 2700 : 2400;
+function streakOf(p) { const h = (p && p.hours) || {}; let s = 0, i = (+h[dkey(dayAgo(0))] || 0) > 0 ? 0 : 1; while ((+h[dkey(dayAgo(i))] || 0) > 0) { s++; i++; } return s; }
+function weekOf(p) { const h = (p && p.hours) || {}; let w = 0; for (let i = 0; i < 7; i++) w += +h[dkey(dayAgo(i))] || 0; return w; }
+function totalH(p) { const h = (p && p.hours) || {}; let t = 0; for (const k in h) t += +h[k] || 0; return t; }
 
-const SUBJ=[['math','Mathematics','رياضيات'],['phy','Physics','فيزياء'],['chem','Chemistry','كيمياء'],['bio','Science','علوم'],['arb','Arabic','عربي'],['eng','English','إنكليزي'],['fr','French','فرنسي'],['rel','Religion','ديانة']];
-const ALL=SUBJ.flatMap(([k])=>(LESSONS[k]||[]).map(([id,t])=>({id,t,s:k})));
-const COLORS=['#F6C445','#7FD3F7','#B9F27C','#FFA3C7','#C9B6FF','#FFB36B','#8CF0D4','#F7F3E8'];
-const CH='abcdefghjkmnpqrstuvwxyz23456789';
-const $=id=>document.getElementById(id);
-const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const pad=n=>String(n).padStart(2,'0');
-const dkey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-const dayAgo=n=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-n);return d};
-const fmtH=h=>(Math.round(h*10)/10).toString();
-const ord=i=>(i+1)+(i===0?'st':i===1?'nd':i===2?'rd':'th');
-const hashCode=()=>{const m=/^#r-([a-z0-9]{4,12})$/.exec(location.hash.toLowerCase());return m?m[1]:null};
+// ---- state ----
+let api = null, meId = null, meName = '', authReady = false, me = null;
+let players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
+let cur = null, ui = '', leaveArm = false, open = new Set(), pending = null, writing = false, toastT = null;
+try { cur = localStorage.getItem('bac-cur') || null; open = new Set(JSON.parse(localStorage.getItem('bac-open2') || '[]')); } catch (e) {}
+if (hashCode()) cur = hashCode();
+const DEMO = window.__DEMO || null;
 
-let auth,db,meId=null,meName='',authReady=false,me=null,players={},lobbyDocs={},lobbyUnsub=new Map(),playersUnsub=null,watching=null;
-let cur=null,ui='',leaveArm=false,open=new Set(['math']),pending=null,writing=false,toastT=null;
-try{cur=localStorage.getItem('bac-cur')||null;open=new Set(JSON.parse(localStorage.getItem('bac-open')||'["math"]'))}catch(e){}
-if(hashCode())cur=hashCode();
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2600); }
+const lobby = () => (cur && lobbyDocs[cur] && !lobbyDocs[cur].missing) ? lobbyDocs[cur] : null;
+const lname = c => lobbyDocs[c] && lobbyDocs[c].name ? lobbyDocs[c].name : 'Race ' + c.toUpperCase();
+const nick = p => (p && p.nick) || 'Someone';
+const isCreator = () => !!(lobby() && lobby().by === meId);
+const canPostHw = () => !!(lobby() && (lobby().by === meId || (lobby().helpers || []).includes(meId)));
+const colorOf = id => { const ids = Object.keys(players).sort((a, b) => (players[a].joined || '').localeCompare(players[b].joined || '')); const i = ids.indexOf(id); return COLORS[(i < 0 ? 0 : i) % COLORS.length]; };
 
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
-const lname=c=>lobbyDocs[c]&&lobbyDocs[c].name?lobbyDocs[c].name:'Race '+c.toUpperCase();
-const nick=p=>(p&&p.nick)||'Someone';
-const colorOf=id=>{const ids=Object.keys(players).sort((a,b)=>(players[a].joined||'').localeCompare(players[b].joined||''));const i=ids.indexOf(id);return COLORS[(i<0?0:i)%COLORS.length]};
-function stats(p){
-  const done=(p&&p.done)||{};const d=ALL.filter(l=>done[l.id]>0).length;const rv=ALL.reduce((a,l)=>a+(+done[l.id]||0),0);
-  const hours=(p&&p.hours)||{};let week=0,total=0;for(const k in hours)total+=+hours[k]||0;
-  for(let i=0;i<7;i++)week+=+hours[dkey(dayAgo(i))]||0;
-  let streak=0,i=(+hours[dkey(dayAgo(0))]||0)>0?0:1;while((+hours[dkey(dayAgo(i))]||0)>0){streak++;i++}
-  return{d,rv,pct:ALL.length?Math.round(d/ALL.length*100):0,week,total,streak};
+// ---- data ----
+function watchLobby(c) {
+  if (!c || lobbyUnsub.has(c) || !api) return;
+  lobbyUnsub.set(c, api.onSnapshot(api.doc(api.db, 'lobbies', c), s => { lobbyDocs[c] = s.exists() ? s.data() : {missing: true}; render(); }, () => { lobbyDocs[c] = {missing: true}; render(); }));
+}
+function watchRace() {
+  if (watching === cur || !api) return; watching = cur;
+  if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; }
+  players = {}; homework = [];
+  if (!cur) { render(); return; }
+  playersUnsub = api.onSnapshot(api.query(api.collection(api.db, 'players'), api.where('lobbies', 'array-contains', cur)), s => { const nx = {}; s.forEach(x => nx[x.id] = x.data()); players = nx; render(); }, () => toast('Could not load this race'));
+  hwUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'homework'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); homework = a; render(); }, () => {});
+}
+function changeMe(fn) { const c = JSON.parse(JSON.stringify(me || {})); fn(c); me = c; if (cur && (c.lobbies || []).includes(cur)) players[meId] = c; render(); if (DEMO) return; pending = c; pump(); }
+async function pump() { if (writing || !pending) return; writing = true; const d = pending; pending = null; try { await api.setDoc(api.doc(api.db, 'players', meId), d); } catch (e) { toast('Could not save. Check your connection.'); } writing = false; pump(); }
+function enter(c) { changeMe(p => { p.lobbies = (p.lobbies || []).filter(x => x !== c); p.lobbies.push(c); }); cur = c; ui = ''; location.hash = 'r-' + c; sync(); }
+function sync() {
+  const my = (me && me.lobbies) || [];
+  if (!hashCode() && (!cur || (me && !my.includes(cur)))) cur = my[0] || null;
+  try { if (cur) localStorage.setItem('bac-cur', cur); } catch (e) {}
+  my.forEach(watchLobby); if (cur) watchLobby(cur); watchRace(); render();
 }
 
-// ---------- data ----------
-function watchLobby(c){if(!c||lobbyUnsub.has(c))return;lobbyUnsub.set(c,onSnapshot(doc(db,'lobbies',c),s=>{if(s.exists())lobbyDocs[c]=s.data();else lobbyDocs[c]={missing:true};render()},()=>{lobbyDocs[c]={missing:true};render()}))}
-function watchPlayers(){
-  if(watching===cur)return;watching=cur;if(playersUnsub){playersUnsub();playersUnsub=null}players={};
-  if(!cur){render();return}
-  playersUnsub=onSnapshot(query(collection(db,'players'),where('lobbies','array-contains',cur)),s=>{const nx={};s.forEach(x=>nx[x.id]=x.data());players=nx;render()},()=>toast('Could not load this race'));
-}
-function changeMe(fn){const c=JSON.parse(JSON.stringify(me||{}));fn(c);me=c;if(cur&&(c.lobbies||[]).includes(cur))players[meId]=c;render();pending=c;pump()}
-async function pump(){if(writing||!pending)return;writing=true;const d=pending;pending=null;
-  try{await setDoc(doc(db,'players',meId),d)}catch(e){toast('Could not save. Check your connection.')}writing=false;pump()}
-function enter(c){changeMe(p=>{p.lobbies=(p.lobbies||[]).filter(x=>x!==c);p.lobbies.push(c)});cur=c;ui='';location.hash='r-'+c;sync()}
-function sync(){
-  const my=(me&&me.lobbies)||[];
-  if(!hashCode()&&(!cur||(me&&!my.includes(cur))))cur=my[0]||null;
-  try{if(cur)localStorage.setItem('bac-cur',cur)}catch(e){}
-  my.forEach(watchLobby);if(cur)watchLobby(cur);watchPlayers();render();
-}
-
-// ---------- view ----------
-function lobbyHTML(my){
-  if(!me)return '';
-  let h='<div class="chips">'+my.map(c=>'<a class="chip'+(c===cur?' on':'')+'" href="#r-'+c+'">'+esc(lname(c))+'</a>').join('')+
+// ---- view ----
+function lobbyHTML(my) {
+  let h = '<div class="chips">' + my.map(c => '<a class="chip' + (c === cur ? ' on' : '') + '" href="#r-' + c + '">' + esc(lname(c)) + '</a>').join('') +
     '<button type="button" class="chip add" data-act="new">+ New race</button><button type="button" class="chip add" data-act="code">Join with code</button></div>';
-  if(ui==='new')h+='<form id="newForm" class="inl"><input type="text" id="newIn" maxlength="30" required placeholder="Race name, like School friends" aria-label="Race name" autocomplete="off"><button class="btn">Create</button></form>';
-  if(ui==='code')h+='<form id="codeForm" class="inl"><input type="text" id="codeIn" maxlength="12" required placeholder="Race code" aria-label="Race code" autocomplete="off" autocapitalize="characters"><button class="btn">Join</button></form>';
-  if(cur){const L=lobbyDocs[cur],inIt=my.includes(cur);
-    if(L&&L.missing)h+='<p class="note">No race found with code '+esc(cur.toUpperCase())+'.</p>';
-    else if(L)h+='<div class="info"><span>'+(inIt?'':'Viewing ')+'<b>'+esc(lname(cur))+'</b> · code <b class="num code">'+esc(cur.toUpperCase())+'</b></span><button type="button" class="btn ghost" data-act="copy">Copy invite</button>'+(!inIt?'<button type="button" class="btn" data-act="enter">Join this race</button>':'<button type="button" class="btn ghost" data-act="leave">'+(leaveArm?'Tap again to leave':'Leave race')+'</button>')+'</div>';
-  }else h+='<p class="note">Create a race and send the invite to your friends, or join one with a code.</p>';
+  if (ui === 'new') h += '<form id="newForm" class="panel"><p><b>New race</b></p><div class="inl" style="margin-bottom:12px"><input type="text" id="newIn" maxlength="30" required placeholder="Race name, like School friends" aria-label="Race name" autocomplete="off"></div>' +
+    '<p>How should English and French count?</p>' +
+    '<label class="opt"><input type="radio" name="lang" value="best" checked><span><b>Only the higher one</b> · out of 2,400<small>Like the real exam</small></span></label>' +
+    '<label class="opt"><input type="radio" name="lang" value="both"><span><b>Both count</b> · out of 2,700<small>Rewards studying both languages</small></span></label>' +
+    '<div class="inl"><button class="btn">Create race</button><button type="button" class="btn ghost" data-act="new">Cancel</button></div></form>';
+  if (ui === 'code') h += '<form id="codeForm" class="inl"><input type="text" id="codeIn" maxlength="12" required placeholder="Race code" aria-label="Race code" autocomplete="off" autocapitalize="characters"><button class="btn">Join</button></form>';
+  if (cur) {
+    const L = lobbyDocs[cur], inIt = my.includes(cur);
+    if (L && L.missing) h += '<p class="note">No race found with code ' + esc(cur.toUpperCase()) + '.</p>';
+    else if (L) h += '<div class="info"><span>' + (inIt ? '' : 'Viewing ') + '<b>' + esc(lname(cur)) + '</b> · code <b class="num code">' + esc(cur.toUpperCase()) + '</b></span><span class="tag">' + (L.lang === 'both' ? 'Both languages · /2700' : 'Best language · /2400') + '</span>' +
+      '<button type="button" class="btn ghost" data-act="copy">Invite</button>' + (!inIt ? '<button type="button" class="btn" data-act="enter">Join this race</button>' : '<button type="button" class="btn ghost" data-act="leave">' + (leaveArm ? 'Tap again to leave' : 'Leave') + '</button>') + '</div>';
+  } else h += '<p class="note">Create a race and send the invite to your friends, or join one with a code.</p>';
   return h;
 }
-function render(){
-  // sign-in / join
-  const j=$('join');
-  if(!authReady)j.innerHTML='';
-  else if(!meId)j.innerHTML='<div class="join"><p><b>Sign in to race.</b> Google keeps your progress on any phone. Guest works on this device only.</p><div class="inl" style="margin-top:12px"><button class="btn" data-act="google">Continue with Google</button><button class="btn ghost" data-act="guest">Play as guest</button></div></div>';
-  else if(!me||!me.nick)j.innerHTML='<div class="join"><p><b>Pick the name your friends will see.</b></p><form id="joinForm"><input type="text" id="nickIn" maxlength="24" required value="'+esc(meName)+'" aria-label="Your name"><button class="btn">Start</button></form></div>';
-  else j.innerHTML='';
-  const my=(me&&me.lobbies)||[];
-  $('lobby').innerHTML=me&&me.nick?lobbyHTML(my):'';
-  // track
-  const rows=Object.keys(players).filter(id=>(players[id].lobbies||[]).includes(cur)).map(id=>({id,p:players[id],s:stats(players[id])}));
-  const by=rows.slice().sort((a,b)=>b.s.pct-a.s.pct||b.s.rv-a.s.rv);
-  const tr=$('track');
-  if(!cur)tr.innerHTML='<p class="empty">'+(me&&me.nick?'Pick a race above, create one, or join with a code.':'Sign in below to start racing.')+'</p>';
-  else if(!rows.length)tr.innerHTML='<p class="empty">No runners in this race yet.</p>';
-  else tr.innerHTML=by.map((r,i)=>'<div class="lane"><div class="who">'+esc(nick(r.p))+(r.id===meId?' (you)':'')+'<small>'+ord(i)+' · '+r.s.d+' of '+ALL.length+(r.s.rv>r.s.d?' · '+r.s.rv+' reviews':'')+'</small></div><div class="run"><span class="runner'+(r.id===meId?' me':'')+'" style="left:calc(17px + (100% - 44px) * '+(r.s.pct/100)+');background:'+colorOf(r.id)+'" aria-hidden="true">'+esc(nick(r.p).trim().charAt(0).toUpperCase()||'?')+'</span></div><div class="pct num">'+r.s.pct+'%</div></div>').join('');
-  const lead=$('lead');
-  if(rows.length&&cur){const top=by[0],mi=by.findIndex(r=>r.id===meId);lead.innerHTML=esc(lname(cur))+': <b>'+esc(nick(top.p))+'</b> leads with '+top.s.pct+'% of '+ALL.length+' lessons'+(mi>0?' · you are '+ord(mi):'')+'.'}
-  else lead.textContent=ALL.length?ALL.length+' lessons across 8 subjects.':'Lessons are being added. Hours already count.';
-  // bac countdown
-  if(BAC_DATE){const n=Math.round((new Date(BAC_DATE+'T00:00')-dayAgo(0))/864e5);$('bac').innerHTML='<span>First Bakaloria exam: <b>'+new Date(BAC_DATE+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</b> · <b class="num" style="font-size:20px">'+(n>0?n+' days':n===0?'today':'done')+'</b></span>'}
-  else $('bac').innerHTML='<span>2027 exam dates not announced yet.</span>';
-  // hours
-  const bw=rows.slice().sort((a,b)=>b.s.week-a.s.week),mx=Math.max(1,...rows.map(r=>r.s.week));
-  $('hours').innerHTML=rows.length?bw.map(r=>'<div class="hr"><span class="n">'+esc(nick(r.p))+(r.s.streak>1?'<small style="display:block;font-size:12px;color:var(--mute)">'+r.s.streak+'-day streak</small>':'')+'</span><div class="hbar"><i style="width:'+(r.s.week/mx*100)+'%;background:'+(r.id===meId?'var(--acc)':'var(--track)')+'"></i></div><span class="v num">'+fmtH(r.s.week)+'h</span></div>').join('')+'<p class="note">Last 7 days · all-time leader: '+esc(nick(rows.slice().sort((a,b)=>b.s.total-a.s.total)[0].p))+'</p>':'<p class="note">No hours in this race yet.</p>';
-  // my hours
-  if(me&&me.nick){const h=me.hours||{},t=+h[dkey(dayAgo(0))]||0,days=[...Array(7)].map((_,i)=>dayAgo(6-i)),wm=Math.max(1,...days.map(d=>+h[dkey(d)]||0));
-    $('mine').innerHTML='<h2>Your hours today</h2><div class="logger"><div class="big num">'+fmtH(t)+'<small>hours</small></div><div class="step"><button class="btn ghost sq" data-h="-0.5" aria-label="Remove half an hour">−</button><button class="btn sq" data-h="0.5" aria-label="Add half an hour">+</button><button class="btn ghost" data-h="1">+1h</button></div></div><div class="week" aria-label="Your last 7 days">'+days.map(d=>{const v=+h[dkey(d)]||0;return'<div><span>'+fmtH(v)+'</span><i style="height:'+(v/wm*56)+'px"></i><span>'+d.toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2)+'</span></div>'}).join('')+'</div>'+
-      '<p class="note" style="margin-top:14px">Signed in as '+esc(me.nick)+' · <button class="linkbtn" data-act="signout">Sign out</button></p>'}
-  else $('mine').innerHTML='<h2>Your hours today</h2><p class="note">Sign in to log hours.</p>';
-  // subjects
-  const done=(me&&me.done)||{},can=!!(me&&me.nick);
-  $('subjects').innerHTML=SUBJ.map(([k,en,ar])=>{const L=(LESSONS[k]||[]),c=L.filter(([id])=>done[id]>0).length,o=open.has(k);
-    return '<div class="sbj'+(o?' open':'')+'"><button type="button" data-open="'+k+'" aria-expanded="'+o+'"><span class="nm">'+en+' <span class="ar" lang="ar" dir="rtl">'+ar+'</span></span><span class="ct num">'+c+'/'+L.length+'</span><span class="bar"><i style="width:'+(L.length?c/L.length*100:0)+'%"></i></span></button><div class="body">'+
-    (L.length?'<ul class="ls">'+L.map(([id,t])=>{const n=+done[id]||0;return '<li><span class="t" dir="auto">'+esc(t)+'</span>'+(n>0&&can?'<button class="x" data-unrev="'+esc(id)+'" aria-label="Undo one study of '+esc(t)+'">−</button>':'')+'<button class="cnt'+(n>0?' on':'')+'" data-rev="'+esc(id)+'"'+(can?'':' disabled')+' aria-label="Mark '+esc(t)+' studied">'+(n>0?'✓'+(n>1?' ×'+n:''):'Studied')+'</button></li>'}).join('')+'</ul>':'<p class="note" style="margin:10px 0">Lessons for this subject are coming soon.</p>')+'</div></div>'}).join('');
+function hwHTML() {
+  const L = lobby(); if (!L || !(me && (me.lobbies || []).includes(cur))) return '';
+  const today = dkey(dayAgo(0)), tm = dkey(dayAgo(-1));
+  const list = homework.filter(w => typeof w.text === 'string' && w.due >= today).sort((a, b) => a.due < b.due ? -1 : 1);
+  const mine = (me && me.hw) || {};
+  let h = '<section class="card hw"><div class="head"><h2 style="margin:0">Homework <span class="ar" lang="ar" style="color:var(--mute);font-size:16px">· واجبات</span></h2>' +
+    (canPostHw() ? '<button class="btn ghost" data-act="hw">' + (ui === 'hw' ? 'Close' : '+ Add homework') + '</button>' : '') + '</div>';
+  if (ui === 'hw' && canPostHw()) {
+    const opts = SUBJECTS.filter(s => s.groups[0].units.length).map(s => '<option>' + esc(s.name) + '</option>').join('');
+    h += '<form id="hwForm" class="inl" style="margin-bottom:10px"><select id="hwSub" aria-label="Subject">' + opts + '</select><input type="date" id="hwDue" required value="' + tm + '" min="' + today + '" aria-label="Due date"><input type="text" id="hwText" maxlength="160" required placeholder="What to do" aria-label="Homework" style="flex:2 1 14em"><button class="btn">Post</button></form>';
+  }
+  if (!list.length) h += '<p class="note">' + (canPostHw() ? 'No homework yet. Add what the teachers gave.' : 'No homework posted for now.') + '</p>';
+  else h += '<ul class="hwl">' + list.map(w => { const d = mine[cur + '_' + w.id]; const soon = w.due <= tm;
+    return '<li class="' + (d ? 'done' : '') + '"><input type="checkbox" data-hwdone="' + esc(w.id) + '"' + (d ? ' checked' : '') + ' aria-label="Done"><div class="t"><span dir="auto">' + esc(w.text) + '</span><span class="due' + (soon ? ' soon' : '') + '"><span class="tag">' + esc(w.subj || '') + '</span> due ' + (w.due === today ? 'today' : w.due === tm ? 'tomorrow' : esc(fmtDate(w.due))) + '</span></div>' +
+      ((isCreator() || w.by === meId) ? '<button class="x" data-hwdel="' + esc(w.id) + '" aria-label="Delete homework">×</button>' : '') + '</li>'; }).join('') + '</ul>';
+  if (isCreator()) {
+    if (ui === 'helpers') {
+      const others = Object.keys(players).filter(id => id !== meId);
+      h += '<div class="panel"><p><b>Homework helpers</b> can post homework in this race (teachers, supervisors, the classmate who always knows).</p>' +
+        (others.length ? '<ul class="hwl">' + others.map(id => { const on = (L.helpers || []).includes(id); return '<li><div class="t"><span>' + esc(nick(players[id])) + '</span></div><button class="tk' + (on ? ' on' : '') + '" data-helper="' + esc(id) + '">' + (on ? 'Helper ✓' : 'Make helper') + '</button></li>'; }).join('') + '</ul>' : '<p class="note">Nobody else has joined yet.</p>') +
+        '<button class="btn ghost" data-act="helpers">Done</button></div>';
+    } else h += '<p class="note" style="margin-top:10px"><button class="linkbtn" data-act="helpers">Manage homework helpers</button></p>';
+  }
+  return h + '</section>';
+}
+function subjectsHTML() {
+  const d = (me && me.done) || {}, can = !!(me && me.nick), rk = relKey(me);
+  const mode = (lobby() && lobby().lang) || 'best';
+  return SUBJECTS.filter(s => !s.rel || s.k === rk).map(s => {
+    const ids = TASKS[s.k]; let n = 0; for (const i of ids) if (d[i] > 0) n++;
+    const pts = Math.round(s.pts * (ids.length ? n / ids.length : 0)); const o = open.has(s.k);
+    const langNote = s.lang ? (mode === 'both' ? ' · counts' : ' · best of two counts') : '';
+    let body = '';
+    if (!ids.length) body = '<p class="note" style="margin-top:12px">Lessons for this subject are coming soon.</p>';
+    for (const g of s.groups) {
+      if (!g.units.length) continue;
+      if (s.groups.length > 1 || g.who) body += '<div class="grp"><span dir="auto">' + esc(g.t) + '</span><span>' + esc(g.who) + '</span></div>';
+      for (const u of g.units) {
+        if (u.t) body += '<div class="unit" dir="auto">' + esc(u.t) + '</div>';
+        body += '<ul class="ls">' + u.items.map(it => {
+          const tasks = it.tasks || [{id: it.id, t: 'Studied', solo: true}];
+          return '<li><span class="t" dir="auto"><span>' + esc(it.t) + '</span>' + (it.sub || it.nick ? '<small>' + esc(it.nick ? 'بالمدرسة: ' + it.nick : it.sub) + '</small>' : '') + '</span><span class="tks">' +
+            tasks.map(t => { const c = +d[t.id] || 0;
+              return (c > 0 && can ? '<button class="x" data-unrev="' + t.id + '" aria-label="Undo one">−</button>' : '') +
+                '<button class="tk' + (c > 0 ? ' on' : '') + '" data-rev="' + t.id + '"' + (can ? '' : ' disabled') + '>' + (t.solo ? (c > 0 ? '✓' : 'Studied') : esc(t.t) + (c > 0 ? ' ✓' : '')) + (c > 1 ? ' ×' + c : '') + '</button>'; }).join('') + '</span></li>';
+        }).join('') + '</ul>';
+      }
+    }
+    return '<div class="sbj' + (o ? ' open' : '') + '"><button type="button" data-open="' + s.k + '" aria-expanded="' + o + '"><span class="nm" dir="auto">' + esc(s.name) + ' <small>' + n + '/' + ids.length + langNote + '</small></span><span class="ct num">' + pts + '<small> / ' + s.pts + '</small></span><span class="bar"><i style="width:' + (ids.length ? n / ids.length * 100 : 0) + '%"></i></span></button><div class="body">' + body + '</div></div>';
+  }).join('');
+}
+function render() {
+  const j = $('join');
+  if (!authReady) j.innerHTML = '';
+  else if (!meId) j.innerHTML = '<div class="panel"><p><b>Sign in to race.</b> Google keeps your progress on any phone. Guest works on this device only.</p><div class="inl"><button class="btn" data-act="google">Continue with Google</button><button class="btn ghost" data-act="guest">Play as guest</button></div></div>';
+  else if (!me || !me.nick || !me.religion) j.innerHTML = '<form id="joinForm" class="panel"><p><b>Welcome!</b> Pick the name your friends will see.</p><div class="inl" style="margin-bottom:14px"><input type="text" id="nickIn" maxlength="24" required value="' + esc((me && me.nick) || meName) + '" aria-label="Your name"></div>' +
+    '<p>Which religion subject do you take?</p><label class="opt"><input type="radio" name="rel" value="i"' + ((me && me.religion) !== 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية الإسلامية</b></span></label><label class="opt"><input type="radio" name="rel" value="c"' + ((me && me.religion) === 'c' ? ' checked' : '') + '><span lang="ar"><b>التربية المسيحية</b></span></label>' +
+    '<button class="btn">Start</button></form>';
+  else j.innerHTML = '';
+  const ready = !!(me && me.nick && me.religion);
+  const my = (me && me.lobbies) || [];
+  $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
+  const mode = (lobby() && lobby().lang) || 'best', mx = maxScore(mode);
+  const rows = Object.keys(players).filter(id => (players[id].lobbies || []).includes(cur)).map(id => ({id, p: players[id], sc: score(players[id], mode)}));
+  const by = rows.slice().sort((a, b) => b.sc - a.sc);
+  const tr = $('track');
+  if (!cur) tr.innerHTML = '<p class="empty">' + (ready ? 'Pick a race above, create one, or join with a code.' : 'Sign in below to start racing.') + '</p>';
+  else if (!rows.length) tr.innerHTML = '<p class="empty">No runners in this race yet.</p>';
+  else tr.innerHTML = by.map((r, i) => '<div class="lane"><div class="who">' + esc(nick(r.p)) + (r.id === meId ? ' (you)' : '') + '<small>' + ord(i) + '</small></div><div class="run"><span class="runner' + (r.id === meId ? ' me' : '') + '" style="left:calc(17px + (100% - 44px) * ' + (r.sc / mx) + ');background:' + colorOf(r.id) + '" aria-hidden="true">' + esc(nick(r.p).trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + r.sc + '</b><small>/ ' + mx + '</small></div></div>').join('');
+  const lead = $('lead');
+  if (rows.length && cur) { const top = by[0], mi = by.findIndex(r => r.id === meId); lead.innerHTML = '<b>' + esc(nick(top.p)) + '</b> leads ' + esc(lname(cur)) + ' with ' + top.sc + ' / ' + mx + (mi > 0 ? ' · you are ' + ord(mi) : '') + '.'; }
+  else lead.textContent = 'Every lesson you study moves you toward the full mark.';
+  $('bac').innerHTML = BAC_DATE ? (() => { const n = Math.round((new Date(BAC_DATE + 'T00:00') - dayAgo(0)) / 864e5); return '<span class="tag">First Bakaloria exam in ' + (n > 0 ? n + ' days' : n === 0 ? 'today' : '—') + '</span>'; })() : '';
+  $('hwBox').innerHTML = hwHTML();
+  const bw = rows.slice().sort((a, b) => weekOf(b.p) - weekOf(a.p)), hm = Math.max(1, ...rows.map(r => weekOf(r.p)));
+  $('hours').innerHTML = rows.length ? bw.map(r => '<div class="hr"><span class="n">' + esc(nick(r.p)) + (streakOf(r.p) > 1 ? '<small>' + streakOf(r.p) + '-day streak</small>' : '') + '</span><div class="hbar"><i class="' + (r.id === meId ? 'me' : '') + '" style="width:' + (weekOf(r.p) / hm * 100) + '%"></i></div><span class="v num">' + fmtH(weekOf(r.p)) + 'h</span></div>').join('') + '<p class="note">Last 7 days · all-time leader: ' + esc(nick(rows.slice().sort((a, b) => totalH(b.p) - totalH(a.p))[0].p)) + '</p>' : '<p class="note">No hours in this race yet.</p>';
+  if (ready) { const h = me.hours || {}, t = +h[dkey(dayAgo(0))] || 0, days = [...Array(7)].map((_, i) => dayAgo(6 - i)), wm = Math.max(1, ...days.map(d => +h[dkey(d)] || 0));
+    $('mine').innerHTML = '<h2>Your hours today</h2><div class="logger"><div class="big num">' + fmtH(t) + '<small>hours</small></div><div class="step"><button class="btn ghost sq" data-h="-0.5" aria-label="Remove half an hour">−</button><button class="btn sq" data-h="0.5" aria-label="Add half an hour">+</button><button class="btn ghost" data-h="1">+1h</button></div></div><div class="week" aria-label="Your last 7 days">' + days.map(d => { const v = +h[dkey(d)] || 0; return '<div><span>' + fmtH(v) + '</span><i style="height:' + (v / wm * 56) + 'px"></i><span>' + d.toLocaleDateString('en-GB', {weekday: 'short'}).slice(0, 2) + '</span></div>'; }).join('') + '</div>' +
+      '<p class="note" style="margin-top:14px">' + esc(me.nick) + ' · <span lang="ar">' + (me.religion === 'c' ? 'التربية المسيحية' : 'التربية الإسلامية') + '</span> · <button class="linkbtn" data-act="profile">Edit</button> · <button class="linkbtn" data-act="signout">Sign out</button></p>'; }
+  else $('mine').innerHTML = '<h2>Your hours today</h2><p class="note">Sign in to log hours.</p>';
+  const sc = ready ? score(me, mode) : 0;
+  $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">/ ' + mx + ' predicted score' + (cur ? ' in ' + esc(lname(cur)) : '') + '</span>' : '';
+  $('subjects').innerHTML = subjectsHTML();
 }
 
-// ---------- events ----------
-document.addEventListener('click',async ev=>{
-  const o=ev.target.closest('[data-open]');
-  if(o){const k=o.dataset.open;open.has(k)?open.delete(k):open.add(k);try{localStorage.setItem('bac-open',JSON.stringify([...open]))}catch(e){}render();const b=document.querySelector('[data-open="'+k+'"]');if(b)b.focus();return}
-  const h=ev.target.closest('[data-h]');
-  if(h&&me&&me.nick){const k=dkey(dayAgo(0));changeMe(p=>{p.hours=p.hours||{};p.hours[k]=Math.max(0,Math.min(24,(+p.hours[k]||0)+(+h.dataset.h)))});return}
-  const rv=ev.target.closest('[data-rev],[data-unrev]');
-  if(rv&&me&&me.nick){const up=!!rv.dataset.rev,id=up?rv.dataset.rev:rv.dataset.unrev;let n=0;
-    changeMe(p=>{p.done=p.done||{};n=Math.max(0,(+p.done[id]||0)+(up?1:-1));if(n)p.done[id]=n;else delete p.done[id]});
-    if(up)toast(n===1?'Lesson done. Keep running!':'Reviewed '+n+' times');const b=document.querySelector('[data-rev="'+id+'"]');if(b)b.focus();return}
-  const a=ev.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
-  if(act==='google'){const p=new GoogleAuthProvider();try{await signInWithPopup(auth,p)}catch(e){if(e&&/popup/.test(e.code||''))signInWithRedirect(auth,p);else toast('Google sign-in failed. Try guest.')}return}
-  if(act==='guest'){try{await signInAnonymously(auth)}catch(e){toast('Could not sign in')}return}
-  if(act==='signout'){await signOut(auth);return}
-  if(act==='new'||act==='code'){ui=ui===act?'':act;render();const i=$(act==='new'?'newIn':'codeIn');if(i)i.focus();return}
-  if(act==='copy'){const link=location.origin+location.pathname+'#r-'+cur;const txt='Join my Bakaloria race "'+lname(cur)+'": '+link+' (code '+cur.toUpperCase()+')';
-    try{if(navigator.share){await navigator.share({text:txt});return}await navigator.clipboard.writeText(txt);toast('Invite copied')}catch(e){toast('Code: '+cur.toUpperCase())}return}
-  if(act==='enter'&&cur){enter(cur);toast('You joined '+lname(cur));return}
-  if(act==='leave'&&cur){if(!leaveArm){leaveArm=true;render();setTimeout(()=>{leaveArm=false;render()},4000);return}
-    const c=cur;leaveArm=false;changeMe(p=>{p.lobbies=(p.lobbies||[]).filter(x=>x!==c)});cur=null;history.replaceState(null,'',location.pathname);sync();toast('You left '+lname(c))}
+// ---- events ----
+document.addEventListener('click', async ev => {
+  const o = ev.target.closest('[data-open]');
+  if (o) { const k = o.dataset.open; open.has(k) ? open.delete(k) : open.add(k); try { localStorage.setItem('bac-open2', JSON.stringify([...open])); } catch (e) {} render(); const b = document.querySelector('[data-open="' + k + '"]'); if (b) b.focus(); return; }
+  const h = ev.target.closest('[data-h]');
+  if (h && me && me.nick) { const k = dkey(dayAgo(0)); changeMe(p => { p.hours = p.hours || {}; p.hours[k] = Math.max(0, Math.min(24, (+p.hours[k] || 0) + (+h.dataset.h))); }); return; }
+  const rv = ev.target.closest('[data-rev],[data-unrev]');
+  if (rv && me && me.nick) { const up = !!rv.dataset.rev, id = up ? rv.dataset.rev : rv.dataset.unrev; let n = 0;
+    changeMe(p => { p.done = p.done || {}; n = Math.max(0, (+p.done[id] || 0) + (up ? 1 : -1)); if (n) p.done[id] = n; else delete p.done[id]; });
+    if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
+  const hd = ev.target.closest('[data-hwdel]');
+  if (hd && api) { try { await api.deleteDoc(api.doc(api.db, 'lobbies', cur, 'homework', hd.dataset.hwdel)); toast('Homework removed'); } catch (e) { toast('Could not remove'); } return; }
+  const hp = ev.target.closest('[data-helper]');
+  if (hp && isCreator() && api) { const id = hp.dataset.helper, hs = new Set(lobby().helpers || []); hs.has(id) ? hs.delete(id) : hs.add(id);
+    try { await api.updateDoc(api.doc(api.db, 'lobbies', cur), {helpers: [...hs]}); } catch (e) { toast('Could not update helpers'); } return; }
+  const a = ev.target.closest('[data-act]'); if (!a) return; const act = a.dataset.act;
+  if (act === 'google' && api) { const p = new api.GoogleAuthProvider(); try { await api.signInWithPopup(api.auth, p); } catch (e) { if (e && /popup/.test(e.code || '')) api.signInWithRedirect(api.auth, p); else toast('Google sign-in failed. Try guest.'); } return; }
+  if (act === 'guest' && api) { try { await api.signInAnonymously(api.auth); } catch (e) { toast('Could not sign in'); } return; }
+  if (act === 'signout' && api) { await api.signOut(api.auth); return; }
+  if (act === 'profile') { changeMe(p => { delete p.religion; }); return; }
+  if (['new', 'code', 'hw', 'helpers'].includes(act)) { ui = ui === act ? '' : act; render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
+  if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
+    try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
+  if (act === 'enter' && cur) { enter(cur); toast('You joined ' + lname(cur)); return; }
+  if (act === 'leave' && cur) { if (!leaveArm) { leaveArm = true; render(); setTimeout(() => { leaveArm = false; render(); }, 4000); return; }
+    const c = cur; leaveArm = false; changeMe(p => { p.lobbies = (p.lobbies || []).filter(x => x !== c); }); cur = null; history.replaceState(null, '', location.pathname); sync(); toast('You left ' + lname(c)); }
 });
-document.addEventListener('submit',async ev=>{
-  ev.preventDefault();const f=ev.target;
-  if(f.id==='joinForm'){const n=$('nickIn').value.trim().slice(0,24);if(!n)return;
-    changeMe(p=>{p.nick=n;p.joined=p.joined||new Date().toISOString();p.done=p.done||{};p.hours=p.hours||{};p.lobbies=p.lobbies||[]});
-    if(cur&&lobbyDocs[cur]&&!lobbyDocs[cur].missing)enter(cur);toast('Welcome, '+n);return}
-  if(f.id==='newForm'){const name=$('newIn').value.trim().slice(0,30);if(!name)return;let code='';for(let i=0;i<6;i++)code+=CH[Math.floor(Math.random()*CH.length)];
-    try{await setDoc(doc(db,'lobbies',code),{name,by:meId,n:Date.now()});lobbyDocs[code]={name};enter(code);toast('Race created. Code '+code.toUpperCase())}catch(e){toast('Could not create the race')}return}
-  if(f.id==='codeForm'){const c=$('codeIn').value.toLowerCase().replace(/[^a-z0-9]/g,'');if(!c)return;cur=c;ui='';watchLobby(c);location.hash='r-'+c;sync();
-    setTimeout(()=>{if(lobbyDocs[c]&&!lobbyDocs[c].missing&&!((me&&me.lobbies)||[]).includes(c)){enter(c);toast('You joined '+lname(c))}},900)}
+document.addEventListener('change', ev => {
+  const c = ev.target; if (!c.dataset || !c.dataset.hwdone || !me) return;
+  const k = cur + '_' + c.dataset.hwdone; changeMe(p => { p.hw = p.hw || {}; if (c.checked) p.hw[k] = 1; else delete p.hw[k]; });
 });
-window.addEventListener('hashchange',()=>{const c=hashCode();if(c){cur=c;ui='';sync()}});
+document.addEventListener('submit', async ev => {
+  ev.preventDefault(); const f = ev.target;
+  if (f.id === 'joinForm') { const n = $('nickIn').value.trim().slice(0, 24); const r = (f.querySelector('input[name=rel]:checked') || {}).value || 'i'; if (!n) return;
+    const first = !(me && me.nick);
+    changeMe(p => { p.nick = n; p.religion = r; p.joined = p.joined || new Date().toISOString(); p.done = p.done || {}; p.hours = p.hours || {}; p.lobbies = p.lobbies || []; });
+    if (first && cur && lobby() && !(me.lobbies || []).includes(cur)) enter(cur); toast('Welcome, ' + n); return; }
+  if (f.id === 'newForm') { const name = $('newIn').value.trim().slice(0, 30); if (!name || !api) return; const lang = (f.querySelector('input[name=lang]:checked') || {}).value === 'both' ? 'both' : 'best';
+    let code = ''; for (let i = 0; i < 6; i++) code += CH[Math.floor(Math.random() * CH.length)];
+    try { await api.setDoc(api.doc(api.db, 'lobbies', code), {name, by: meId, n: Date.now(), lang, helpers: []}); lobbyDocs[code] = {name, by: meId, lang, helpers: []}; enter(code); toast('Race created. Code ' + code.toUpperCase()); } catch (e) { toast('Could not create the race'); } return; }
+  if (f.id === 'codeForm') { const c = $('codeIn').value.toLowerCase().replace(/[^a-z0-9]/g, ''); if (!c) return; cur = c; ui = ''; watchLobby(c); location.hash = 'r-' + c; sync();
+    setTimeout(() => { if (lobbyDocs[c] && !lobbyDocs[c].missing && !((me && me.lobbies) || []).includes(c)) { enter(c); toast('You joined ' + lname(c)); } }, 900); return; }
+  if (f.id === 'hwForm' && api) { const text = $('hwText').value.trim().slice(0, 160), due = $('hwDue').value, subj = $('hwSub').value; if (!text || !due) return;
+    try { await api.addDoc(api.collection(api.db, 'lobbies', cur, 'homework'), {text, due, subj, by: meId, n: Date.now()}); $('hwText').value = ''; toast('Homework posted'); } catch (e) { toast('Could not post homework'); } }
+});
+window.addEventListener('hashchange', () => { const c = hashCode(); if (c) { cur = c; ui = ''; sync(); } });
 
-// ---------- start ----------
-render();
-if(FIREBASE_CONFIG.apiKey.startsWith('PASTE')){$('lead').textContent='Setup needed: paste your Firebase config at the top of the code.'}
-else{
-  const app=initializeApp(FIREBASE_CONFIG);auth=getAuth(app);db=getFirestore(app);
-  let meUnsub=null;
-  onAuthStateChanged(auth,u=>{
-    authReady=true;if(meUnsub){meUnsub();meUnsub=null}
-    meId=u?u.uid:null;meName=u&&u.displayName?u.displayName.split(' ')[0]:'';me=null;
-    if(u)meUnsub=onSnapshot(doc(db,'players',u.uid),s=>{if(!pending&&!writing)me=s.exists()?s.data():null;sync()},()=>toast('Could not load your profile'));
-    else{players={};watching=null;if(playersUnsub){playersUnsub();playersUnsub=null}}
+// ---- start ----
+async function start() {
+  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
+  render();
+  const [A, U, F] = await Promise.all([import(FB + 'firebase-app.js'), import(FB + 'firebase-auth.js'), import(FB + 'firebase-firestore.js')]);
+  const app = A.initializeApp(FIREBASE_CONFIG), auth = U.getAuth(app), db = F.getFirestore(app);
+  api = {auth, db, ...U, ...F};
+  let meUnsub = null;
+  U.onAuthStateChanged(auth, u => {
+    authReady = true; if (meUnsub) { meUnsub(); meUnsub = null; }
+    meId = u ? u.uid : null; meName = u && u.displayName ? u.displayName.split(' ')[0] : ''; me = null;
+    if (u) meUnsub = F.onSnapshot(F.doc(db, 'players', u.uid), s => { if (!pending && !writing) me = s.exists() ? s.data() : null; sync(); }, () => toast('Could not load your profile'));
+    else { players = {}; watching = null; if (playersUnsub) { playersUnsub(); playersUnsub = null; } if (hwUnsub) { hwUnsub(); hwUnsub = null; } }
     sync();
   });
 }
+start().catch(() => { $('lead').textContent = 'Could not connect. Check your internet and reload.'; });
 
 </script>
 </body>
