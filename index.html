@@ -1018,7 +1018,6 @@ document.addEventListener('click', async ev => {
   const mk = ev.target.closest('[data-mk]');
   if (mk && isAdmin() && api) { const n = +mk.dataset.mk; try { const b = api.writeBatch(api.db); for (let i = 0; i < n; i++) { let c = ''; for (let j = 0; j < 8; j++) c += CH[Math.floor(Math.random() * CH.length)]; b.set(api.doc(api.db, 'codes', c.toUpperCase()), {n: Date.now()}); } await b.commit(); toast(L(n + ' new code' + (n > 1 ? 's' : ''), n + ' كود جديد')); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
   const sbb = ev.target.closest('[data-sb]'); if (sbb) { playSB(sbb.dataset.sb); return; }
-  if (ev.target.closest('[data-sbsay]')) { say($('sbSay') ? $('sbSay').value.trim() : ''); return; }
   const wo = ev.target.closest('[data-warnopen]');
   if (wo && isAdmin()) { warnFor = wo.dataset.warnopen && warnFor !== wo.dataset.warnopen ? wo.dataset.warnopen : null; rainFor = null; render(); return; }
   const ws = ev.target.closest('[data-warnsound]');
@@ -1211,19 +1210,13 @@ const SB = [
   ['boing', 'Boing', 'بوينغ', () => { const t = ac().currentTime; const o = tone(600, t, 0.7, 'sine', 0.2); o.frequency.exponentialRampToValueAtTime(140, t + 0.6); for (let i = 0; i < 6; i++) o.detune.setValueAtTime(i % 2 ? 60 : -60, t + i * 0.08); }],
   ['airhorn', 'Air horn', 'زمّور', () => { const t = ac().currentTime; [0, 0.32, 0.64].forEach((d, i) => [466, 554, 698].forEach(f => tone(f, t + d, i === 2 ? 0.7 : 0.24, 'sawtooth', 0.08))); }],
   ['tick', 'Tick tock', 'تك تك', () => { const t = ac().currentTime; for (let i = 0; i < 8; i++) tone(i % 2 ? 900 : 1300, t + i * 0.38, 0.05, 'square', 0.12); }],
-  ['shayfak', '"شايفك بس عايفك"', 'شايفك بس عايفك', () => say('شايفك بس عايفك')],
-  ['rakkez', '"ركّز!"', 'ركّز!', () => say('ركّز!')],
-  ['3eib', '"عيب!"', 'عيب!', () => say('عيب عليك!')],
-  ['yalla', '"يلا ادرس"', 'يلا ادرس', () => say('يلا، قوم ادرس!')],
-  ['bravo', '"برافو عليك"', 'برافو عليك', () => say('برافو عليك!')]
 ];
 function playSB(id) { const s = SB.find(x => x[0] === id); if (!s) return; try { s[3](); } catch (e) {} }
 function soundboardHTML() {
-  return '<section class="card" style="margin-top:14px"><h2>' + L('Soundboard', 'لوحة الأصوات') + '</h2><p class="note">' + L('Tap to play. Spoken ones use your phone\'s Arabic voice, so they sound a bit robotic.', 'اضغط للتشغيل. الأصوات المحكية تستخدم صوت الهاتف العربي، فقد تبدو آلية قليلاً.') + '</p><div class="sbgrid">' +
-    SB.map(([k, en, ar]) => '<button type="button" class="sbbtn" data-sb="' + k + '" dir="auto">' + (LANG === 'ar' ? ar : en) + '</button>').join('') + '</div>' +
-    '<div class="inl" style="margin-top:12px"><input type="text" id="sbSay" maxlength="80" placeholder="' + L('Type anything to say it out loud', 'اكتب أي شيء ليُقال بصوت عالٍ') + '" dir="auto"><button type="button" class="btn ghost" data-sbsay>' + L('Say it', 'قلها') + '</button></div></section>';
+  return '<section class="card" style="margin-top:14px"><h2>' + L('Soundboard', 'لوحة الأصوات') + '</h2><p class="note">' + L('Tap to play.', 'اضغط للتشغيل.') + '</p><div class="sbgrid">' +
+    SB.map(([k, en, ar]) => '<button type="button" class="sbbtn" data-sb="' + k + '" dir="auto">' + (LANG === 'ar' ? ar : en) + '</button>').join('') + '</div>' + '</section>';
 }
-let warnFor = null, warnSound = 'shayfak';
+let warnFor = null, warnSound = 'trombone';
 function warnPanelHTML(uid, name) {
   return '<div class="panel warnpanel"><p><b>' + L('Warning for ', 'تنبيه لـ ') + '<span dir="ltr">' + esc(name) + '</span></b><br><span class="note">' + L('A red alarm screen with a siren appears the next time they open the site. They have to tap to close it.', 'شاشة إنذار حمراء مع صفارة تظهر في المرة القادمة التي يفتح فيها الموقع، ويجب أن يضغط لإغلاقها.') + '</span></p>' +
     '<div class="stackf"><label class="fl">' + L('Message', 'الرسالة') + '<input type="text" id="warnMsg" maxlength="120" value="' + L('We got a complaint about you. Sort it out!', 'وصلتنا شكوى عنك. انتبه!') + '" dir="auto"></label></div>' +
@@ -1257,7 +1250,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795722401";
+const BUILD = "1795722654";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
