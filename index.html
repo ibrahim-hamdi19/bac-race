@@ -846,7 +846,7 @@ document.addEventListener('click', async ev => {
   if (pkb && isAdmin() && api) { const uid = pkb.dataset.perk || pkb.dataset.perkset, k = pkb.dataset.k, cur0 = perksAll[uid] || {}, th = new Set(Array.isArray(cur0.themes) ? cur0.themes : []); const upd = {};
     if (pkb.dataset.perk) { th.has(k) ? th.delete(k) : th.add(k); upd.themes = [...th]; if (!th.has(k) && cur0.set === k) { upd.set = ''; } }
     else { th.add(k); upd.themes = [...th]; upd.set = k; upd.setAt = Date.now(); }
-    try { await api.setDoc(api.doc(api.db, 'perks', uid), upd, {merge: true}); toast(pkb.dataset.perkset ? L('Theme set', 'تم تطبيق الشكل') : th.has(k) ? L('Unlocked', 'تم الفتح') : L('Locked', 'تم القفل')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ')); } return; }
+    try { await api.setDoc(api.doc(api.db, 'perks', uid), upd, {merge: true}); toast(pkb.dataset.perkset ? L('Theme set', 'تم تطبيق الشكل') : th.has(k) ? L('Unlocked', 'تم الفتح') : L('Locked', 'تم القفل')); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   const cp = ev.target.closest('[data-cpy]');
   if (cp) { const c = cp.dataset.cpy, link = location.origin + location.pathname; const txt = L('Your access code for the Bakaloria race: ' + c + '\nOpen ' + link + ' and tap "Create an account".', 'كود الدخول لسباق البكالوريا: ' + c + '\nافتح ' + link + ' واضغط «أنشئ حساباً بكود».');
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast(L('Copied', 'نُسخ')); } catch (e) { toast(c); } return; }
