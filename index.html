@@ -324,6 +324,11 @@ function earned(p, from, to) {
       if (f[id] === day) { pts += VAL[k]; nw++; } else { pts += VAL[k] / 2; rv++; } } }
   return {pts: Math.round(pts), nw, rv};
 }
+// Homework done = one new lesson of that subject, on the day it was ticked. Kept per race.
+const SUBJ_BY_NAME = Object.fromEntries(SUBJECTS.map(s => [s.name, s.k]));
+function hwFor(p, c) { const o = {}, h = (p && p.hw) || {}; for (const key in h) { const v = h[key]; if (key.startsWith(c + '_') && v && typeof v === 'object' && v.d) o[key.slice(c.length + 1)] = {d: v.d, k: v.k || ''}; } return o; }
+function hwPts(p, from, to) { let pts = 0, n = 0; const h = (p && p.hw) || {}; for (const id in h) { const v = h[id]; if (v && typeof v === 'object' && v.d >= from && v.d <= to && VAL[v.k]) { pts += VAL[v.k]; n++; } } return {pts, n}; }
+function racePts(p, from, to) { const e = earned(p, from, to), h = hwPts(p, from, to); return {pts: Math.round(e.pts + h.pts), nw: e.nw, rv: e.rv, hw: h.n}; }
 const monthStart = () => { const d = dayAgo(0); d.setDate(1); return dkey(d); };
 const todayKey = () => dkey(dayAgo(0));
 // ---- tests ----
@@ -418,7 +423,7 @@ function watchRace() {
   players = {}; homework = [];
   if (!want) { render(); return; }
   const retry = () => { clearTimeout(retryT); retryT = setTimeout(() => { watching = '__retry'; watchRace(); }, 1500); };
-  playersUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'members'), s => { const nx = {}; s.forEach(x => nx[x.id] = x.data()); if ((pending || writing) && nx[meId] && me) nx[meId] = pub(me); players = nx; render(); }, retry);
+  playersUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'members'), s => { const nx = {}; s.forEach(x => nx[x.id] = x.data()); if ((pending || writing) && nx[meId] && me) nx[meId] = {...pub(me), hw: hwFor(me, cur)}; players = nx; render(); }, retry);
   hwUnsub = api.onSnapshot(api.collection(api.db, 'lobbies', cur, 'homework'), s => { const a = []; s.forEach(x => a.push({id: x.id, ...x.data()})); homework = a; render(); }, retry);
 }
 // What race-mates can see: never the list of races, never homework ticks.
@@ -426,10 +431,10 @@ const pub = p => ({nick: p.nick || '', religion: p.religion || 'i', joined: p.jo
 let dropFrom = new Set();
 function changeMe(fn) { const before = new Set((me && me.lobbies) || []); const c = JSON.parse(JSON.stringify(me || {})); fn(c);
   const after = new Set(c.lobbies || []); for (const x of before) if (!after.has(x)) dropFrom.add(x); for (const x of after) dropFrom.delete(x);
-  me = c; if (cur && after.has(cur)) players[meId] = pub(c); else if (cur) delete players[meId]; render(); if (DEMO) return; pending = c; pump(); }
+  me = c; if (cur && after.has(cur)) players[meId] = {...pub(c), hw: hwFor(c, cur)}; else if (cur) delete players[meId]; render(); if (DEMO) return; pending = c; pump(); }
 async function pump() { if (writing || !pending) return; writing = true; const d = pending; pending = null;
   try { const b = api.writeBatch(api.db); b.set(api.doc(api.db, 'users', meId), d);
-    if (d.nick) for (const c of (d.lobbies || [])) b.set(api.doc(api.db, 'lobbies', c, 'members', meId), pub(d));
+    if (d.nick) for (const c of (d.lobbies || [])) b.set(api.doc(api.db, 'lobbies', c, 'members', meId), {...pub(d), hw: hwFor(d, c)});
     const drops = [...dropFrom]; for (const c of drops) b.delete(api.doc(api.db, 'lobbies', c, 'members', meId));
     await b.commit(); drops.forEach(c => dropFrom.delete(c)); } catch (e) { toast('Could not save. Check your connection.'); } writing = false; pump(); }
 function enter(c) { changeMe(p => { p.lobbies = (p.lobbies || []).filter(x => x !== c); p.lobbies.push(c); }); cur = c; ui = ''; location.hash = 'r-' + c; sync(); }
@@ -521,14 +526,14 @@ function weekInfo(p, mode) {
   const ws = dkey(weekStart()), f = (p && p.first) || {}, done = (p && p.done) || {};
   const fresh = Object.keys(f).filter(id => f[id] >= ws && done[id] > 0 && TITLE[id]);
   const before = Object.assign({}, p, {done: Object.fromEntries(Object.entries(done).filter(([k]) => !fresh.includes(k)))});
-  const e = earned(p, ws, todayKey()); const gain = e.pts;
+  const e = racePts(p, ws, todayKey()); const gain = e.pts;
   let reviews = 0; const lg = (p && p.log) || {}; for (const k in lg) if (k >= ws) for (const id in lg[k]) reviews += +lg[k][id] || 0;
   let hours = 0; const h = (p && p.hours) || {}; for (const k in h) if (k >= ws) hours += +h[k] || 0;
   return {fresh, gain, reviews: e.rv, hours, ws};
 }
 function weekHTML(rows, mode) {
   if (!(me && me.nick)) return '<p class="note">Sign in to see your week.</p>';
-  const w = weekInfo(me, mode), f = me.first || {};
+  const w = weekInfo(cur && players[meId] ? players[meId] : me, mode), f = me.first || {};
   const byDay = {}; for (const id of w.fresh) (byDay[f[id]] = byDay[f[id]] || []).push(id);
   const subjOf = id => { for (const s of SUBJECTS) if (TASKS[s.k].includes(id)) return s.name; return ''; };
   let h = '<section class="card"><p class="note">Since ' + esc(fmtDate(w.ws)) + '</p><div class="wk"><div><b class="num">+' + w.gain + '</b><span>points</span></div><div><b class="num">' + w.fresh.length + '</b><span>new lessons</span></div><div><b class="num">' + w.reviews + '</b><span>reviews</span></div><div><b class="num">' + fmtH(w.hours) + '</b><span>hours</span></div></div></section>';
@@ -584,17 +589,17 @@ function rulesHTML() {
   const table = '<table class="rt"><thead><tr><th>' + L('Subject', 'المادة') + '</th><th>' + L('Exam marks', 'العلامة') + '</th><th>' + L('New lesson', 'درس جديد') + '</th><th>' + L('Review', 'مراجعة') + '</th></tr></thead><tbody>' +
     shown.map(s => '<tr><td dir="auto">' + esc(nm(s)) + '</td><td class="num">' + s.pts + '</td><td class="num">' + (Math.round(VAL[s.k] * 10) / 10) + '</td><td class="num">' + (Math.round(VAL[s.k] * 5) / 10) + '</td></tr>').join('') + '</tbody></table>';
   if (LANG === 'ar') return '<section class="card rules" dir="rtl">' +
-    '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>المراجعة تعطي <b>نصف</b> قيمة الدرس، ومرة واحدة لكل درس في اليوم.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
+    '<h2>السباق الشهري</h2><ul><li>كل درس تدرسه يعطيك نقاطاً. لا يوجد حد أعلى: كلما درست أكثر جمعت أكثر.</li><li>قيمة الدرس = علامة المادة في البكالوريا ÷ عدد دروسها. لذلك درس الفيزياء (400 علامة على 21 درساً) أثمن من درس الديانة (200 علامة على 44 درساً).</li><li>المراجعة تعطي <b>نصف</b> قيمة الدرس، ومرة واحدة لكل درس في اليوم.</li><li>إنهاء واجب يعطيك قيمة درس جديد من مادته، في يوم تعليمه. يمكنك تعليم الواجب حتى موعد تسليمه فقط.</li><li>يبدأ السباق من الصفر في أول يوم من كل شهر.</li></ul>' + table +
     '<h2>الاختبارات</h2><ul><li>الاختبارات يعلنها مدير الموقع فقط، وتظهر في صفحة الاختبارات.</li><li>كل اختبار من العلامات الحقيقية: الرياضيات 600، الفيزياء 400، العربي 400، العلوم 300، الكيمياء 200، الديانة 200، واللغة 300. علامة كل مادة تُقسم على دروسها الداخلة في الاختبار فقط.</li><li>تُحسب الدروس التي تدرسها من يوم إعلان الاختبار حتى يومه. الاختبارات لا تعود للصفر مع بداية الشهر.</li><li>اللغات: حسب إعداد السباق، إما تُحسب الأعلى بين الإنكليزي والفرنسي (مثل الامتحان الحقيقي)، أو تُحسب الاثنتان.</li></ul>' +
     '<h2>الساعات</h2><ul><li>الساعات ليس لها نقاط. هي لك أنت لترى كم تدرس، ولتحافظ على أيامك المتتالية.</li></ul>' +
     '<h2>الواجبات</h2><ul><li>ينشر الواجبات منشئ السباق ومن يختارهم كمساعدين فقط. كل شخص يعلّم واجباته عندما ينهيها، والواجب يختفي بعد موعد تسليمه.</li></ul>' +
     '<h2>طريقة الاستخدام</h2><ol><li>سجّل الدخول بحساب Google (يحفظ تقدمك على أي هاتف) أو كضيف (على هذا الجهاز فقط).</li><li>اختر اسمك ومادة الديانة التي تدرسها.</li><li>أنشئ سباقاً واختر طريقة حساب اللغات، أو انضم لسباق برمز. اضغط «دعوة» لترسل الرابط لأصدقائك. يمكنك أن تكون في أكثر من سباق.</li><li>في صفحة المواد: اضغط على المادة، ثم على الوحدة، ثم «درست» عندما تنهي الدرس. اضغطه مرة ثانية كلما راجعته. زر «−» يلغي ضغطة بالغلط.</li><li>سجّل ساعاتك في صفحة الساعات، وشاهد إنجازك الأسبوعي في صفحة إنجازك.</li><li>غيّر اللغة والألوان من الأزرار في أعلى الصفحة.</li></ol>' +
     '<h2>الأمانة</h2><p>السباق قائم على الثقة بين الأصدقاء. علّم الدرس فقط عندما تدرسه فعلاً. الهدف أن ننجح كلنا. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ.</p></section>';
   return '<section class="card rules">' +
-    '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>A review earns <b>half</b> a lesson\'s value, once per lesson per day.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
+    '<h2>The monthly race</h2><ul><li>Every lesson you study earns points. There is no limit: the more you study, the more you collect.</li><li>A lesson is worth its subject\'s Bakaloria marks ÷ its number of lessons. So a Physics lesson (400 marks over 21 lessons) is worth more than a Religion lesson (200 marks over 44 lessons).</li><li>A review earns <b>half</b> a lesson\'s value, once per lesson per day.</li><li>Finishing a homework earns one new lesson\'s value in its subject, on the day you tick it. You can only tick it until its due date.</li><li>The race restarts from zero on the 1st of every month.</li></ul>' + table +
     '<h2>Tests</h2><ul><li>Only the website admin announces tests. They appear on the Tests page.</li><li>Each test is out of the real marks: Math 600, Physics 400, Arabic 400, Science 300, Chemistry 200, Religion 200 and a language 300. Each subject\'s marks are divided only over its lessons included in the test.</li><li>Lessons count if you study them between the announcement and the test day. Tests don\'t reset at the start of the month.</li><li>Languages: depending on the race setting, either the higher of English and French counts (like the real exam), or both do.</li></ul>' +
     '<h2>Hours</h2><ul><li>Hours don\'t give points. They\'re for you to see how much you study and to keep your streak going.</li></ul>' +
-    '<h2>Homework</h2><ul><li>Only the race creator and the helpers they choose can post homework. Everyone ticks their own when it\'s done, and it disappears after its due date.</li></ul>' +
+    '<h2>Homework</h2><ul><li>Only the race creator and the helpers they choose can post homework. Everyone ticks their own when it\'s done and earns points for it, and it disappears after its due date.</li></ul>' +
     '<h2>How to use</h2><ol><li>Sign in with Google (keeps your progress on any phone) or as a guest (this device only).</li><li>Pick your name and your religion subject.</li><li>Create a race and choose how languages count, or join one with a code. Tap Invite to send the link to friends. You can be in several races.</li><li>On the Subjects page: tap a subject, then a unit, then Studied when you finish a lesson. Tap it again every time you review. The − button undoes a mistake.</li><li>Log your hours on the Hours page and see your week on the إنجازك page.</li><li>Change the language and colours with the buttons at the top.</li></ol>' +
     '<h2>Honesty</h2><p>The race runs on trust between friends. Only tick a lesson when you really studied it. The goal is for all of us to pass. وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ</p></section>';
 }
@@ -610,7 +615,7 @@ function render() {
   const my = (me && me.lobbies) || [];
   if (!(ui === 'new' && $('newForm'))) $('lobby').innerHTML = ready ? lobbyHTML(my) : '';
   const mode = (lobby() && lobby().lang) || 'best', ms = monthStart(), tk = todayKey();
-  const rows = Object.keys(players).map(id => ({id, p: players[id], sc: earned(players[id], ms, tk).pts}));
+  const rows = Object.keys(players).map(id => ({id, p: players[id], sc: racePts(players[id], ms, tk).pts}));
   const mx = Math.max(1, ...rows.map(r => r.sc));
   const by = rows.slice().sort((a, b) => b.sc - a.sc);
   const tr = $('track');
@@ -629,7 +634,7 @@ function render() {
     $('mine').innerHTML = '<h2>Your hours today</h2><div class="logger"><div class="big num">' + fmtH(t) + '<small>hours</small></div><div class="step"><button class="btn ghost sq" data-h="-0.5" aria-label="Remove half an hour">−</button><button class="btn sq" data-h="0.5" aria-label="Add half an hour">+</button><button class="btn ghost" data-h="1" dir="ltr">+1h</button></div></div><div class="week" aria-label="Your last 7 days">' + days.map(d => { const v = +h[dkey(d)] || 0; return '<div><span>' + fmtH(v) + '</span><i style="height:' + (v / wm * 56) + 'px"></i><span>' + dayShort(d) + '</span></div>'; }).join('') + '</div>' +
       '<p class="note" style="margin-top:14px">' + esc(me.nick) + ' · <span lang="ar">' + (me.religion === 'c' ? 'التربية المسيحية' : 'التربية الإسلامية') + '</span> · <button class="linkbtn" data-act="profile">Edit</button> · <button class="linkbtn" data-act="signout">Sign out</button></p>'; }
   else $('mine').innerHTML = '<h2>Your hours today</h2><p class="note">Sign in to log hours.</p>';
-  const sc = ready ? earned(me, ms, tk).pts : 0;
+  const sc = ready ? racePts(cur && players[meId] ? players[meId] : me, ms, tk).pts : 0;
   $('myScore').innerHTML = ready ? '<b class="num">' + sc + '</b><span class="note">points this month</span>' : '';
   $('subjects').innerHTML = subjectsHTML();
   $('weekBox').innerHTML = weekHTML(rows, mode);
@@ -686,7 +691,9 @@ document.addEventListener('change', ev => {
   const c = ev.target;
   if (c.dataset && c.dataset.tsubj) { c.closest('.tsub').querySelectorAll('input[type=checkbox]').forEach(x => { if (x !== c) x.checked = c.checked; }); return; }
   if (c.dataset && c.dataset.tunit) { c.closest('.tunit').querySelectorAll('.tl').forEach(x => { x.checked = c.checked; }); return; } if (!c.dataset || !c.dataset.hwdone || !me) return;
-  const k = cur + '_' + c.dataset.hwdone; changeMe(p => { p.hw = p.hw || {}; if (c.checked) p.hw[k] = 1; else delete p.hw[k]; });
+  const w = homework.find(x => x.id === c.dataset.hwdone); const k = cur + '_' + c.dataset.hwdone; const sk = w ? (SUBJ_BY_NAME[w.subj] || '') : '';
+  changeMe(p => { p.hw = p.hw || {}; if (c.checked) p.hw[k] = {d: todayKey(), k: sk}; else delete p.hw[k]; });
+  if (c.checked && VAL[sk]) toast(L('Homework done: +' + Math.round(VAL[sk]) + ' points', 'أنهيت الواجب: +' + Math.round(VAL[sk]) + ' نقطة'));
 });
 document.addEventListener('submit', async ev => {
   ev.preventDefault(); const f = ev.target;
