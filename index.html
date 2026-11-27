@@ -498,6 +498,25 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
 .person.open{background:var(--panel2);border-radius:14px;padding:4px 10px 12px;margin:4px -10px}
 .rainmute{pointer-events:auto;display:block;margin:12px auto 0;font:inherit;font-size:14px;font-weight:600;background:transparent;color:var(--mute);border:1.5px solid var(--line);border-radius:12px;padding:8px 14px;min-height:40px;cursor:pointer}
 .rainmsg:has(.rainmute){pointer-events:auto}
+
+/* ===== calmer layout ===== */
+.ayah{font-size:clamp(28px,6.4vw,42px);line-height:1.45}
+.top .sub{display:none}
+body:not([data-pg=race]) .top{display:none}
+body:not([data-pg=race]) #markNote{display:none}
+.topbtns{margin-bottom:4px}
+.pgt{margin-top:8px}
+#pg-race>*+*{margin-top:14px}
+#pg-race .lead{margin-top:10px;font-size:15px}
+.rinfo{justify-content:space-between;flex-wrap:nowrap}
+.rinfo>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rmore{min-width:48px;font-size:22px;line-height:1;padding:0 12px}
+.rmenu{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.rmenu .btn{flex:1 1 40%}
+.card{padding:16px 18px}
+.marknote{padding:14px 16px}
+body:not([data-pg=race]) #join:not(:has(#joinForm,#staffJoin)){display:none}
+body:not([data-pg=race]) .wrap{padding-top:calc(72px + env(safe-area-inset-top))}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",jasmine:"#F7F6EF",sea:"#0B3D5C",palmyra:"#F6E3C7",stadium:"#0B1F14",notebook:"#FBF8F1",chalk:"#24382C",exam:"#FFFFFF",latenight:"#2A1E16",space:"#0E0B2A",arcade:"#1A1A2E",winter:"#EAF3FB",hamster:"#FFE6EF",cats:"#FFF1E6",football:"#1E6B34",ramadan:"#1B1440"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -513,20 +532,18 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   <p class="lead" id="lead">Loading…</p>
   <div id="bac"></div>
   <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
-  <p class="note">Each runner's spot is their points in this round. Every lesson counts by its subject's exam marks.</p>
   <div id="surpBox"></div>
+  <div id="hwBox"></div>
   <div id="chBox"></div>
   <div id="teamBox"></div>
   <div id="pastBox"></div>
-  <div id="hwBox"></div>
   </div>
   <div id="pg-week" hidden><h2 class="pgt" data-en="Your week">إنجازك هذا الأسبوع</h2><div id="weekBox"></div></div>
   <div id="pg-hours" hidden><h2 class="pgt" data-en="Study hours">ساعات الدراسة</h2>
-    <p class="infobox">Hours don't give points in the race. They're only for you, to see how much you're studying. Points come from the lessons you finish.</p>
     <section class="card" id="mine"></section>
     <section class="card" style="margin-top:14px"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
   </div>
-  <div id="pg-subj" hidden><h2 class="pgt" data-en="Subjects">المواد</h2><div class="score" id="myScore"></div><p class="note">Tap a subject, then a unit, to see its lessons. Tap a button when you finish it, and again every time you review it.</p>
+  <div id="pg-subj" hidden><h2 class="pgt" data-en="Subjects">المواد</h2><div class="score" id="myScore"></div>
   <div class="subjects" id="subjects"></div></div>
   <div id="pg-tests" hidden><h2 class="pgt" data-en="Tests">الاختبارات</h2><div id="testsBox"></div></div>
   <div id="pg-profile" hidden><h2 class="pgt" data-en="Profile">ملفي</h2><div id="profileBox"></div></div>
@@ -790,12 +807,13 @@ function cpanelHTML(LB) { const m = resetMode(LB);
     RESETS.map(([k, en, ar]) => '<button type="button" class="tk' + (m === k ? ' on' : '') + '" data-reset="' + k + '" aria-pressed="' + (m === k) + '">' + (LANG === 'ar' ? ar : en) + '</button>').join('') + '</div>' +
     (m === 'manual' ? '<p class="note" style="margin-top:8px">' + (roundNow(LB) === ALL_FROM ? L('No reset yet: points count from the start.', 'ما صار تصفير لسا: النقاط محسوبة من البداية.') : L('Current round started ', 'الجولة الحالية بلشت ') + esc(fmtDate(roundNow(LB)))) + '</p><button type="button" class="btn' + (resetArm ? ' warnbtn' : ' ghost') + '" data-act="resetnow">' + (resetArm ? L('Tap again to start a new round', 'اضغط مرة تانية لتبلش جولة جديدة') : L('Start a new round now', 'بلّش جولة جديدة هلق')) + '</button>' : '') +
     '<h3>' + L('English and French', 'الإنكليزي والفرنسي') + '</h3><div class="chips"><button type="button" class="tk' + (LB.lang !== 'both' ? ' on' : '') + '" data-rlang="best">' + L('Only the higher one · /2400', 'الأعلى بس · /2400') + '</button><button type="button" class="tk' + (LB.lang === 'both' ? ' on' : '') + '" data-rlang="both">' + L('Both count · /2700', 'التنتين · /2700') + '</button></div>' +
-    '<h3>' + L('Teams and helpers', 'الفرق والمساعدين') + '</h3><div class="inl"><button type="button" class="btn ghost" data-act="teams">' + L('Edit teams', 'عدّل الفرق') + '</button><button type="button" class="btn ghost" data-act="helpers">' + L('Challenge helpers', 'مساعدو التحديات') + '</button></div>' +
+    '<h3>' + L('Teams, challenges and helpers', 'الفرق والتحديات والمساعدين') + '</h3><div class="inl"><button type="button" class="btn ghost" data-act="ch">' + L('New challenge', 'تحدٍّ جديد') + '</button><button type="button" class="btn ghost" data-act="teams">' + L('Edit teams', 'عدّل الفرق') + '</button><button type="button" class="btn ghost" data-act="helpers">' + L('Challenge helpers', 'مساعدو التحديات') + '</button></div>' +
     '<p style="margin-top:14px"><button type="button" class="btn ghost" data-act="cpanel">' + L('Close', 'إغلاق') + '</button></p></div>';
 }
 function lobbyHTML(my) {
   let h = '<div class="chips">' + my.map(c => '<a class="chip' + (c === cur ? ' on' : '') + '" href="#r-' + c + '">' + esc(lname(c)) + '</a>').join('') +
-    '<button type="button" class="chip add" data-act="new">+ New race</button><button type="button" class="chip add" data-act="code">Join with code</button></div>';
+    '<button type="button" class="chip add" data-act="plus" aria-expanded="' + (ui === 'plus' || ui === 'new' || ui === 'code') + '" aria-label="' + LL('New race or join one', 'سباق جديد أو انضم لسباق') + '">' + (my.length ? '+' : LL('+ New race or join', '+ سباق جديد أو انضم')) + '</button></div>';
+  if (ui === 'plus') h += '<div class="inl"><button type="button" class="btn" data-act="new">' + LL('New race', 'سباق جديد') + '</button><button type="button" class="btn ghost" data-act="code">' + LL('Join with code', 'انضم بكود') + '</button></div>';
   if (ui === 'new') h += '<form id="newForm" class="panel"><p><b>New race</b></p><div class="inl" style="margin-bottom:12px"><input type="text" id="newIn" maxlength="30" required placeholder="Race name, like School friends" aria-label="Race name" autocomplete="off"></div>' +
     '<p>How should English and French count?</p>' +
     '<label class="opt"><input type="radio" name="lang" value="best" checked><span><b>Only the higher one</b> · out of 2,400<small>Like the real exam</small></span></label>' +
@@ -805,9 +823,11 @@ function lobbyHTML(my) {
   if (cur) {
     const L = lobbyDocs[cur], inIt = my.includes(cur);
     if (L && L.missing) h += '<p class="note">No race found with code ' + esc(cur.toUpperCase()) + '.</p>';
-    else if (L) h += '<div class="info"><span>' + (inIt ? '' : 'Viewing ') + '<b>' + esc(lname(cur)) + '</b> · code <b class="num code">' + esc(cur.toUpperCase()) + '</b></span><span class="tag">' + (L.lang === 'both' ? 'Both languages · /2700' : 'Best language · /2400') + '</span>' +
-      '<button type="button" class="btn ghost" data-act="copy">Invite</button>' + (inIt && L.by === meId ? '<button type="button" class="btn' + (ui === 'cpanel' ? '' : ' ghost') + '" data-act="cpanel" aria-expanded="' + (ui === 'cpanel') + '">' + LL('Race creator panel', 'لوحة منشئ السباق') + '</button>' : '') + (!inIt ? '<button type="button" class="btn" data-act="enter">Join this race</button>' : '<button type="button" class="btn ghost" data-act="leave">' + (leaveArm ? 'Tap again to leave' : 'Leave') + '</button>') + '</div>' +
-      (ui === 'cpanel' && inIt && L.by === meId ? cpanelHTML(L) : '');
+    else if (L) { const canSurp = inIt && Object.keys(players).some(id => id !== meId) && !(perks && perks.nosurp), menuOpen = ui === 'rmenu';
+      h += '<div class="info rinfo"><span>' + (inIt ? '' : 'Viewing ') + '<b>' + esc(lname(cur)) + '</b> · <b class="num code">' + esc(cur.toUpperCase()) + '</b></span>' +
+      (!inIt ? '<button type="button" class="btn" data-act="enter">Join this race</button>' : '<button type="button" class="btn ghost rmore" data-act="rmenu" aria-expanded="' + menuOpen + '" aria-label="' + LL('Race options', 'خيارات السباق') + '">' + (menuOpen ? '✕' : '⋯') + '</button>') + '</div>' +
+      (menuOpen ? '<div class="rmenu"><button type="button" class="btn ghost" data-act="copy">Invite</button>' + (canSurp ? '<button type="button" class="btn ghost" data-act="surp">' + LL('Send a surprise', 'أرسل مفاجأة') + '</button>' : '') + (L.by === meId ? '<button type="button" class="btn ghost" data-act="cpanel">' + LL('Race creator panel', 'لوحة منشئ السباق') + '</button>' : '') + '<button type="button" class="btn ghost" data-act="leave">' + (leaveArm ? 'Tap again to leave' : 'Leave') + '</button></div>' : '') +
+      (ui === 'cpanel' && inIt && L.by === meId ? cpanelHTML(L) : ''); }
   } else h += '<p class="note">Create a race and send the invite to your friends, or join one with a code.</p>';
   return h;
 }
@@ -970,7 +990,7 @@ function quizFormHTML() {
 }
 function testsHTML(rows, mode) {
   let h = '';
-  if (isAdmin()) h += ui === 'test' ? testFormHTML() : ui === 'quiz' ? quizFormHTML() : '<p class="inl"><button class="btn" data-act="test">' + L('+ Announce a مذاكرة or امتحان', '+ أعلن مذاكرة أو امتحاناً') + '</button><button class="btn ghost" data-act="quiz">' + L('+ Add a تقييم', '+ أضف تقييماً') + '</button></p><p class="note">' + L('مذاكرة and امتحان are on a schedule: announce them early so everyone can prepare. A تقييم comes without warning: add it after it happens, and everyone enters their mark.', 'المذاكرات والامتحانات لها موعد: أعلنها مبكراً ليستعد الجميع. التقييم يأتي فجأة: أضفه بعد حدوثه، ويدخل كل شخص علامته.') + '</p>';
+  if (isAdmin()) h += ui === 'test' ? testFormHTML() : ui === 'quiz' ? quizFormHTML() : '<p class="inl"><button class="btn" data-act="test">' + L('+ Announce a مذاكرة or امتحان', '+ أعلن مذاكرة أو امتحاناً') + '</button><button class="btn ghost" data-act="quiz">' + L('+ Add a تقييم', '+ أضف تقييماً') + '</button></p>';
   const tk = todayKey(), valid = tests.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
   const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1);
   if (!valid.length) return h + '<p class="note">' + L('No tests announced yet. When a test is announced, it shows here with its own leaderboard, out of the real exam marks.', 'لا اختبارات معلنة بعد. عندما يُعلن اختبار يظهر هنا مع ترتيبه الخاص، من العلامات الحقيقية.') + '</p>';
@@ -997,10 +1017,9 @@ function challengesHTML(rows, mode) {
   const LB = lobby(); if (!LB || !(me && (me.lobbies || []).includes(cur))) return '';
   const tk = todayKey(), valid = challenges.filter(t => t && typeof t.name === 'string' && Array.isArray(t.items) && t.date && t.start);
   const active = valid.filter(t => t.date >= tk).sort((a, b) => a.date < b.date ? -1 : 1), past = valid.filter(t => t.date < tk).sort((a, b) => a.date > b.date ? -1 : 1).slice(0, 3);
-  if (!valid.length && !canChallenge()) return '';
+  if (!valid.length && !(canChallenge() && ui === 'ch')) return '';
   let h = '<section class="chs"><div class="head"><h2 style="margin:0">' + L('Challenges', 'التحديات') + '</h2>' + (canChallenge() ? '<button class="btn ghost" data-act="ch">' + (ui === 'ch' ? L('Close', 'إغلاق') : L('+ New challenge', '+ تحدٍّ جديد')) + '</button>' : '') + '</div>';
   if (ui === 'ch' && canChallenge()) h += testFormHTML({id: 'chForm', p: 'c', act: 'ch', title: L('New challenge for this race', 'تحدٍّ جديد لهذا السباق'), btn: L('Start challenge', 'ابدأ التحدي'), ph: L('Name, like Chemistry week', 'الاسم، مثلاً: أسبوع الكيمياء')});
-  if (!valid.length) h += '<p class="note">' + L('Set your race a goal: pick some lessons and a deadline, like "finish Chemistry unit 4 by Friday", and see who covers the most.', 'ضع هدفاً لسباقك: اختر دروساً وموعداً، مثل «أنهوا الوحدة الرابعة في الكيمياء قبل الجمعة»، وشوف مين بيغطي أكثر.') + '</p>';
   h += active.map(t => testCard(t, false, rows, mode, 'ch')).join('');
   h += helpersHTML();
   if (past.length) h += '<details style="margin-top:10px"><summary class="note" style="min-height:44px;display:flex;align-items:center;cursor:pointer">' + L('Finished challenges', 'تحديات منتهية') + '</summary>' + past.map(t => testCard(t, true, rows, mode, 'ch')).join('') + '</details>';
@@ -1186,7 +1205,7 @@ const TEAMCOL = ['#F3D37A', '#7FD3F7', '#B9F27C', '#FFA3C7', '#C9B6FF', '#FFB36B
 function surpHTML() {
   const LB = lobby(); if (!LB || !(me && me.nick && (me.lobbies || []).includes(cur))) return '';
   const others = Object.keys(players).filter(id => id !== meId); if (!others.length || (perks && perks.nosurp)) return '';
-  return ui === 'surp' ? rainPanelHTML('', '', true) : '<p class="inl" style="margin-top:10px"><button type="button" class="btn ghost" data-act="surp">' + L('Send a surprise to someone', 'أرسل مفاجأة لأحد') + '</button></p>';
+  return ui === 'surp' ? rainPanelHTML('', '', true) : '';
 }
 function teamsHTML(rows) {
   const LB = lobby(); if (!LB || !(me && (me.lobbies || []).includes(cur))) return '';
@@ -1195,8 +1214,8 @@ function teamsHTML(rows) {
   let h = '<section class="card teams"><div class="head"><h2 style="margin:0">' + L('Team race', 'سباق الفرق') + '</h2>' + (creator && ui === 'teams' ? '<button class="btn ghost" data-act="teams">' + L('Done', 'تم') + '</button>' : '') + '</div>';
   const ts = teams.map((t, i) => { const mem = rows.filter(r => of[r.id] === t.id); const avg = mem.length ? Math.round(mem.reduce((a, r) => a + r.sc, 0) / mem.length) : 0; return {...t, i, mem, avg}; }).sort((a, b) => b.avg - a.avg);
   const mx = Math.max(1, ...ts.map(t => t.avg));
-  if (!teams.length) h += '<p class="note">' + L('Split your race into teams. Each team\'s score is the average of its members\' points in this round, so team sizes don\'t matter.', 'قسّم سباقك إلى فرق. نقاط كل فريق هي متوسط نقاط أعضائه بهالجولة، فلا يهم حجم الفريق.') + '</p>';
-  else h += '<p class="note">' + L('Team score = average points of its members ', 'نقاط الفريق = متوسط نقاط أعضائه ') + roundLabel(lobby()) + '.' + '</p><div class="track tt">' + ts.map((t, k) => '<div class="lane"><div class="who"><span dir="auto">' + esc(t.name) + '</span><small>' + ord(k) + ' · ' + L(t.mem.length + ' member' + (t.mem.length === 1 ? '' : 's'), t.mem.length + ' أعضاء') + '</small></div><div class="run"><span class="runner" style="left:calc(17px + (100% - 44px) * ' + (t.avg / mx) + ');background:' + TEAMCOL[t.i % TEAMCOL.length] + '" aria-hidden="true">' + esc(t.name.trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + t.avg + '</b><small>' + L('avg', 'متوسط') + '</small></div></div>').join('') + '</div>' +
+  if (!teams.length) h += '<p class="note">' + L('Add a team name, then put each member in a team.', 'ضيف اسم فريق، وبعدين حط كل عضو بفريق.') + '</p>';
+  else h += '<div class="track tt">' + ts.map((t, k) => '<div class="lane"><div class="who"><span dir="auto">' + esc(t.name) + '</span><small>' + ord(k) + ' · ' + L(t.mem.length + ' member' + (t.mem.length === 1 ? '' : 's'), t.mem.length + ' أعضاء') + '</small></div><div class="run"><span class="runner" style="left:calc(17px + (100% - 44px) * ' + (t.avg / mx) + ');background:' + TEAMCOL[t.i % TEAMCOL.length] + '" aria-hidden="true">' + esc(t.name.trim().charAt(0).toUpperCase() || '?') + '</span></div><div class="pct num"><b>' + t.avg + '</b><small>' + L('avg', 'متوسط') + '</small></div></div>').join('') + '</div>' +
     '<div class="tmem">' + ts.map(t => '<p class="note"><b style="color:' + TEAMCOL[t.i % TEAMCOL.length] + '" dir="auto">' + esc(t.name) + ':</b> ' + (t.mem.length ? t.mem.map(r => esc(nick(r.p))).join('، ') : L('nobody yet', 'لا أحد بعد')) + '</p>').join('') + '</div>';
   if (creator && ui === 'teams') {
     h += '<div class="panel"><form id="teamForm" class="inl" style="margin-bottom:12px"><input type="text" id="teamName" maxlength="20" required placeholder="' + L('New team name', 'اسم فريق جديد') + '" aria-label="' + L('New team name', 'اسم فريق جديد') + '"' + (teams.length >= 6 ? ' disabled' : '') + '><button class="btn"' + (teams.length >= 6 ? ' disabled' : '') + '>' + L('Add team', 'أضف فريقاً') + '</button></form>' +
@@ -1288,6 +1307,7 @@ function render() {
   translateDOM(document.body);
   { const cr = $('credit'); if (cr) { cr.textContent = L('by Ibrahim Hamdi', 'من صنع إبراهيم حمدي'); cr.setAttribute('dir', LANG === 'ar' ? 'rtl' : 'ltr'); } }
   if (staffMode()) { if (page !== 'profile' && page !== 'rules') page = 'staff'; } else if (page === 'staff') page = 'race';
+  document.body.dataset.pg = page;
   document.querySelector('.tabs').hidden = staffMode();
   { const sb = $('staffBox'), typing = sb.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName); if (!typing) sb.innerHTML = staffMode() && me && me.nick ? staffHTML() : ''; }
   for (const pgId of ['race', 'week', 'hours', 'subj', 'tests', 'rules', 'admin', 'profile', 'staff']) { $('pg-' + pgId).hidden = page !== pgId; const b = document.querySelector('.tabs [data-page="' + pgId + '"]'); if (b) b.setAttribute('aria-current', page === pgId ? 'page' : 'false'); }
@@ -1412,7 +1432,7 @@ document.addEventListener('click', async ev => {
   if (act === 'soundtest') { const was = SOUND; SOUND = true; playSound('lesson'); setTimeout(() => playSound('hw'), 500); SOUND = was; return; }
   if (act === 'reload') { location.reload(); return; }
   if (act === 'out2') { if (!outArm2) { outArm2 = true; render(); setTimeout(() => { outArm2 = false; render(); }, 4000); return; } outArm2 = false; page = 'race'; if (api) await api.signOut(api.auth); return; }
-  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch', 'quiz', 'surp', 'cpanel'].includes(act)) { ui = ui === act ? '' : act; if (act === 'surp') { rainPick = new Set(); $('surpBox').innerHTML = ''; } if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if (act === 'teams' || act === 'helpers') setTimeout(() => { const el = $(act === 'teams' ? 'teamBox' : 'chBox'); if (el) el.scrollIntoView({block: 'start', behavior: 'smooth'}); }, 50); if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
+  if (['new', 'code', 'hw', 'helpers', 'test', 'teams', 'ch', 'quiz', 'surp', 'cpanel', 'plus', 'rmenu'].includes(act)) { ui = ui === act ? '' : act; if (act === 'surp') { rainPick = new Set(); $('surpBox').innerHTML = ''; } if (act === 'ch') $('chBox').innerHTML = ''; if ($('newForm') && act !== 'new') $('lobby').innerHTML = ''; if ((act === 'teams' || act === 'helpers' || act === 'ch') && ui === act) setTimeout(() => { const el = $(act === 'teams' ? 'teamBox' : 'chBox'); if (el) el.scrollIntoView({block: 'start', behavior: 'smooth'}); }, 50); if (ui !== act) { const bx = {new: 'lobby', hw: 'hwBox', test: 'testsBox'}[act]; if (bx) $(bx).innerHTML = ''; } render(); const i = $({new: 'newIn', code: 'codeIn', hw: 'hwText'}[act] || 'x'); if (i) i.focus(); return; }
   if (act === 'copy') { const link = location.origin + location.pathname + '#r-' + cur; const txt = LANG === 'ar' ? 'انضم لسباق البكالوريا "' + lname(cur) + '": ' + link + ' (الرمز ' + cur.toUpperCase() + ')' : 'Join my Bakaloria race "' + lname(cur) + '": ' + link + ' (code ' + cur.toUpperCase() + ')';
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast('Invite copied'); } catch (e) { toast('Code: ' + cur.toUpperCase()); } return; }
   if (act === 'enter' && cur) { enter(cur); toast('You joined ' + lname(cur)); return; }
@@ -1624,7 +1644,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795763232";
+const BUILD = "1795763671";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
