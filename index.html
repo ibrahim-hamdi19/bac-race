@@ -525,6 +525,9 @@ body:not([data-pg=race]) .wrap{padding-top:calc(72px + env(safe-area-inset-top))
 .spsel{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0;padding:10px 12px;border:1.5px solid var(--gold);border-radius:12px}
 .ptog .pt{display:flex;flex-direction:column;gap:1px;flex:1}
 .offf .inl input{flex:1 1 9em}
+.rvhint{font-size:12px;font-weight:600;opacity:.85;margin-inline-start:4px;padding:1px 6px;border-radius:8px;background:color-mix(in srgb,currentColor 14%,transparent)}
+.revtip{margin:4px 0 12px;padding:10px 12px;border-radius:12px;background:var(--panel2);border:1px dashed var(--gold);font-size:14px;color:var(--ink)}
+.revtip b{color:var(--gold2)}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",jasmine:"#F7F6EF",sea:"#0B3D5C",palmyra:"#F6E3C7",stadium:"#0B1F14",notebook:"#FBF8F1",chalk:"#24382C",exam:"#FFFFFF",latenight:"#2A1E16",space:"#0E0B2A",arcade:"#1A1A2E",winter:"#EAF3FB",hamster:"#FFE6EF",cats:"#FFF1E6",football:"#1E6B34",ramadan:"#1B1440"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -551,7 +554,7 @@ body:not([data-pg=race]) .wrap{padding-top:calc(72px + env(safe-area-inset-top))
     <section class="card" id="mine"></section>
     <section class="card" style="margin-top:14px"><h2>Study hours this week</h2><div class="rows" id="hours"></div></section>
   </div>
-  <div id="pg-subj" hidden><h2 class="pgt" data-en="Subjects">المواد</h2><div class="score" id="myScore"></div>
+  <div id="pg-subj" hidden><h2 class="pgt" data-en="Subjects">المواد</h2><div class="score" id="myScore"></div><p class="revtip"><b>✓</b> <span data-en="Studied it? Tap the lesson. Reviewed it again? Tap ✓ again, and it counts every time.">درست الدرس؟ اضغط عليه. راجعته؟ اضغط ✓ مرة تانية، وكل مرة بتنحسب.</span></p>
   <div class="subjects" id="subjects"></div></div>
   <div id="pg-tests" hidden><h2 class="pgt" data-en="Tests">الاختبارات</h2><div id="testsBox"></div></div>
   <div id="pg-profile" hidden><h2 class="pgt" data-en="Profile">ملفي</h2><div id="profileBox"></div></div>
@@ -868,7 +871,7 @@ function itemsHTML(items, d, can) {
     return '<li><span class="t" dir="auto"><span>' + esc(it.t) + '</span>' + (it.sub || it.nick ? '<small>' + esc(it.nick ? 'بالمدرسة: ' + it.nick : it.sub) + '</small>' : '') + '</span><span class="tks">' +
       tasks.map(t => { const c = +d[t.id] || 0;
         return (c > 0 && can ? '<button class="x" data-unrev="' + t.id + '" aria-label="Undo one">−</button>' : '') +
-          '<button class="tk' + (c > 0 ? ' on' : '') + '" data-rev="' + t.id + '"' + (can ? '' : ' disabled') + '>' + (t.solo ? (c > 0 ? '✓' : 'Studied') : esc(t.t) + (c > 0 ? ' ✓' : '')) + (c > 1 ? ' ×' + c : '') + '</button>'; }).join('') + '</span></li>';
+          '<button class="tk' + (c > 0 ? ' on' : '') + '" data-rev="' + t.id + '"' + (can ? '' : ' disabled') + ' aria-label="' + (c > 0 ? L('Tap when you review it', 'اضغط لما تراجعه') : L('Tap when you study it', 'اضغط لما تدرسه')) + '">' + (t.solo ? (c > 0 ? '✓' + (c > 1 ? '×' + c : '') + ' <span class="rvhint">↻ ' + L('+ review', '+ مراجعة') + '</span>' : 'Studied') : esc(t.t) + (c > 0 ? ' ✓' + (c > 1 ? '×' + c : '') + ' <span class="rvhint">↻ +</span>' : '')) + '</button>'; }).join('') + '</span></li>';
   }).join('') + '</ul>';
 }
 const taskIds = items => items.flatMap(it => it.tasks ? it.tasks.map(t => t.id) : [it.id]);
@@ -1381,7 +1384,7 @@ document.addEventListener('click', async ev => {
       if (up && n === 1 && !p.first[id]) p.first[id] = today;
       const L = p.log[today] = p.log[today] || {}; L[id] = Math.max(0, (+L[id] || 0) + (up ? 1 : -1)); if (!L[id]) delete L[id]; if (!Object.keys(L).length) delete p.log[today];
       });
-    if (up) toast(n === 1 ? 'Done: ' + TITLE[id] : 'Reviewed ' + n + ' times'); playSound(!up ? 'undo' : n === 1 ? 'lesson' : 'review'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
+    if (up) toast(n === 1 ? L('Done! Tap it again every time you review it', 'تمام! اضغطه مرة تانية كل ما تراجعه') : L('Review counted · ' + (n - 1) + (n - 1 === 1 ? ' review' : ' reviews') + ' so far', 'انحسبت المراجعة · ' + (n - 1) + ' مراجعة لهلق')); playSound(!up ? 'undo' : n === 1 ? 'lesson' : 'review'); const b = document.querySelector('[data-rev="' + id + '"]'); if (b) b.focus(); return; }
   const to = ev.target.closest('[data-topen]');
   if (to) { const k = to.closest('.trow').nextElementSibling; k.hidden = !k.hidden; to.classList.toggle('open', !k.hidden); return; }
   const mk = ev.target.closest('[data-mk]');
@@ -1698,7 +1701,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795765075";
+const BUILD = "1795765889";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
