@@ -548,6 +548,12 @@ body:not([data-pg=race]) .wrap{padding-top:calc(72px + env(safe-area-inset-top))
 .qed{display:flex;flex-direction:column;gap:6px}
 .qedl{margin:6px 0;padding-inline-start:20px}.qedl li{margin:4px 0}
 .qadd{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.taql{list-style:none;padding:0;margin:0}
+.taql li+li{border-top:1px solid var(--line)}
+.taql button{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:46px;padding:6px 2px;cursor:pointer}
+.taql button:focus-visible{outline:2px solid var(--gold)}
+.taql small{color:var(--mute);font-weight:500;font-size:13px}
+.taqd{color:var(--mute);font-size:14px;white-space:nowrap}.taqd b{color:var(--gold2)}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",jasmine:"#F7F6EF",sea:"#0B3D5C",palmyra:"#F6E3C7",stadium:"#0B1F14",notebook:"#FBF8F1",chalk:"#24382C",exam:"#FFFFFF",latenight:"#2A1E16",space:"#0E0B2A",arcade:"#1A1A2E",winter:"#EAF3FB",hamster:"#FFE6EF",cats:"#FFF1E6",football:"#1E6B34",ramadan:"#1B1440"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -1206,6 +1212,12 @@ function adminHTML() {
 const normA = x => String(x || '').trim().toLowerCase().replace(/[\u064B-\u0652\u0640]/g, '').replace(/[إأآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/\s+/g, ' ');
 function qRight(q, a) { if (a === undefined || a === null || a === '') return false; if (q.type === 'text') return (Array.isArray(q.answer) ? q.answer : [q.answer]).some(x => normA(x) === normA(a)); return String(q.answer) === String(a); }
 function quizVisible(z) { const tk = todayKey(); if (!z || !Array.isArray(z.questions) || !z.questions.length) return false; if (z.from && z.from > tk) return isAdmin(); if (z.to && z.to < tk) return false; const sc = Array.isArray(z.secs) ? z.secs : []; return !sc.length || isAdmin() || (me && sc.includes(me.sec)); }
+// Race page: a short list of تقييمات (name and date); tap to open the Tests page.
+function taqHTML() { const tk = todayKey(), cut = addDays(tk, -30), mk = (me && me.marks) || {};
+  const list = tests.filter(t => t && t.type === 'quiz' && typeof t.name === 'string' && t.date && t.date >= cut).sort((a, b) => a.date < b.date ? 1 : -1).slice(0, 5);
+  if (!list.length) return '';
+  return '<section class="card taqc"><h2 style="margin:0 0 6px">' + L('Latest تقييمات', 'آخر التقييمات') + '</h2><ul class="taql">' + list.map(t => { const m = mk[t.id], out = outOfFor(t);
+    return '<li><button type="button" data-page="tests"><span dir="auto"><b>' + esc(t.name) + '</b>' + (t.subj ? ' <small>' + esc(t.subj) + '</small>' : '') + '</span><span class="taqd">' + esc(fmtDate(t.date)) + (m ? ' · <b>' + esc(String(m.m)) + (out ? '/' + out : '') + '</b>' : '') + '</span></button></li>'; }).join('') + '</ul></section>'; }
 function keepQDraft() { if (!qDraft) return; if ($('qTitle')) qDraft.title = $('qTitle').value.trim().slice(0, 60); if ($('qSubj')) qDraft.subj = $('qSubj').value; if ($('qTo')) qDraft.to = $('qTo').value; }
 function quizHTML() {
   const list = quizzes.filter(quizVisible).sort((a, b) => (b.n || 0) - (a.n || 0)), done = (me && me.quiz) || {};
@@ -1387,7 +1399,7 @@ function render() {
   else lead.textContent = L('Every lesson you study earns points.', 'كل درس بتدرسه بيعطيك نقاط.');
   $('bac').innerHTML = BAC_DATE ? (() => { const n = Math.round((new Date(BAC_DATE + 'T00:00') - dayAgo(0)) / 864e5); return '<span class="tag">First Bakaloria exam in ' + (n > 0 ? n + ' days' : n === 0 ? 'today' : '—') + '</span>'; })() : '';
   if (!(ui === 'hw' && $('hwForm'))) $('hwBox').innerHTML = hwHTML();
-  if (!($('quizBox').contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))) $('quizBox').innerHTML = hasAccess() && ready ? quizHTML() : '';
+  if (!($('quizBox').contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))) $('quizBox').innerHTML = hasAccess() && ready ? taqHTML() : '';
   if (!(ui === 'ch' && $('chForm'))) $('chBox').innerHTML = challengesHTML(rows, mode);
   if (!(ui === 'surp' && $('surpBox').contains(document.activeElement))) { const keepTo = $('rainTo') ? $('rainTo').value : '', keepMsg = ui === 'surp' && $('rainMsg') ? $('rainMsg').value : ''; $('surpBox').innerHTML = surpHTML(); if (keepTo && $('rainTo')) $('rainTo').value = keepTo; if (keepMsg && $('rainMsg')) $('rainMsg').value = keepMsg; }
   if (!(ui === 'teams' && $('teamForm') && $('teamForm').contains(document.activeElement))) $('teamBox').innerHTML = teamsHTML(rows);
@@ -1779,7 +1791,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795769504";
+const BUILD = "1795769677";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
