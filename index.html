@@ -528,6 +528,26 @@ body:not([data-pg=race]) .wrap{padding-top:calc(72px + env(safe-area-inset-top))
 .rvhint{font-size:12px;font-weight:600;opacity:.85;margin-inline-start:4px;padding:1px 6px;border-radius:8px;background:color-mix(in srgb,currentColor 14%,transparent)}
 .revtip{margin:4px 0 12px;padding:10px 12px;border-radius:12px;background:var(--panel2);border:1px dashed var(--gold);font-size:14px;color:var(--ink)}
 .revtip b{color:var(--gold2)}
+.quizc .head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.qlist{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.qrow{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;cursor:pointer;min-height:52px}
+.qrow small{display:block;color:var(--mute);font-size:13px;font-weight:500}
+.qrow:focus-visible{outline:2px solid var(--gold)}
+.qscore{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;color:var(--gold2)}
+.qlist li.open .qrow{border-color:var(--gold)}
+.qform{display:flex;flex-direction:column;gap:12px;padding:12px 4px 4px}
+.qq{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0;display:flex;flex-direction:column;gap:6px}
+.qq legend{padding:0 4px;font-weight:600;line-height:1.5}
+.qq.ok{border-color:#3BB273}.qq.no{border-color:#E8453C}
+.qopt{display:flex;align-items:center;gap:10px;min-height:42px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.qopt input[type=radio]{accent-color:var(--gold);width:18px;height:18px;flex:none}
+.qopt input[type=text]{flex:1}
+.qopt.right{border-color:#3BB273;background:color-mix(in srgb,#3BB273 14%,transparent)}
+.qopt.wrong{border-color:#E8453C;background:color-mix(in srgb,#E8453C 14%,transparent)}
+.qdone{margin:0;font-size:18px}
+.qed{display:flex;flex-direction:column;gap:6px}
+.qedl{margin:6px 0;padding-inline-start:20px}.qedl li{margin:4px 0}
+.qadd{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:6px}
 </style>
 <script>try{var t=localStorage.getItem("bac-theme");if(t&&t!=="night")document.documentElement.setAttribute("data-theme",t);var BG={night:"#0A1128",damascus:"#F4EEDF",jasmine:"#F7F6EF",sea:"#0B3D5C",palmyra:"#F6E3C7",stadium:"#0B1F14",notebook:"#FBF8F1",chalk:"#24382C",exam:"#FFFFFF",latenight:"#2A1E16",space:"#0E0B2A",arcade:"#1A1A2E",winter:"#EAF3FB",hamster:"#FFE6EF",cats:"#FFF1E6",football:"#1E6B34",ramadan:"#1B1440"};if(t&&!BG[t]){t="night";document.documentElement.removeAttribute("data-theme")}document.querySelector("meta[name=theme-color]").setAttribute("content",BG[t||"night"]||"#0A1128")}catch(e){}</script>
 </head>
@@ -544,6 +564,7 @@ body:not([data-pg=race]) .wrap{padding-top:calc(72px + env(safe-area-inset-top))
   <div id="bac"></div>
   <div class="track" id="track" aria-label="Race track: predicted score per friend"><p class="empty">Loading…</p></div>
   <div id="surpBox"></div>
+  <div id="quizBox"></div>
   <div id="hwBox"></div>
   <div id="chBox"></div>
   <div id="teamBox"></div>
@@ -685,7 +706,7 @@ function totalH(p) { const h = (p && p.hours) || {}; let t = 0; for (const k in 
 
 // ---- state ----
 let api = null, meId = null, meName = '', authReady = false, me = null;
-let tests = [], testsUnsub = null, ghw = [], ghwUnsub = null, access = null, adminUids = null, codes = [], codesUnsub = null, authMode = 'login', players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
+let quizzes = [], qOpen = null, qAns = {}, qDraft = null, tests = [], testsUnsub = null, ghw = [], ghwUnsub = null, access = null, adminUids = null, codes = [], codesUnsub = null, authMode = 'login', players = {}, lobbyDocs = {}, homework = [], lobbyUnsub = new Map(), playersUnsub = null, hwUnsub = null, watching = null;
 let page = 'race', cur = null, ui = '', leaveArm = false, open = new Set(), pending = null, writing = false, toastT = null;
 try { page = localStorage.getItem('bac-page') || 'race'; cur = localStorage.getItem('bac-cur') || null; open = new Set(JSON.parse(localStorage.getItem('bac-open2') || '[]')); } catch (e) {}
 if (hashCode()) cur = hashCode();
@@ -1181,6 +1202,43 @@ function adminHTML() {
     peopleHTML() + allThemesHTML() + adminNotesHTML() + '<section class="card" style="margin-top:14px"><h2>' + L('Other admin tools', 'أدوات أخرى') + '</h2><ul class="alist"><li>' + L('Announce tests on the Tests page (+ Announce a test).', 'أعلن الاختبارات من صفحة الاختبارات (+ أعلن اختباراً).') + '</li><li>' + L('Post homework for everyone from the homework box on the race page: keep "Send to all races" ticked.', 'انشر واجباً للجميع من صندوق الواجبات في صفحة السباق مع إبقاء «أرسله لكل السباقات» معلّماً.') + '</li></ul>' +
     '<p style="margin-top:12px"><button class="btn ghost" data-page="tests">' + L('Go to Tests', 'إلى الاختبارات') + '</button> <button class="btn ghost" data-page="race">' + L('Go to homework', 'إلى الواجبات') + '</button></p></section>';
 }
+// ---- quizzes: shown on the Race page. Types: mc (choose one), tf (true/false), text (typed, checked loosely) ----
+const normA = x => String(x || '').trim().toLowerCase().replace(/[\u064B-\u0652\u0640]/g, '').replace(/[إأآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/\s+/g, ' ');
+function qRight(q, a) { if (a === undefined || a === null || a === '') return false; if (q.type === 'text') return (Array.isArray(q.answer) ? q.answer : [q.answer]).some(x => normA(x) === normA(a)); return String(q.answer) === String(a); }
+function quizVisible(z) { const tk = todayKey(); if (!z || !Array.isArray(z.questions) || !z.questions.length) return false; if (z.from && z.from > tk) return isAdmin(); if (z.to && z.to < tk) return false; const sc = Array.isArray(z.secs) ? z.secs : []; return !sc.length || isAdmin() || (me && sc.includes(me.sec)); }
+function keepQDraft() { if (!qDraft) return; if ($('qTitle')) qDraft.title = $('qTitle').value.trim().slice(0, 60); if ($('qSubj')) qDraft.subj = $('qSubj').value; if ($('qTo')) qDraft.to = $('qTo').value; }
+function quizHTML() {
+  const list = quizzes.filter(quizVisible).sort((a, b) => (b.n || 0) - (a.n || 0)), done = (me && me.quiz) || {};
+  if (!list.length && !isAdmin()) return '';
+  let h = '<section class="card quizc"><div class="head"><h2 style="margin:0">' + L('Quizzes', 'كويزات') + '</h2>' + (isAdmin() ? '<button class="btn ghost" data-act="qnew">' + (qDraft ? L('Close', 'إغلاق') : L('+ New quiz', '+ كويز جديد')) + '</button>' : '') + '</div>';
+  if (isAdmin() && qDraft) h += quizEditorHTML();
+  if (!list.length) return h + (qDraft ? '' : '<p class="note">' + L('No quizzes yet.', 'ما في كويزات لسا.') + '</p>') + '</section>';
+  h += '<ul class="qlist">' + list.map(z => { const r = done[z.id], open = qOpen === z.id;
+    return '<li class="' + (open ? 'open' : '') + '"><button type="button" class="qrow" data-qopen="' + esc(z.id) + '" aria-expanded="' + open + '"><span><b dir="auto">' + esc(z.title || L('Quiz', 'كويز')) + '</b><small>' + (z.subj ? esc(z.subj) + ' · ' : '') + L(z.questions.length + ' questions', z.questions.length + ' أسئلة') + (z.to ? ' · ' + L('until ', 'لحد ') + esc(fmtDate(z.to)) : '') + '</small></span>' +
+      (r ? '<span class="qscore">' + r.score + '/' + r.total + '</span>' : '<span class="tag">' + L('New', 'جديد') + '</span>') + '</button>' + (open ? quizTakeHTML(z, r) : '') + '</li>'; }).join('') + '</ul>';
+  return h + '</section>';
+}
+function quizTakeHTML(z, r) {
+  const show = !!r, ans = show ? (r.ans || {}) : qAns;
+  return '<form class="qform" id="quizForm" data-qid="' + esc(z.id) + '">' + z.questions.map((q, i) => { const a = ans[i], ok = show && qRight(q, a);
+    let body = '';
+    if (q.type === 'tf') body = [['true', L('True', 'صح')], ['false', L('False', 'غلط')]].map(([v, t]) => '<label class="qopt' + (show && String(q.answer) === v ? ' right' : '') + (show && String(a) === v && !ok ? ' wrong' : '') + '"><input type="radio" name="q' + i + '" value="' + v + '"' + (String(a) === v ? ' checked' : '') + (show ? ' disabled' : '') + '> ' + t + '</label>').join('');
+    else if (q.type === 'text') body = '<input type="text" name="q' + i + '" value="' + esc(a || '') + '" dir="auto" autocomplete="off"' + (show ? ' disabled' : '') + ' aria-label="' + L('Your answer', 'جوابك') + '">' + (show && !ok ? '<p class="note">' + L('Answer: ', 'الجواب: ') + '<b dir="auto">' + esc(Array.isArray(q.answer) ? q.answer[0] : q.answer) + '</b></p>' : '');
+    else body = (q.options || []).map((o, k) => '<label class="qopt' + (show && String(q.answer) === String(k) ? ' right' : '') + (show && String(a) === String(k) && !ok ? ' wrong' : '') + '"><input type="radio" name="q' + i + '" value="' + k + '"' + (String(a) === String(k) ? ' checked' : '') + (show ? ' disabled' : '') + '> <span dir="auto">' + esc(o) + '</span></label>').join('');
+    return '<fieldset class="qq' + (show ? (ok ? ' ok' : ' no') : '') + '"><legend dir="auto"><b>' + (i + 1) + '.</b> ' + esc(q.q) + (show ? (ok ? ' ✓' : ' ✗') : '') + '</legend>' + body + (show && q.why ? '<p class="note" dir="auto">' + esc(q.why) + '</p>' : '') + '</fieldset>'; }).join('') +
+    (show ? '<p class="qdone">' + L('Your score: ', 'علامتك: ') + '<b>' + r.score + '/' + r.total + '</b></p>' : '<div class="inl"><button class="btn">' + L('Submit answers', 'سلّم الأجوبة') + '</button></div>') + '</form>';
+}
+function quizEditorHTML() { const d = qDraft;
+  return '<div class="panel qed"><input type="text" id="qTitle" maxlength="60" value="' + esc(d.title) + '" placeholder="' + L('Quiz title, like Waves · lesson 2', 'اسم الكويز، مثلاً الأمواج · الدرس 2') + '" dir="auto" aria-label="' + L('Quiz title', 'اسم الكويز') + '">' +
+    '<div class="inl" style="margin-top:8px;align-items:flex-end"><select id="qSubj" style="flex:1 1 10em" aria-label="' + L('Subject', 'المادة') + '"><option value="">' + L('Any subject', 'أي مادة') + '</option>' + SUBJECTS.filter(x => x.groups[0].units.length).map(x => '<option' + (x.name === d.subj ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '</select><label class="fl" style="flex:1 1 8em">' + L('Open until (optional)', 'مفتوح لحد (اختياري)') + '<input type="date" id="qTo" value="' + esc(d.to || '') + '" dir="ltr"></label></div>' + secChecks('qSecs') +
+    '<ol class="qedl">' + d.questions.map((q, i) => '<li><span dir="auto">' + esc(q.q) + '</span> <small class="tag">' + (q.type === 'tf' ? L('True/false', 'صح/غلط') : q.type === 'text' ? L('Written', 'كتابي') : L('Choice', 'اختيار')) + '</small> <button type="button" class="linkbtn" data-qdel="' + i + '">' + L('Remove', 'شيل') + '</button></li>').join('') + '</ol>' +
+    '<div class="qadd"><div class="chips">' + [['mc', L('Multiple choice', 'اختيار من متعدد')], ['tf', L('True / false', 'صح أو غلط')], ['text', L('Written answer', 'جواب مكتوب')]].map(([k, t]) => '<button type="button" class="tk' + (d.type === k ? ' on' : '') + '" data-qtype="' + k + '">' + t + '</button>').join('') + '</div>' +
+    '<textarea id="qQ" rows="2" maxlength="400" placeholder="' + L('The question', 'السؤال') + '" dir="auto"></textarea>' +
+    (d.type === 'mc' ? [0, 1, 2, 3].map(k => '<label class="qopt"><input type="radio" name="qRight" value="' + k + '"' + (k === 0 ? ' checked' : '') + ' aria-label="' + L('Correct answer', 'الجواب الصح') + '"><input type="text" id="qO' + k + '" maxlength="160" placeholder="' + L('Option ', 'خيار ') + (k + 1) + (k > 1 ? L(' (optional)', ' (اختياري)') : '') + '" dir="auto"></label>').join('') + '<p class="note">' + L('Tick the right answer.', 'علّم الجواب الصح.') + '</p>' :
+     d.type === 'tf' ? '<div class="chips"><label class="qopt"><input type="radio" name="qRight" value="true" checked> ' + L('True', 'صح') + '</label><label class="qopt"><input type="radio" name="qRight" value="false"> ' + L('False', 'غلط') + '</label></div>' :
+     '<input type="text" id="qA" maxlength="160" placeholder="' + L('Right answer (other accepted answers after a | )', 'الجواب الصح (أجوبة تانية مقبولة بعد | )') + '" dir="auto">') +
+    '<input type="text" id="qWhy" maxlength="300" placeholder="' + L('Explanation after answering (optional)', 'شرح بعد الجواب (اختياري)') + '" dir="auto" style="margin-top:6px"><div class="inl" style="margin-top:8px"><button type="button" class="btn ghost" data-act="qaddq">' + L('+ Add question', '+ أضف السؤال') + '</button></div></div>' +
+    '<div class="inl" style="margin-top:12px"><button type="button" class="btn" data-act="qsave">' + L('Publish quiz (' + d.questions.length + ' questions)', 'انشر الكويز (' + d.questions.length + ' أسئلة)') + '</button></div></div>'; }
 // ---- school notes (teachers: good notes; supervisor and admin: good or bad) ----
 const NOTE_ROLE = n => n.role === 'teacher' ? L('Teacher', 'أستاذ') : n.role === 'supervisor' ? L('Supervisor', 'المشرفة') : n.role === 'admin' ? L('Admin', 'المدير') : '';
 let noteKind = 'good', ndelArm = null;
@@ -1329,6 +1387,7 @@ function render() {
   else lead.textContent = L('Every lesson you study earns points.', 'كل درس بتدرسه بيعطيك نقاط.');
   $('bac').innerHTML = BAC_DATE ? (() => { const n = Math.round((new Date(BAC_DATE + 'T00:00') - dayAgo(0)) / 864e5); return '<span class="tag">First Bakaloria exam in ' + (n > 0 ? n + ' days' : n === 0 ? 'today' : '—') + '</span>'; })() : '';
   if (!(ui === 'hw' && $('hwForm'))) $('hwBox').innerHTML = hwHTML();
+  if (!($('quizBox').contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))) $('quizBox').innerHTML = hasAccess() && ready ? quizHTML() : '';
   if (!(ui === 'ch' && $('chForm'))) $('chBox').innerHTML = challengesHTML(rows, mode);
   if (!(ui === 'surp' && $('surpBox').contains(document.activeElement))) { const keepTo = $('rainTo') ? $('rainTo').value : '', keepMsg = ui === 'surp' && $('rainMsg') ? $('rainMsg').value : ''; $('surpBox').innerHTML = surpHTML(); if (keepTo && $('rainTo')) $('rainTo').value = keepTo; if (keepMsg && $('rainMsg')) $('rainMsg').value = keepMsg; }
   if (!(ui === 'teams' && $('teamForm') && $('teamForm').contains(document.activeElement))) $('teamBox').innerHTML = teamsHTML(rows);
@@ -1400,6 +1459,9 @@ document.addEventListener('click', async ev => {
   const pk1 = ev.target.closest('[data-pick],[data-psec],[data-pickclr]'); if (pk1) { const keep = $('noteText') ? $('noteText').value : '';
     if (pk1.dataset.pick) pick.uid = pk1.dataset.pick; else if (pk1.dataset.psec) { pick.sec = pick.sec === pk1.dataset.psec && !pick.q ? '' : pk1.dataset.psec; pick.q = ''; } else pick.uid = '';
     render(); if ($('noteText')) $('noteText').value = keep; return; }
+  const qo = ev.target.closest('[data-qopen]'); if (qo) { const id = qo.dataset.qopen; qOpen = qOpen === id ? null : id; qAns = {}; render(); return; }
+  const qt = ev.target.closest('[data-qtype]'); if (qt && qDraft) { keepQDraft(); qDraft.type = qt.dataset.qtype; render(); return; }
+  const qd = ev.target.closest('[data-qdel]'); if (qd && qDraft) { keepQDraft(); qDraft.questions.splice(+qd.dataset.qdel, 1); render(); return; }
   const nk = ev.target.closest('[data-nkind]'); if (nk) { noteKind = nk.dataset.nkind; const keep = $('noteText') ? $('noteText').value : '', to = $('noteTo') ? $('noteTo').value : ''; ev.target.blur && document.activeElement && document.activeElement.blur(); render(); if ($('noteText')) $('noteText').value = keep; if (to && $('noteTo')) $('noteTo').value = to; return; }
   const nd = ev.target.closest('[data-ndel]'); if (nd) { const id = nd.dataset.ndel; if (ndelArm !== id) { ndelArm = id; render(); setTimeout(() => { ndelArm = null; render(); }, 4000); return; } ndelArm = null; if (!api) return; try { await api.deleteDoc(api.doc(api.db, 'notes', id)); toast(L('Note deleted', 'انحذفت الملاحظة')); } catch (e) { toast(L('Could not delete', 'تعذّر الحذف')); } return; }
   const sbb = ev.target.closest('[data-sb]'); if (sbb) { playSB(sbb.dataset.sb); return; }
@@ -1475,6 +1537,15 @@ document.addEventListener('click', async ev => {
   if (act === 'cpystaff') { const link = location.origin + location.pathname; const txt = codes.filter(c => (c.role === 'teacher' || c.role === 'supervisor') && !c.usedBy).sort((a, b) => (a.n || 0) - (b.n || 0)).map(c => (c.label || ROLE_NAME(c.role)) + ': ' + c.id).join('\n') + '\n\n' + link;
     try { if (navigator.share) { await navigator.share({text: txt}); return; } await navigator.clipboard.writeText(txt); toast(L('Copied', 'نُسخ')); } catch (e) { toast(L('Could not copy', 'تعذّر النسخ')); } return; }
   if (act === 'mutesurp' && me) { const on = !me.muteSurp; changeMe(p => { p.muteSurp = on; }); toast(on ? L('Surprises muted', 'انكتمت المفاجآت') : L('Surprises on', 'رجعت المفاجآت')); return; }
+  if (act === 'qnew' && isAdmin()) { qDraft = qDraft ? null : {title: '', subj: '', to: '', type: 'mc', questions: []}; render(); return; }
+  if (act === 'qaddq' && qDraft) { keepQDraft(); const q = ($('qQ') || {}).value ? $('qQ').value.trim() : '', why = $('qWhy') ? $('qWhy').value.trim() : '', t = qDraft.type, rr = document.querySelector('input[name=qRight]:checked'); if (!q) { toast(L('Write the question first', 'اكتب السؤال أول')); return; }
+    const item = {q, type: t}; if (why) item.why = why;
+    if (t === 'mc') { const opts = [0, 1, 2, 3].map(k => ($('qO' + k) || {}).value || '').map(x => x.trim()); const right = rr ? +rr.value : 0; if (!opts[0] || !opts[1]) { toast(L('Add at least two options', 'أضف خيارين عالأقل')); return; } if (!opts[right]) { toast(L('The right answer is empty', 'الجواب الصح فاضي')); return; } const keep = opts.map((o, k) => ({o, k})).filter(x => x.o); item.options = keep.map(x => x.o); item.answer = keep.findIndex(x => x.k === right); }
+    else if (t === 'tf') item.answer = rr ? rr.value : 'true';
+    else { const a = ($('qA') || {}).value || ''; const alts = a.split('|').map(x => x.trim()).filter(Boolean); if (!alts.length) { toast(L('Write the right answer', 'اكتب الجواب الصح')); return; } item.answer = alts; }
+    qDraft.questions.push(item); render(); if ($('qQ')) $('qQ').focus(); return; }
+  if (act === 'qsave' && qDraft && isAdmin() && api) { keepQDraft(); if (!qDraft.title) { toast(L('Give the quiz a title', 'سمّي الكويز')); return; } if (!qDraft.questions.length) { toast(L('Add at least one question', 'أضف سؤال عالأقل')); return; }
+    const secs = pickedSecs('qSecs'); try { await api.addDoc(api.collection(api.db, 'quizzes'), {title: qDraft.title, subj: qDraft.subj, to: qDraft.to || '', secs: secs.length === SECS.length ? [] : secs, questions: qDraft.questions, by: meId, n: Date.now()}); qDraft = null; toast(L('Quiz published', 'انتشر الكويز')); render(); } catch (e) { toast(L('Could not publish', 'تعذّر النشر') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   if (act === 'notesseen') { const mx = Math.max(0, ...myNotes.map(n => n.at || 0)); try { localStorage.setItem('bac-notes-seen', String(mx)); } catch (e) {} render(); return; }
   if (act === 'doblater') { dobLater = true; render(); return; }
   if (act === 'authmode') { const ku = $('auUser') ? $('auUser').value : '', kp = $('auPass') ? $('auPass').value : ''; authMode = authMode === 'login' ? 'signup' : 'login'; render(); if ($('auUser')) $('auUser').value = ku; if ($('auPass')) $('auPass').value = kp; const u = $('auUser'); if (u) u.focus(); return; }
@@ -1541,6 +1612,10 @@ document.addEventListener('submit', async ev => {
     try { const b = api.writeBatch(api.db); b.set(api.doc(api.db, 'roster', uid), {nameEn, nameAr, code}); b.update(api.doc(api.db, 'codes', code), {nameEn, nameAr}); codes.filter(x => x.role === 'parent' && x.parentOf === code).forEach(x => b.update(api.doc(api.db, 'codes', x.id), {nameEn, nameAr})); await b.commit(); document.activeElement && document.activeElement.blur(); toast(L('Name saved', 'انحفظ الاسم')); render(); } catch (e) { toast(L('Could not save', 'تعذّر الحفظ') + ' (' + ((e && e.code) || 'error') + ')'); } return; }
   if (f.id === 'staffCode') { if (!isAdmin() || !api) return; const role = $('scRole').value === 'supervisor' ? 'supervisor' : 'teacher', label = $('scLabel').value.trim().slice(0, 30);
     try { const c = newCode(); await api.setDoc(api.doc(api.db, 'codes', c), {n: Date.now(), role, label}); $('scLabel').value = ''; toast(L('Code made: ', 'انعمل الكود: ') + c); } catch (e) { toast(L('Could not make codes', 'تعذّر إنشاء الأكواد')); } return; }
+  if (f.id === 'quizForm') { const z = quizzes.find(x => x.id === f.dataset.qid); if (!z || !me) return; if (me.quiz && me.quiz[z.id]) return; const ans = {}; let score = 0;
+    z.questions.forEach((q, i) => { const el = q.type === 'text' ? f.querySelector('[name=q' + i + ']') : f.querySelector('[name=q' + i + ']:checked'); const v = el ? el.value.trim() : ''; if (v !== '') ans[i] = v; if (qRight(q, v)) score++; });
+    if (Object.keys(ans).length < z.questions.length) { toast(L('Answer every question first', 'جاوب على كل الأسئلة أول')); return; }
+    changeMe(p => { p.quiz = p.quiz || {}; p.quiz[z.id] = {score, total: z.questions.length, at: Date.now(), ans}; }); playSound(score === z.questions.length ? 'hw' : 'lesson'); toast(L('Score: ', 'علامتك: ') + score + '/' + z.questions.length); return; }
   if (f.id === 'dobForm') { const d = $('dobIn2').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || d > todayKey()) { toast(L('Pick your date of birth', 'اختر تاريخ ميلادك')); return; } changeMe(p => { p.dob = d; }); toast(L('Saved', 'حُفظ')); return; }
   if (f.id === 'joinForm') { const n = $('nickIn').value.trim().slice(0, 24); const r = (f.querySelector('input[name=rel]:checked') || {}).value || 'i'; if (!n) return;
     const dob = $('dobIn') ? $('dobIn').value : ''; if (!/^\d{4}-\d{2}-\d{2}$/.test(dob) || dob > todayKey()) { toast(L('Pick your date of birth', 'اختر تاريخ ميلادك')); return; }
@@ -1704,7 +1779,7 @@ function playSound(kind) {
   } catch (e) {}
 }
 // ---- app updates: the home-screen app keeps an old copy, so check for a newer one ----
-const BUILD = "1795766811";
+const BUILD = "1795769504";
 let updShown = false;
 async function checkUpdate(manual) {
   if (DEMO || BUILD.startsWith('__')) return;
@@ -1723,7 +1798,7 @@ async function redeem(code, uid) {
   if (cd.role === 'parent') { const ks = await api.getDoc(api.doc(api.db, 'codes', cd.parentOf || '-')); const ku = ks.exists() ? ks.data().usedBy : ''; if (!ku) { const e = new Error('kid'); e.kid = true; throw e; } acc.child = ku; }
   const b = api.writeBatch(api.db); b.update(api.doc(api.db, 'codes', code), {usedBy: uid, usedAt: Date.now(), usedName: myUsername()}); b.set(api.doc(api.db, 'access', uid), acc); if (!cd.role && (cd.nameEn || cd.nameAr)) b.set(api.doc(api.db, 'roster', uid), {nameEn: cd.nameEn || '', nameAr: cd.nameAr || '', code}); await b.commit(); }
 async function start() {
-  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; challenges = DEMO.challenges || []; ghw = DEMO.ghw || []; tests = DEMO.tests || []; access = true; accData = DEMO.acc || null; students = DEMO.students || []; roster = DEMO.roster || {}; kid = DEMO.kid || null; myNotes = DEMO.myNotes || []; sentNotes = DEMO.sentNotes || []; kidNotes = DEMO.kidNotes || []; adminUids = DEMO.email ? [DEMO.meId] : []; codes = DEMO.codes || []; perksAll = DEMO.perks || {}; onPerks(DEMO.perks ? DEMO.perks[DEMO.meId] : {}); if (DEMO.state === 'out') { meId = null; me = null; } if (DEMO.state === 'gate') { access = false; adminUids = []; } cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
+  if (DEMO) { authReady = true; meId = DEMO.meId; me = DEMO.players[meId]; players = DEMO.players; lobbyDocs = DEMO.lobbies; homework = DEMO.homework; challenges = DEMO.challenges || []; ghw = DEMO.ghw || []; tests = DEMO.tests || []; access = true; accData = DEMO.acc || null; students = DEMO.students || []; roster = DEMO.roster || {}; quizzes = DEMO.quizzes || []; kid = DEMO.kid || null; myNotes = DEMO.myNotes || []; sentNotes = DEMO.sentNotes || []; kidNotes = DEMO.kidNotes || []; adminUids = DEMO.email ? [DEMO.meId] : []; codes = DEMO.codes || []; perksAll = DEMO.perks || {}; onPerks(DEMO.perks ? DEMO.perks[DEMO.meId] : {}); if (DEMO.state === 'out') { meId = null; me = null; } if (DEMO.state === 'gate') { access = false; adminUids = []; } cur = DEMO.cur; open = new Set(DEMO.open || []); render(); return; }
   render();
   const [A, U, F] = await Promise.all([import(FB + 'firebase-app.js'), import(FB + 'firebase-auth.js'), import(FB + 'firebase-firestore.js')]);
   const app = A.initializeApp(FIREBASE_CONFIG), auth = U.getAuth(app), db = F.getFirestore(app);
@@ -1733,7 +1808,7 @@ async function start() {
     if (dataOn || !meId || !hasAny() || adminUids === null) return; dataOn = true; const uid = meId, r = isAdmin() ? 'admin' : ROLE();
     const col = (q, set) => F.onSnapshot(q, x => { const a = []; x.forEach(d => a.push({id: d.id, ...d.data()})); set(a); render(); }, () => {});
     if (r !== 'parent') ghwUnsub = col(F.collection(db, 'allhw'), a => ghw = a);
-    if (r === 'student' || r === 'admin') { testsUnsub = col(F.collection(db, 'tests'), a => tests = a); extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('to', '==', uid)), a => { myNotes = a; notesLoaded = true; setTimeout(syncNotePts, 0); })); }
+    if (r === 'student' || r === 'admin') { extraUnsubs.push(col(F.collection(db, 'quizzes'), a => quizzes = a)); testsUnsub = col(F.collection(db, 'tests'), a => tests = a); extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('to', '==', uid)), a => { myNotes = a; notesLoaded = true; setTimeout(syncNotePts, 0); })); }
     if (r === 'admin' || r === 'supervisor') extraUnsubs.push(col(F.collection(db, 'notes'), a => sentNotes = a));
     if (r === 'teacher') extraUnsubs.push(col(F.query(F.collection(db, 'notes'), F.where('from', '==', uid)), a => sentNotes = a));
     if (r !== 'student' && r !== 'parent') extraUnsubs.push(F.onSnapshot(F.collection(db, 'roster'), q => { const m = {}; q.forEach(d => { m[d.id] = d.data(); }); roster = m; render(); }, () => {}));
